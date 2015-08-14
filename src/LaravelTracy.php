@@ -7,9 +7,7 @@ use Tracy\FireLogger;
 
 class LaravelTracy
 {
-    public static $config = [
-
-    ];
+    public static $config = [];
 
     protected static $ajaxPanel = [
         'Recca0120\LaravelTracy\Panels\ConnectionPanel',
@@ -83,16 +81,31 @@ class LaravelTracy
 
     public static function modifyResponse($request, $response)
     {
-        $app = app();
-        if ($app->runningInConsole() === true) {
-            return $response;
-        }
+        $content = $response->getContent();
+        $pos = strripos($content, '</body>');
 
-        if ($request->isJson() === true or
-            $request->wantsJson() === true or
-            $request->ajax() === true or
-            $request->pjax() === true
-        ) {
+        if ($pos !== false and
+            $request->isJson() === false and
+            $request->wantsJson() === false and
+            $request->ajax() === false and
+            $request->pjax() === false) {
+            ob_start();
+            call_user_func_array(static::$config['handler']['shutdown'], []);
+            $renderedContent = ob_get_clean();
+
+            $rewriteJavascript = view('laravel-tracy::rewriteJavascript')->render();
+
+            if (static::$config['version'] === '2.2') {
+                $rewriteJavascript = $rewriteJavascript;
+                $renderedContent = str_replace('window.onload = ', $rewriteJavascript, $renderedContent);
+            } else {
+                $renderedContent = str_replace('window.addEventListener(\'load\', ', $rewriteJavascript.'(', $renderedContent);
+            }
+
+            $content = substr($content, 0, $pos).$renderedContent.substr($content, $pos);
+
+            $response->setContent($content);
+        } else {
             $logger = new FireLogger();
             $logger->maxDepth = static::$config['maxDepth'];
             $logger->maxLength = static::$config['maxLen'];
@@ -103,130 +116,7 @@ class LaravelTracy
                     $logger->log($jsonData);
                 }
             }
-        } else {
-            $response = static::injectBar($response);
         }
-
-        return $response;
-    }
-
-    protected static function injectBar($response)
-    {
-        $content = $response->getContent();
-        ob_start();
-        call_user_func_array(static::$config['handler']['shutdown'], []);
-        $renderedContent = ob_get_clean();
-
-        $rewriteJavascript = <<<EOF
-function bindReady(handler){
-
-    var called = false
-
-    var ready = function() {
-        if (called) return
-        called = true
-        handler()
-    }
-
-    if ( document.addEventListener ) { // native event
-        document.addEventListener( "DOMContentLoaded", ready, false )
-    } else if ( document.attachEvent ) {  // IE
-
-        try {
-            var isFrame = window.frameElement != null
-        } catch(e) {}
-
-        // IE, the document is not inside a frame
-        if ( document.documentElement.doScroll && !isFrame ) {
-            function tryScroll(){
-                if (called) return
-                try {
-                    document.documentElement.doScroll("left")
-                    ready()
-                } catch(e) {
-                    setTimeout(tryScroll, 10)
-                }
-            }
-            tryScroll()
-        }
-
-        // IE, the document is inside a frame
-        document.attachEvent("onreadystatechange", function(){
-            if ( document.readyState === "complete" ) {
-                ready()
-            }
-        })
-    }
-
-    // Old browsers
-    if (window.addEventListener)
-        window.addEventListener('load', ready, false)
-    else if (window.attachEvent)
-        window.attachEvent('onload', ready)
-    else {
-        var fn = window.onload // very old browser, copy old onload
-        window.onload = function() { // replace by new onload and call the old one
-            fn && fn()
-            ready()
-        }
-    }
-}
-
-var readyList = []
-
-function onReady(handler) {
-
-    function executeHandlers() {
-        for(var i=0; i<readyList.length; i++) {
-            readyList[i]()
-        }
-    }
-
-    if (!readyList.length) { // set handler on first run
-        bindReady(executeHandlers)
-    }
-
-    readyList.push(handler)
-}
-
-
-var _T = null
-var completed = function() {
-    _T()
-    _T = function() {}
-}
-var onLoad = window.onload;
-if (typeof onLoad === 'function') {
-    bindReady(onLoad);
-    window.onload = function() {}
-}
-var fire = function() {
-    if (window.addEventListener) {
-        bindReady(completed);
-    } else if (_T != null){
-        bindReady(completed);
-    } else {
-        setTimeout(fire, 50);
-    }
-}
-fire();
-_T =
-EOF;
-        if (static::$config['version'] === '2.2') {
-            $rewriteJavascript = $rewriteJavascript;
-            $renderedContent = str_replace('window.onload = ', $rewriteJavascript, $renderedContent);
-        } else {
-            $renderedContent = str_replace('window.addEventListener(\'load\', ', $rewriteJavascript.'(', $renderedContent);
-        }
-
-        $pos = strripos($content, '</body>');
-        if (false !== $pos) {
-            $content = substr($content, 0, $pos).$renderedContent.substr($content, $pos);
-        } else {
-            $content = $content.$renderedContent;
-        }
-
-        $response->setContent($content);
 
         return $response;
     }

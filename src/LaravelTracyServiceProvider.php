@@ -27,7 +27,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        if (config('app.debug')) {
+        if (config('app.debug') === true and $this->app->runningInConsole() === false) {
             $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
             LaravelTracy::register(config('tracy'));
         }
