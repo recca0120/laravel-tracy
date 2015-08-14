@@ -46,7 +46,7 @@ abstract class AbstractPanel implements IBarPanel
     public function getTab()
     {
         $data = array_merge($this->getData(), [
-            'toHtmlOption' => LaravelTracy::$tracyData['DUMP_OPTION'],
+            'toHtmlOption' => LaravelTracy::$config['dumpOption'],
         ]);
         $response = (empty($data) === false) ? view('laravel-tracy::'.$this->getClassBasename().'.tab', $data) : null;
 
@@ -61,7 +61,7 @@ abstract class AbstractPanel implements IBarPanel
     public function getPanel()
     {
         $data = array_merge($this->getData(), [
-            'toHtmlOption' => LaravelTracy::$tracyData['DUMP_OPTION'],
+            'toHtmlOption' => LaravelTracy::$config['dumpOption'],
         ]);
         $response = (empty($data) === false) ? view('laravel-tracy::'.$this->getClassBasename().'.panel', $data) : null;
 

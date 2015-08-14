@@ -8,7 +8,7 @@ use Tracy\FireLogger;
 
 class LaravelTracy
 {
-    public static $tracyData = [
+    public static $config = [
 
     ];
 
@@ -35,56 +35,50 @@ class LaravelTracy
         ],
     ];
 
-    public static function register()
+    public static function register($config = [])
     {
-        $version = static::normalizeTracyVersion();
-        $maxDepth = 4;
-        $maxLength = 1000;
-        $showLocation = true;
-        $strictMode = true;
-        switch ($version) {
+        $config = array_merge([
+            'version' => static::normalizeTracyVersion(),
+            'strictMode' => Debugger::$strictMode,
+            'maxDepth' => Debugger::$maxDepth,
+            'maxLen' => Debugger::$maxLen,
+            'showLocation' => Debugger::$showLocation,
+            'editor' => Debugger::$editor,
+        ], $config);
+        switch ($config['version']) {
             case '2.2':
-                static::$tracyData = [
-                    'VERSION' => $version,
-                    'MAX_DEPTH' => $maxDepth,
-                    'MAX_LENGTH' => $maxLength,
-                    'SHOW_LOCATION' => $showLocation,
-                    'STRICT_MODE' => $strictMode,
-                    'DUMP_OPTION' => [
+                static::$config = array_merge($config, [
+                    'dumpOption' => [
                         Dumper::COLLAPSE => false,
                     ],
-                    'HANDLER' => [
-                        'EXCEPTION' => ['\Tracy\Debugger', '_exceptionHandler'],
-                        'SHUTDOWN' => ['\Tracy\Debugger', '_shutdownHandler'],
-                        'ERROR' => ['\Tracy\Debugger', '_errorHandler'],
+                    'handler' => [
+                        'exception' => ['\Tracy\Debugger', '_exceptionHandler'],
+                        'shutdown' => ['\Tracy\Debugger', '_shutdownHandler'],
+                        'error' => ['\Tracy\Debugger', '_errorHandler'],
                     ],
-                ];
+                ]);
                 break;
             default:
-                static::$tracyData = [
-                    'VERSION' => $version,
-                    'MAX_DEPTH' => $maxDepth,
-                    'MAX_LENGTH' => $maxLength,
-                    'SHOW_LOCATION' => $showLocation,
-                    'STRICT_MODE' => $strictMode,
-                    'DUMP_OPTION' => [
+                static::$config = array_merge($config, [
+                    'dumpOption' => [
                         Dumper::COLLAPSE => false,
                         Dumper::LIVE => true,
                     ],
-                    'HANDLER' => [
-                        'EXCEPTION' => ['\Tracy\Debugger', 'exceptionHandler'],
-                        'SHUTDOWN' => ['\Tracy\Debugger', 'shutdownHandler'],
-                        'ERROR' => ['\Tracy\Debugger', 'errorHandler'],
+                    'handler' => [
+                        'exception' => ['\Tracy\Debugger', 'exceptionHandler'],
+                        'shutdown' => ['\Tracy\Debugger', 'shutdownHandler'],
+                        'error' => ['\Tracy\Debugger', 'errorHandler'],
                     ],
-                ];
+                ]);
                 break;
         }
 
         Debugger::$time = isset($_SERVER['REQUEST_TIME_FLOAT']) ? $_SERVER['REQUEST_TIME_FLOAT'] : microtime(true);
-        Debugger::$maxDepth = static::$tracyData['MAX_DEPTH'];
-        Debugger::$maxLen = static::$tracyData['MAX_LENGTH'];
-        Debugger::$showLocation = static::$tracyData['SHOW_LOCATION'];
-        Debugger::$strictMode = static::$tracyData['STRICT_MODE'];
+        Debugger::$maxDepth = static::$config['maxDepth'];
+        Debugger::$maxLen = static::$config['maxLen'];
+        Debugger::$showLocation = static::$config['showLocation'];
+        Debugger::$strictMode = static::$config['strictMode'];
+        Debugger::$editor = static::$config['editor'];
 
         $app = app();
         $app->singleton(
@@ -113,8 +107,8 @@ class LaravelTracy
             $request->pjax() === true
         ) {
             $logger = new FireLogger();
-            $logger->maxDepth = static::$tracyData['MAX_DEPTH'];
-            $logger->maxLength = tatic::$tracyData['MAX_LENGTH'];
+            $logger->maxDepth = static::$config['maxDepth'];
+            $logger->maxLength = tatic::$config['maxLen'];
             foreach (static::$panels as $panelId => $panelData) {
                 if ($panelData['toJson'] === true) {
                     $panel = Debugger::getBar()->getPanel($panelId);
@@ -133,7 +127,7 @@ class LaravelTracy
     {
         $content = $response->getContent();
         ob_start();
-        call_user_func_array(static::$tracyData['HANDLER']['SHUTDOWN'], []);
+        call_user_func_array(static::$config['handler']['shutdown'], []);
         $renderedContent = ob_get_clean();
 
         $rewriteJavascript = <<<EOF
@@ -231,7 +225,7 @@ var fire = function() {
 fire();
 _T =
 EOF;
-        if (static::$tracyData['VERSION'] === '2.2') {
+        if (static::$config['version'] === '2.2') {
             $rewriteJavascript = $rewriteJavascript;
             $renderedContent = str_replace('window.onload = ', $rewriteJavascript, $renderedContent);
         } else {
@@ -262,7 +256,7 @@ EOF;
 
         if (config('app.debug') === true) {
             ob_start();
-            call_user_func_array(static::$tracyData['HANDLER']['EXCEPTION'], [$e, false]);
+            call_user_func_array(static::$config['handler']['exception'], [$e, false]);
             $content = ob_get_clean();
 
             $response = response()->make($content, $status);

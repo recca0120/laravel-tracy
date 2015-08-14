@@ -16,6 +16,11 @@ class LaravelTracyServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-tracy');
+
+        $app = $this->app;
+        $this->publishes([
+            __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
+        ]);
     }
     /**
      * Register the service provider.
@@ -23,7 +28,8 @@ class LaravelTracyServiceProvider extends ServiceProvider
     public function register()
     {
         if (config('app.debug')) {
-            LaravelTracy::register();
+            $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
+            LaravelTracy::register(config('tracy'));
         }
     }
     /**
