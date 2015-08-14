@@ -5,13 +5,17 @@ use Tracy\Helpers as TracyHelpers;
 
 class ConnectionPanel extends AbstractPanel
 {
-    private static $initialize = false;
-
     public $data = [
         'count' => 0,
         'totalTime' => 0,
         'queries' => [],
     ];
+
+    private static $initialize = false;
+
+    private $count = 0;
+
+    private $totalTime = 0;
 
     public function __construct()
     {
