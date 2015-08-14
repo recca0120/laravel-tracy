@@ -7,6 +7,11 @@ abstract class AbstractPanel implements IBarPanel
 {
     public $data = [];
 
+    public function id()
+    {
+        return str_replace('panel', '', strtolower($this->getClassBasename()));
+    }
+
     public function getClassBasename()
     {
         return class_basename(get_class($this));

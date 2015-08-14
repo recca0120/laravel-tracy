@@ -1,6 +1,5 @@
 <?php namespace Recca0120\LaravelTracy;
 
-use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tracy\Debugger;
 use Tracy\Dumper;
@@ -12,27 +11,9 @@ class LaravelTracy
 
     ];
 
-    protected static $panels = [
-        'Routing' => [
-            'panel' => 'Recca0120\LaravelTracy\Panels\RoutingPanel',
-            'toJson' => false,
-        ],
-        'Database' => [
-            'panel' => 'Recca0120\LaravelTracy\Panels\ConnectionPanel',
-            'toJson' => true,
-        ],
-        'Session' => [
-            'panel' => 'Recca0120\LaravelTracy\Panels\SessionPanel',
-            'toJson' => false,
-        ],
-        'Request' => [
-            'panel' => 'Recca0120\LaravelTracy\Panels\RequestPanel',
-            'toJson' => false,
-        ],
-        'User' => [
-            'panel' => 'Recca0120\LaravelTracy\Panels\UserPanel',
-            'toJson' => true,
-        ],
+    protected static $ajaxPanel = [
+        'Recca0120\LaravelTracy\Panels\ConnectionPanel',
+        'Recca0120\LaravelTracy\Panels\UserPanel',
     ];
 
     public static function register($config = [])
@@ -44,6 +25,13 @@ class LaravelTracy
             'maxLen' => Debugger::$maxLen,
             'showLocation' => Debugger::$showLocation,
             'editor' => Debugger::$editor,
+            'panels' => [
+                'Recca0120\LaravelTracy\Panels\RoutingPanel',
+                'Recca0120\LaravelTracy\Panels\ConnectionPanel',
+                'Recca0120\LaravelTracy\Panels\SessionPanel',
+                'Recca0120\LaravelTracy\Panels\RequestPanel',
+                'Recca0120\LaravelTracy\Panels\UserPanel',
+            ],
         ], $config);
         switch ($config['version']) {
             case '2.2':
@@ -88,9 +76,8 @@ class LaravelTracy
         $kernel = $app['Illuminate\Contracts\Http\Kernel'];
         $kernel->pushMiddleware('Recca0120\LaravelTracy\Middleware\LaravelTracyMiddleware');
 
-        foreach (static::$panels as $panelId => $panelData) {
-            $panel = $panelData['panel'];
-            Debugger::getBar()->addPanel(new $panel(), $panelId);
+        foreach (static::$config['panels'] as $panel) {
+            Debugger::getBar()->addPanel(new $panel(), $panel);
         }
     }
 
@@ -108,10 +95,10 @@ class LaravelTracy
         ) {
             $logger = new FireLogger();
             $logger->maxDepth = static::$config['maxDepth'];
-            $logger->maxLength = tatic::$config['maxLen'];
-            foreach (static::$panels as $panelId => $panelData) {
-                if ($panelData['toJson'] === true) {
-                    $panel = Debugger::getBar()->getPanel($panelId);
+            $logger->maxLength = static::$config['maxLen'];
+            foreach (static::$ajaxPanel as $panel) {
+                if (in_array($panel, static::$config['panels'], true) === true) {
+                    $panel = Debugger::getBar()->getPanel($panel);
                     $jsonData = $panel->toJson();
                     $logger->log($jsonData);
                 }
