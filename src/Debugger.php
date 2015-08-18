@@ -91,20 +91,24 @@ class Debugger
             $request->ajax() === false and
             $request->pjax() === false) {
             ob_start();
-            call_user_func_array(static::$config['handler']['shutdown'], []);
+            // call_user_func_array(static::$config['handler']['shutdown'], []);
+            TracyDebugger::getBar()->render();
             $debuggerJavascript = ob_get_clean();
 
-            $scriptPos = strripos($debuggerJavascript, '</script>');
-            $rewriteJavascript = 'if (typeof jQuery === \'undefined\') {document.write("<script src=\"https://code.jquery.com/jquery-1.11.3.min.js\"><\/script>");};_T =';
-            $debuggerJavascript = substr($debuggerJavascript, 0, $scriptPos).'jQuery(document).on("ready", _T)'.substr($debuggerJavascript, $scriptPos);
+            $scriptStartPos = stripos($debuggerJavascript, '<script>');
 
             if (static::$config['version'] === '2.2') {
-                $rewriteJavascript = $rewriteJavascript;
-                $debuggerJavascript = str_replace('window.onload = ', $rewriteJavascript, $debuggerJavascript);
+                $debuggerJavascript = str_replace('(function(onloadOrig) {', '', $debuggerJavascript);
+                $debuggerJavascript = str_replace('})(window.onload);', '', $debuggerJavascript);
+                $debuggerJavascript = str_replace('if (typeof onloadOrig === \'function\') onloadOrig();', '', $debuggerJavascript);
+                $debuggerJavascript = str_replace('window.onload =', '_TracyDebugger =', $debuggerJavascript);
             } else {
-                $debuggerJavascript = str_replace('window.addEventListener(\'load\', ', $rewriteJavascript.'(', $debuggerJavascript);
+                // $debuggerJavascript = str_replace('window.addEventListener(\'load\', ', $rewriteJavascript.'(', $debuggerJavascript);
             }
 
+            $scriptEndPos = strripos($debuggerJavascript, '</script>');
+            $onloadScript = '_TracyDebugger()';
+            $debuggerJavascript = substr($debuggerJavascript, 0, $scriptEndPos).$onloadScript.substr($debuggerJavascript, $scriptEndPos);
             $content = substr($content, 0, $pos).$debuggerJavascript.substr($content, $pos);
 
             $response->setContent($content);
@@ -136,9 +140,9 @@ class Debugger
 
         if (config('app.debug') === true) {
             ob_start();
-            call_user_func_array(static::$config['handler']['exception'], [$e, false]);
+            // call_user_func_array(static::$config['handler']['exception'], [$e, false]);
+            TracyDebugger::getBlueScreen()->render($e);
             $content = ob_get_clean();
-
             $response = response()->make($content, $status);
         } else {
             $response = (new SymfonyDisplayer(false))->createResponse($e);
