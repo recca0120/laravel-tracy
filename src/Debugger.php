@@ -1,11 +1,11 @@
 <?php namespace Recca0120\LaravelTracy;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Tracy\Debugger;
+use Tracy\Debugger as TracyDebugger;
 use Tracy\Dumper;
 use Tracy\FireLogger;
 
-class LaravelTracy
+class Debugger
 {
     public static $config = [];
 
@@ -18,11 +18,11 @@ class LaravelTracy
     {
         $config = array_merge([
             'version' => static::normalizeTracyVersion(),
-            'strictMode' => Debugger::$strictMode,
-            'maxDepth' => Debugger::$maxDepth,
-            'maxLen' => Debugger::$maxLen,
-            'showLocation' => Debugger::$showLocation,
-            'editor' => Debugger::$editor,
+            'strictMode' => TracyDebugger::$strictMode,
+            'maxDepth' => TracyDebugger::$maxDepth,
+            'maxLen' => TracyDebugger::$maxLen,
+            'showLocation' => TracyDebugger::$showLocation,
+            'editor' => TracyDebugger::$editor,
             'panels' => [
                 'Recca0120\LaravelTracy\Panels\RoutingPanel',
                 'Recca0120\LaravelTracy\Panels\ConnectionPanel',
@@ -59,12 +59,12 @@ class LaravelTracy
                 break;
         }
 
-        Debugger::$time = isset($_SERVER['REQUEST_TIME_FLOAT']) ? $_SERVER['REQUEST_TIME_FLOAT'] : microtime(true);
-        Debugger::$maxDepth = static::$config['maxDepth'];
-        Debugger::$maxLen = static::$config['maxLen'];
-        Debugger::$showLocation = static::$config['showLocation'];
-        Debugger::$strictMode = static::$config['strictMode'];
-        Debugger::$editor = static::$config['editor'];
+        TracyDebugger::$time = isset($_SERVER['REQUEST_TIME_FLOAT']) ? $_SERVER['REQUEST_TIME_FLOAT'] : microtime(true);
+        TracyDebugger::$maxDepth = static::$config['maxDepth'];
+        TracyDebugger::$maxLen = static::$config['maxLen'];
+        TracyDebugger::$showLocation = static::$config['showLocation'];
+        TracyDebugger::$strictMode = static::$config['strictMode'];
+        TracyDebugger::$editor = static::$config['editor'];
 
         $app = app();
         $app->singleton(
@@ -75,7 +75,7 @@ class LaravelTracy
         $kernel->pushMiddleware('Recca0120\LaravelTracy\Middleware\LaravelTracyMiddleware');
 
         foreach (static::$config['panels'] as $panel) {
-            Debugger::getBar()->addPanel(new $panel(), $panel);
+            TracyDebugger::getBar()->addPanel(new $panel(), $panel);
         }
     }
 
@@ -111,7 +111,7 @@ class LaravelTracy
             $logger->maxLength = static::$config['maxLen'];
             foreach (static::$ajaxPanel as $panel) {
                 if (in_array($panel, static::$config['panels'], true) === true) {
-                    $panel = Debugger::getBar()->getPanel($panel);
+                    $panel = TracyDebugger::getBar()->getPanel($panel);
                     $jsonData = $panel->toJson();
                     $logger->log($jsonData);
                 }
@@ -146,7 +146,7 @@ class LaravelTracy
 
     private static function normalizeTracyVersion()
     {
-        if (version_compare(Debugger::VERSION, '2.3.0', '<')) {
+        if (version_compare(TracyDebugger::VERSION, '2.3.0', '<')) {
             $version = '2.2';
         } else {
             $version = '2.3';

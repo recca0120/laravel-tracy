@@ -1,7 +1,8 @@
 <?php namespace Recca0120\LaravelTracy\Exceptions;
 
+use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Recca0120\LaravelTracy\LaravelTracy;
+use Recca0120\LaravelTracy\Debugger;
 
 class Handler extends ExceptionHandler
 {
@@ -22,8 +23,8 @@ class Handler extends ExceptionHandler
      *
      * @return \Illuminate\Http\Response
      */
-    public function render($request, \Exception $e)
+    public function render($request, Exception $e)
     {
-        return LaravelTracy::handleException($request, $e);
+        return Debugger::handleException($request, $e);
     }
 }

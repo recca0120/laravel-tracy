@@ -3,7 +3,7 @@
 use Closure;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
-use Recca0120\LaravelTracy\LaravelTracy;
+use Recca0120\LaravelTracy\Debugger;
 
 class LaravelTracyMiddleware
 {
@@ -50,7 +50,7 @@ class LaravelTracyMiddleware
             $this->exceptionHandler->report($e);
             $response = $this->exceptionHandler->render($request, $e);
         }
-        $response = LaravelTracy::modifyResponse($request, $response);
+        $response = Debugger::modifyResponse($request, $response);
 
         return $response;
     }

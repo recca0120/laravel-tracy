@@ -1,6 +1,7 @@
 <?php namespace Recca0120\LaravelTracy\Panels;
 
-use Tracy\Debugger;
+use PDO;
+use Tracy\Debugger as TracyDebugger;
 use Tracy\Helpers as TracyHelpers;
 
 class ConnectionPanel extends AbstractPanel
@@ -57,7 +58,7 @@ class ConnectionPanel extends AbstractPanel
         if (stripos($sql, 'select') === 0) {
             $statement = $pdo->prepare('EXPLAIN '.$sql);
             $statement->execute($bindings);
-            $explain = $statement->fetchAll(\PDO::FETCH_CLASS);
+            $explain = $statement->fetchAll(PDO::FETCH_CLASS);
         }
 
         return $explain;
@@ -98,7 +99,7 @@ class ConnectionPanel extends AbstractPanel
         $source = null;
         $trace = debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : false);
         foreach ($trace as $row) {
-            if (isset($row['file']) === true && Debugger::getBluescreen()->isCollapsed($row['file']) === false) {
+            if (isset($row['file']) === true && TracyDebugger::getBluescreen()->isCollapsed($row['file']) === false) {
                 if ((isset($row['function']) && strpos($row['function'], 'call_user_func') === 0)
                     || (isset($row['class']) && is_subclass_of($row['class'], '\\Illuminate\\Database\\Connection'))
                 ) {

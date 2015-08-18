@@ -1,6 +1,6 @@
 <?php namespace Recca0120\LaravelTracy\Panels;
 
-use Recca0120\LaravelTracy\LaravelTracy;
+use Recca0120\LaravelTracy\Debugger;
 use Tracy\IBarPanel;
 
 abstract class AbstractPanel implements IBarPanel
@@ -51,7 +51,7 @@ abstract class AbstractPanel implements IBarPanel
     public function getTab()
     {
         $data = array_merge($this->getData(), [
-            'toHtmlOption' => LaravelTracy::$config['dumpOption'],
+            'toHtmlOption' => Debugger::$config['dumpOption'],
         ]);
         $response = (empty($data) === false) ? view('laravel-tracy::'.$this->getClassBasename().'.tab', $data) : null;
 
@@ -66,7 +66,7 @@ abstract class AbstractPanel implements IBarPanel
     public function getPanel()
     {
         $data = array_merge($this->getData(), [
-            'toHtmlOption' => LaravelTracy::$config['dumpOption'],
+            'toHtmlOption' => Debugger::$config['dumpOption'],
         ]);
         $response = (empty($data) === false) ? view('laravel-tracy::'.$this->getClassBasename().'.panel', $data) : null;
 
