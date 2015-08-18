@@ -84,17 +84,18 @@ class Debugger
             TracyDebugger::getBar()->render();
             $debuggerJavascript = ob_get_clean();
 
-            if (static::$config['version'] === '2.2') {
-                $debuggerJavascript = str_replace('(function(onloadOrig) {', '', $debuggerJavascript);
-                $debuggerJavascript = str_replace('})(window.onload);', '', $debuggerJavascript);
-                $debuggerJavascript = str_replace('if (typeof onloadOrig === \'function\') onloadOrig();', '', $debuggerJavascript);
-                $debuggerJavascript = str_replace('window.onload =', 'window._TracyDebugger =', $debuggerJavascript);
-            } else {
-                $debuggerJavascript = str_replace('window.addEventListener(\'load\',', 'window._TracyDebugger = (', $debuggerJavascript);
-            }
-            $scriptEndPos = strripos($debuggerJavascript, '</script>');
-            $onloadScript = '_TracyDebugger();';
-            $debuggerJavascript = substr($debuggerJavascript, 0, $scriptEndPos).$onloadScript.substr($debuggerJavascript, $scriptEndPos);
+            // if (static::$config['version'] === '2.2') {
+            //     $debuggerJavascript = str_replace('(function(onloadOrig) {', '', $debuggerJavascript);
+            //     $debuggerJavascript = str_replace('})(window.onload);', '', $debuggerJavascript);
+            //     $debuggerJavascript = str_replace('if (typeof onloadOrig === \'function\') onloadOrig();', '', $debuggerJavascript);
+            //     $debuggerJavascript = str_replace('window.onload =', 'window._TracyDebugger =', $debuggerJavascript);
+            // } else {
+            //     $debuggerJavascript = str_replace('window.addEventListener(\'load\',', 'window._TracyDebugger = (', $debuggerJavascript);
+            // }
+            // $scriptEndPos = strripos($debuggerJavascript, '</script>');
+            // $onloadScript = '_TracyDebugger();';
+            // $debuggerJavascript = substr($debuggerJavascript, 0, $scriptEndPos).$onloadScript.substr($debuggerJavascript, $scriptEndPos);
+
             $content = substr($content, 0, $pos).$debuggerJavascript.substr($content, $pos);
 
             $response->setContent($content);
