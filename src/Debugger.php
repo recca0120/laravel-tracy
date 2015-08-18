@@ -38,11 +38,6 @@ class Debugger
                     'dumpOption' => [
                         Dumper::COLLAPSE => false,
                     ],
-                    'handler' => [
-                        'exception' => ['\Tracy\Debugger', '_exceptionHandler'],
-                        'shutdown' => ['\Tracy\Debugger', '_shutdownHandler'],
-                        'error' => ['\Tracy\Debugger', '_errorHandler'],
-                    ],
                 ]);
                 break;
             default:
@@ -50,11 +45,6 @@ class Debugger
                     'dumpOption' => [
                         Dumper::COLLAPSE => false,
                         Dumper::LIVE => true,
-                    ],
-                    'handler' => [
-                        'exception' => ['\Tracy\Debugger', 'exceptionHandler'],
-                        'shutdown' => ['\Tracy\Debugger', 'shutdownHandler'],
-                        'error' => ['\Tracy\Debugger', 'errorHandler'],
                     ],
                 ]);
                 break;
@@ -91,23 +81,19 @@ class Debugger
             $request->ajax() === false and
             $request->pjax() === false) {
             ob_start();
-            // call_user_func_array(static::$config['handler']['shutdown'], []);
             TracyDebugger::getBar()->render();
             $debuggerJavascript = ob_get_clean();
-
-            $scriptStartPos = stripos($debuggerJavascript, '<script>');
 
             if (static::$config['version'] === '2.2') {
                 $debuggerJavascript = str_replace('(function(onloadOrig) {', '', $debuggerJavascript);
                 $debuggerJavascript = str_replace('})(window.onload);', '', $debuggerJavascript);
                 $debuggerJavascript = str_replace('if (typeof onloadOrig === \'function\') onloadOrig();', '', $debuggerJavascript);
-                $debuggerJavascript = str_replace('window.onload =', '_TracyDebugger =', $debuggerJavascript);
+                $debuggerJavascript = str_replace('window.onload =', 'window._TracyDebugger =', $debuggerJavascript);
             } else {
-                // $debuggerJavascript = str_replace('window.addEventListener(\'load\', ', $rewriteJavascript.'(', $debuggerJavascript);
+                $debuggerJavascript = str_replace('window.addEventListener(\'load\',', 'window._TracyDebugger = (', $debuggerJavascript);
             }
-
             $scriptEndPos = strripos($debuggerJavascript, '</script>');
-            $onloadScript = '_TracyDebugger()';
+            $onloadScript = '_TracyDebugger();';
             $debuggerJavascript = substr($debuggerJavascript, 0, $scriptEndPos).$onloadScript.substr($debuggerJavascript, $scriptEndPos);
             $content = substr($content, 0, $pos).$debuggerJavascript.substr($content, $pos);
 
@@ -140,7 +126,6 @@ class Debugger
 
         if (config('app.debug') === true) {
             ob_start();
-            // call_user_func_array(static::$config['handler']['exception'], [$e, false]);
             TracyDebugger::getBlueScreen()->render($e);
             $content = ob_get_clean();
             $response = response()->make($content, $status);
