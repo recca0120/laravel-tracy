@@ -1,5 +1,6 @@
 <?php namespace Recca0120\LaravelTracy;
 
+use Exception;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tracy\Debugger as TracyDebugger;
 use Tracy\Dumper;
@@ -121,7 +122,7 @@ class Debugger
         return $response;
     }
 
-    public static function handleException($request, \Exception $e)
+    public static function handleException($request, Exception $e)
     {
         $status = 500;
         if ($e instanceof HttpException) {
@@ -153,5 +154,10 @@ class Debugger
         }
 
         return $version;
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        return call_user_func_array(['\Tracy\Debugger', $name], $arguments);
     }
 }
