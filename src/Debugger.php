@@ -92,18 +92,20 @@ class Debugger
             $request->pjax() === false) {
             ob_start();
             call_user_func_array(static::$config['handler']['shutdown'], []);
-            $renderedContent = ob_get_clean();
+            $debuggerJavascript = ob_get_clean();
 
-            $rewriteJavascript = view('laravel-tracy::rewriteJavascript')->render();
+            $scriptPos = strripos($debuggerJavascript, '</script>');
+            $rewriteJavascript = 'if (typeof jQuery === \'undefined\') {document.write("<script src=\"https://code.jquery.com/jquery-1.11.3.min.js\"><\/script>");};_T =';
+            $debuggerJavascript = substr($debuggerJavascript, 0, $scriptPos).'jQuery(document).on("ready", _T)'.substr($debuggerJavascript, $scriptPos);
 
             if (static::$config['version'] === '2.2') {
                 $rewriteJavascript = $rewriteJavascript;
-                $renderedContent = str_replace('window.onload = ', $rewriteJavascript, $renderedContent);
+                $debuggerJavascript = str_replace('window.onload = ', $rewriteJavascript, $debuggerJavascript);
             } else {
-                $renderedContent = str_replace('window.addEventListener(\'load\', ', $rewriteJavascript.'(', $renderedContent);
+                $debuggerJavascript = str_replace('window.addEventListener(\'load\', ', $rewriteJavascript.'(', $debuggerJavascript);
             }
 
-            $content = substr($content, 0, $pos).$renderedContent.substr($content, $pos);
+            $content = substr($content, 0, $pos).$debuggerJavascript.substr($content, $pos);
 
             $response->setContent($content);
         } else {
