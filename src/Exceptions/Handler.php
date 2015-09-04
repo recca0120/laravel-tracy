@@ -15,6 +15,7 @@ class Handler extends ExceptionHandler
      */
     protected $dontReport = [
         'Symfony\Component\HttpKernel\Exception\HttpException',
+        'Illuminate\Database\Eloquent\ModelNotFoundException',
     ];
 
     /**
