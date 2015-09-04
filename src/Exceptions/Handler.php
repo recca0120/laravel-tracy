@@ -1,4 +1,6 @@
-<?php namespace Recca0120\LaravelTracy\Exceptions;
+<?php
+
+namespace Recca0120\LaravelTracy\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;

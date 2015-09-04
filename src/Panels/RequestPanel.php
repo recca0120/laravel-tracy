@@ -1,4 +1,6 @@
-<?php namespace Recca0120\LaravelTracy\Panels;
+<?php
+
+namespace Recca0120\LaravelTracy\Panels;
 
 use Illuminate\Http\Request;
 

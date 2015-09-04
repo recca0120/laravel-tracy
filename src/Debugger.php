@@ -1,4 +1,6 @@
-<?php namespace Recca0120\LaravelTracy;
+<?php
+
+namespace Recca0120\LaravelTracy;
 
 use Exception;
 use Symfony\Component\HttpKernel\Exception\HttpException;

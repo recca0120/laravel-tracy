@@ -1,4 +1,6 @@
-<?php namespace Recca0120\LaravelTracy\Middleware;
+<?php
+
+namespace Recca0120\LaravelTracy\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Debug\ExceptionHandler;
