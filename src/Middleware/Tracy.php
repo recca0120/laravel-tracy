@@ -5,9 +5,9 @@ namespace Recca0120\LaravelTracy\Middleware;
 use Closure;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
-use Recca0120\LaravelTracy\Debugger;
+use Recca0120\LaravelTracy\Helper;
 
-class LaravelTracyMiddleware
+class Tracy
 {
     /**
      * The Laravel Application.
@@ -46,13 +46,12 @@ class LaravelTracyMiddleware
     public function handle($request, Closure $next)
     {
         try {
-            /** @var \Illuminate\Http\Response $response */
             $response = $next($request);
         } catch (\Exception $e) {
             $this->exceptionHandler->report($e);
             $response = $this->exceptionHandler->render($request, $e);
         }
-        $response = Debugger::modifyResponse($request, $response);
+        $response = Helper::appendDebuggerBar($request, $response);
 
         return $response;
     }

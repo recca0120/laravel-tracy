@@ -6,27 +6,18 @@ use Illuminate\Http\Request;
 
 class RequestPanel extends AbstractPanel
 {
-    public function __construct()
+    public function getAttributes()
     {
-        $app = app();
-        $requestData = $this->getRequestInformation($app['request']);
-
-        $this->setData([
-            'requestData' => $requestData,
-        ]);
-    }
-
-    protected function getRequestInformation(Request $request)
-    {
+        $request = $this->app['request'];
         $server = $request->server();
-
         foreach (['HTTP_HOST', 'HTTP_COOKIE'] as $v) {
             if (isset($server[$v])) {
                 unset($server[$v]);
             }
         }
 
-        $result = [
+        $attributes['request'] = [
+            'ip' => $request->ip(),
             'ip' => $request->ip(),
             'ips' => $request->ips(),
             'query' => $request->query(),
@@ -39,9 +30,6 @@ class RequestPanel extends AbstractPanel
             // 'headers' => $request->header(),
         ];
 
-        // dump($request, get_class_methods($request));
-        // exit;
-
-        return $result;
+        return $attributes;
     }
 }

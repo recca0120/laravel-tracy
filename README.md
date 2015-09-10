@@ -48,9 +48,7 @@ Update config/app.php
 ### Editor Link
 
 ```
-go to <vendor path>/recca0120/laravel-tracy/tools/open-in-editor
+copy <vendor path>/recca0120/laravel-tracy/tools/subl-handler/subl-handler.vbs to any directory where you want to place
 
-run as administrator and click install.cmd
+double click subl-handler.vbs and select editor (support eclipse, sublime, notepad++, else...)
 ```
-
-

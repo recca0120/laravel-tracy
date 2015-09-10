@@ -11,8 +11,8 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "laravel/framework": "5.0.*|5.1.*",
-        "tracy/tracy": "^2.3.3|^2.2.7"
+        "laravel/framework": "~5.0|~5.1",
+        "tracy/tracy": "~2.3.5|~2.2.7"
     },
     "autoload": {
         "psr-4": {

@@ -4,7 +4,8 @@ namespace Recca0120\LaravelTracy\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Recca0120\LaravelTracy\Debugger;
+use Recca0120\LaravelTracy\Helper;
+use Symfony\Component\Debug\ExceptionHandler as SymfonyDisplayer;
 
 class Handler extends ExceptionHandler
 {
@@ -18,7 +19,7 @@ class Handler extends ExceptionHandler
         'Illuminate\Database\Eloquent\ModelNotFoundException',
     ];
 
-    /**
+    /*
      * Render an exception into an HTTP response.
      *
      * @param \Illuminate\Http\Request $request
@@ -26,8 +27,35 @@ class Handler extends ExceptionHandler
      *
      * @return \Illuminate\Http\Response
      */
+
     public function render($request, Exception $e)
     {
-        return Debugger::handleException($request, $e);
+        if (method_exists($this, 'isUnauthorizedException')) {
+            $response = parent::render($request, $e);
+        } else {
+            if ($this->isHttpException($e)) {
+                $status = $e->getStatusCode();
+                if (view()->exists("errors.{$status}")) {
+                    $response = response()->view("errors.{$status}", [], $status);
+                } else {
+                    $response = $this->convertExceptionToResponse($e);
+                }
+            } else {
+                $response = $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
+            }
+        }
+
+        return $response;
+        // return Helper::appendDebuggerBar($request, $response);
+    }
+
+    protected function convertExceptionToResponse(Exception $e)
+    {
+        $debug = config('app.debug');
+        if ($debug === false) {
+            return (new SymfonyDisplayer(config('app.debug')))->createResponse($e);
+        } else {
+            return Helper::getHttpResponse(Helper::getBlueScreen($e), $e);
+        }
     }
 }
