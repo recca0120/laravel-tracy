@@ -21,6 +21,7 @@ class UserPanel extends AbstractPanel
         $identifier = $user->getAuthIdentifier();
         if (is_numeric($identifier)) {
             if ($user->username) {
+                $identifier = $user->username;
             } elseif ($user->email) {
                 $identifier = $user->email;
             } elseif ($user->name) {
