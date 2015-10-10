@@ -20,10 +20,11 @@ class UserPanel extends AbstractPanel
         $user = $auth->user();
         $identifier = $user->getAuthIdentifier();
         if (is_numeric($identifier)) {
-            if ($user->name) {
-                $identifier = $user->name;
+            if ($user->username) {
             } elseif ($user->email) {
                 $identifier = $user->email;
+            } elseif ($user->name) {
+                $identifier = $user->name;
             }
         }
 
