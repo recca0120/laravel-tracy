@@ -20,6 +20,8 @@ class ConnectionPanel extends AbstractPanel
 
     private $totalTime = 0;
 
+    private $queries = [];
+
     public function __construct()
     {
         if (static::$initialize === false) {

@@ -11,7 +11,6 @@ class RoutingPanel extends AbstractPanel
     public function __construct()
     {
         $app = app();
-        $a;
         $app['events']->listen('router.matched', function () use ($app) {
             $request = $app['request'];
             $router = $app['router'];

@@ -31,6 +31,7 @@ class Debugger
                 'Recca0120\LaravelTracy\Panels\ConnectionPanel',
                 'Recca0120\LaravelTracy\Panels\SessionPanel',
                 'Recca0120\LaravelTracy\Panels\RequestPanel',
+                'Recca0120\LaravelTracy\Panels\EventPanel',
                 'Recca0120\LaravelTracy\Panels\UserPanel',
             ],
         ], $config);
