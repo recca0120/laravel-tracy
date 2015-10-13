@@ -11,6 +11,10 @@ use Tracy\FireLogger;
 class Debugger
 {
     public static $config = [];
+    protected static $ajaxPanel = [
+        'Recca0120\LaravelTracy\Panels\ConnectionPanel',
+        'Recca0120\LaravelTracy\Panels\UserPanel',
+    ];
 
     public static function register($config = [])
     {
