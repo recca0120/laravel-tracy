@@ -1,0 +1,26 @@
+{
+    "name": "recca0120/laravel-tracy",
+    "description": "Nette Tracy Debugger for Laravel 5",
+    "keywords": ["laravel", "debugbar", "profiler", "debug", "webprofiler", "nette", "tracy"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "recca0120",
+            "email": "recca0120@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "laravel/framework": "~5.0|~5.1",
+        "tracy/tracy": "~2.3.5|~2.2.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Recca0120\\LaravelTracy\\": "src/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "dev"
+}
