@@ -24,6 +24,7 @@
             if (data.length < 2) {
                 return;
             }
+
             data = window.JSON.parse(data);
             a = data.indexOf('var debug =');
             b = data.lastIndexOf('debug.style.display = \'block\';');
