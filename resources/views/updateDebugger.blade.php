@@ -37,39 +37,49 @@
         eval(data);
     };
 
-    var ajaxButton = $("<a id='tracy-ajax'>AjaxLoad</a>")
-        .css({
-            position: "fixed",
-            top: 0,
-            left: 0,
-            zIndex: 10000000,
-            background: "red",
-            color: "#fff",
-            padding: "5px 10px",
-            opacity: .3
-        })
-        .hide()
-        .appendTo(document.body);
+    var xhrs = [];
+    var ajaxButton = $("<a id='tracy-ajax'>Tracy Ajax Loader (<span id='tracy-ajax-counts'></span>)</a>")
+        .appendTo(document.body)
+        .hide();
+    var ajaxCounts = $("#tracy-ajax-counts");
+
+
+    var opacity = .5
+    ajaxButton.css({
+        position: "fixed",
+        right: 0,
+        bottom: 0,
+        zIndex: 10000000,
+        "font-weight": "bolder",
+        background: "red",
+        color: "#fff",
+        padding: "5px 20px",
+        opacity: opacity
+    });
 
     ajaxButton.on("mouseenter mouseleave", function(e) {
-        opacity = .3;
+        var newOpacity = opacity;
         if (e.type == 'mouseenter') {
-            opacity = 1;
+            newOpacity = 1;
         }
         ajaxButton.css({
-            opacity: opacity
+            opacity: newOpacity
         });
     });
 
     ajaxButton.on("click", function(e) {
-        var $this = $(this);
-        var xhr = $this.data("xhr");
-        updateDebugger(xhr.getAllResponseHeaders())
-        $this.hide();
+        xhr = xhrs.shift();
+        updateDebugger(xhr.getAllResponseHeaders());
+        if (xhrs.length == 0) {
+            ajaxButton.hide();
+        }
     });
 
     $(document).ajaxSuccess(function(event, xhr, settings) {
-        ajaxButton.data("xhr", xhr).show();
+        // ajaxButton.data("xhr", xhr).show();
+        xhrs.push(xhr);
+        ajaxCounts.html(xhrs.length);
+        ajaxButton.show();
     });
 }(jQuery))
 
