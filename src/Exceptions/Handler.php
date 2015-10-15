@@ -6,7 +6,6 @@ use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Recca0120\LaravelTracy\Helper;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyDisplayer;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -32,24 +31,21 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         if (method_exists($this, 'isUnauthorizedException')) {
-            if ($this->isUnauthorizedException($e)) {
-                $e = new HttpException(403, $e->getMessage());
+            $response = parent::render($request, $e);
+        } else {
+            if ($this->isHttpException($e)) {
+                $status = $e->getStatusCode();
+                if (view()->exists("errors.{$status}")) {
+                    $response = response()->view("errors.{$status}", [], $status);
+                } else {
+                    $response = $this->convertExceptionToResponse($e);
+                }
+            } else {
+                $response = $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
             }
         }
 
-        if ($this->isHttpException($e)) {
-            return $this->toIlluminateResponse($this->renderHttpException($e), $e);
-        } else {
-            return $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
-        }
-    }
-
-    protected function toIlluminateResponse($response, Exception $e)
-    {
-        $response = response($response->getContent(), $response->getStatusCode(), $response->headers->all());
-        $response->exception = $e;
-
-        return $response;
+        return Helper::appendDebuggerInfo($request, $response);
     }
 
     protected function convertExceptionToResponse(Exception $e)

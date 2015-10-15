@@ -39,4 +39,26 @@ class Helper
 
         return response($content, $statusCode, $headers);
     }
+
+    public static function appendDebuggerInfo($request, $response)
+    {
+        $content = $response->getContent();
+        $pos = strripos($content, '</body>');
+        if ($pos !== false and
+            $request->isJson() === false and
+            $request->wantsJson() === false and
+            $request->ajax() === false and
+            $request->pjax() === false) {
+            $barResponse = static::getBar();
+            $content = substr($content, 0, $pos).$barResponse.substr($content, $pos);
+
+            $response->setContent($content);
+        } else {
+            foreach (str_split(base64_encode(@json_encode($debuggerJavascript)), 4990) as $k => $v) {
+                $response->header('tracy-ajax-'.$k, $v);
+            }
+        }
+
+        return $response;
+    }
 }

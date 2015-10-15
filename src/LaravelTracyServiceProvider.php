@@ -64,7 +64,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
                 'Recca0120\LaravelTracy\Exceptions\Handler'
             );
             $kernel = $this->app['Illuminate\Contracts\Http\Kernel'];
-            $kernel->pushMiddleware('Recca0120\LaravelTracy\Middleware\TracyMiddleware');
+            $kernel->pushMiddleware('Recca0120\LaravelTracy\Middleware\Tracy');
         }
     }
 }
