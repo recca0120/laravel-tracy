@@ -4,7 +4,7 @@ namespace Recca0120\LaravelTracy\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Recca0120\LaravelTracy\Tracy;
+use Recca0120\LaravelTracy\Helper;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyDisplayer;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -58,7 +58,7 @@ class Handler extends ExceptionHandler
         if ($debug === false) {
             return (new SymfonyDisplayer(config('app.debug')))->createResponse($e);
         } else {
-            return Tracy::getHttpResponse(Tracy::getBlueScreen($e), $e);
+            return Helper::getHttpResponse(Helper::getBlueScreen($e), $e);
         }
     }
 }

@@ -6,7 +6,7 @@ use Exception;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tracy\Debugger;
 
-class Tracy
+class Helper
 {
     public static function getBar()
     {
