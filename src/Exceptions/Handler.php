@@ -45,7 +45,8 @@ class Handler extends ExceptionHandler
             }
         }
 
-        return Helper::appendDebuggerInfo($request, $response);
+        return $response;
+        // return Helper::appendDebuggerBar($request, $response);
     }
 
     protected function convertExceptionToResponse(Exception $e)

@@ -40,7 +40,7 @@ class Helper
         return response($content, $statusCode, $headers);
     }
 
-    public static function appendDebuggerInfo($request, $response)
+    public static function appendDebuggerBar($request, $response)
     {
         $content = $response->getContent();
         $pos = strripos($content, '</body>');
@@ -55,7 +55,7 @@ class Helper
             $response->setContent($content);
         } else {
             foreach (str_split(base64_encode(@json_encode($debuggerJavascript)), 4990) as $k => $v) {
-                $response->header('tracy-ajax-'.$k, $v);
+                $response->header('X-Tracy-Error-Ajax-'.$k, $v);
             }
         }
 

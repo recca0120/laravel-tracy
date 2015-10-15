@@ -3,29 +3,26 @@
 namespace Recca0120\LaravelTracy\Panels;
 
 use Illuminate\Events\Dispatcher;
+use Tracy\Debugger;
 
 class EventPanel extends AbstractPanel
 {
-    public $data = [];
+    public $data = [
+        'count' => 0,
+        'totalTime' => 0,
+        'events' => [],
+    ];
 
-    public $time;
-
-    public function __construct($config)
+    public function subscribe(Dispatcher $events)
     {
-        parent::__construct($config);
-        $app = app();
-        $this->time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
-        $events = $app['events'];
-        $events->listen('*', function () {
+        $key = get_class($this);
+        $timer = Debugger::timer($key);
+        $events->listen('*', function () use ($key) {
+            $execTime = Debugger::timer($key);
             $dispatcher = static::findDispatcher();
-            if (empty($dispatcher) === false) {
-                $endTime = microtime(true);
-                $this->data['events'][] = [
-                    'time' => round(($endTime - $this->time), 2),
-                    'dispatcher' => static::findDispatcher(),
-                ];
-                $this->timer = microtime(true);
-            }
+            $editorLink = self::getEditorLink(static::findSource());
+            $this->data['totalTime'] += $execTime;
+            $this->data['events'][] = compact('time', 'dispatcher', 'editorLink');
         });
     }
 
@@ -40,7 +37,6 @@ class EventPanel extends AbstractPanel
                 //         $trace['args']['1'][$key] = (is_object($value) === true) ? get_class($value) : $value;
                 //     }
                 // }
-
                 return $trace;
             }
         }

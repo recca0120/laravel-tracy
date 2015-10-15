@@ -51,7 +51,7 @@ class Tracy
             $this->exceptionHandler->report($e);
             $response = $this->exceptionHandler->render($request, $e);
         }
-        $response = Helper::appendDebuggerInfo($request, $response);
+        $response = Helper::appendDebuggerBar($request, $response);
 
         return $response;
     }

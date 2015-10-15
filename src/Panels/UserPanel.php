@@ -7,34 +7,35 @@ class UserPanel extends AbstractPanel
     public function getData()
     {
         $auth = auth();
-        if (auth()->check() === false) {
-            return [
-                'auth' => $auth,
-                'user' => [
-                    'name' => 'Guest',
-                    'user' => ['guest' => true],
-                ],
+
+        if ($auth->check() === false) {
+            $isLoggedIn = false;
+            $name = 'Guest';
+            $user = [
+
             ];
-        }
-
-        $user = $auth->user();
-        $identifier = $user->getAuthIdentifier();
-        if (is_numeric($identifier)) {
-            if ($user->username) {
-                $identifier = $user->username;
-            } elseif ($user->email) {
-                $identifier = $user->email;
-            } elseif ($user->name) {
-                $identifier = $user->name;
+        } else {
+            $isLoggedIn = true;
+            $user = $auth->user();
+            $name = $user->getAuthIdentifier();
+            if (is_numeric($name)) {
+                if ($user->username) {
+                    $name = $user->username;
+                } elseif ($user->email) {
+                    $name = $user->email;
+                } elseif ($user->name) {
+                    $name = $user->name;
+                }
             }
+            $user = $user->toArray();
         }
 
-        return [
-            'auth' => $auth,
-            'user' => [
-                'name' => $identifier,
-                'user' => $user->toArray(),
-            ],
+        $data = [
+            'isLoggedIn' => $isLoggedIn,
+            'name' => $name,
+            'user' => $user,
         ];
+
+        return $data;
     }
 }

@@ -9,7 +9,7 @@
         }
         var data = [],
             a, b, c, d;
-        while ((a = headers.indexOf('tracy-ajax-')) !== -1) {
+        while ((a = headers.indexOf('X-Tracy-Error-Ajax-')) !== -1) {
             headers = headers.substr(a + 'tracy-ajax-'.length);
             b = headers.indexOf(':');
             c = parseInt(headers.substr(0, b));

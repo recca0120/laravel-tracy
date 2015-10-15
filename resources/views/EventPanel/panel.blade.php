@@ -1,4 +1,4 @@
-<h1>Events: {{ array_sum(array_pluck($events, 'time')) }} ms</h1>
+<h1>Events: {{ round($totalTime*100, 2) }} ms</h1>
 <div class="tracy-inner laravel-EventPanel">
     <table>
         <thead>
@@ -11,12 +11,12 @@
             @foreach ($events as $event)
                 <tr>
                     <th>
-                        <span class="tracy-dump-object">{{ array_get($event, 'dispatcher.args.0') }}</span>
-                        <br />
-                        <span class="tracy-dump-string">{{ array_get($event, 'time') }} ms</span>
+                        <span class="tracy-dump-object">{{ array_get($event, 'dispatcher.args.0') }}</span><br />
+                        {!! array_get($event, 'editorLink') !!}<br />
+                        <span class="tracy-dump-string">{{ round(array_get($event, 'time', 0) * 100, 2) }} ms</span>
                     </th>
                     <td>
-                        {!! Tracy\Dumper::toHtml(array_get($event, 'dispatcher.args.1'), array_merge($toHtmlOption, [
+                        {!! Tracy\Dumper::toHtml(array_get($event, 'dispatcher.args.1'), array_merge($dumpOption, [
                             Tracy\Dumper::TRUNCATE => 50,
                             Tracy\Dumper::COLLAPSE => TRUE,
                         ])) !!}
