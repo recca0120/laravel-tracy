@@ -52,13 +52,6 @@ class LaravelTracyServiceProvider extends ServiceProvider
                 ],
             ], config('tracy'));
 
-            $kernel = $this->app['Illuminate\Contracts\Http\Kernel'];
-            $kernel->pushMiddleware('Recca0120\LaravelTracy\Middleware\TracyMiddleware');
-            $this->app->singleton(
-                'Illuminate\Contracts\Debug\ExceptionHandler',
-                'Recca0120\LaravelTracy\Exceptions\Handler'
-            );
-
             Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
             Debugger::$maxDepth = array_get($config, 'maxDepth');
             Debugger::$maxLen = array_get($config, 'maxLen');
@@ -69,6 +62,13 @@ class LaravelTracyServiceProvider extends ServiceProvider
             foreach ($config['panels'] as $panel) {
                 Debugger::getBar()->addPanel(new $panel($config), $panel);
             }
+
+            $kernel = $this->app['Illuminate\Contracts\Http\Kernel'];
+            $kernel->pushMiddleware('Recca0120\LaravelTracy\Middleware\TracyMiddleware');
+            $this->app->singleton(
+                'Illuminate\Contracts\Debug\ExceptionHandler',
+                'Recca0120\LaravelTracy\Exceptions\Handler'
+            );
         }
     }
 }
