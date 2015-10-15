@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 
 class RequestPanel extends AbstractPanel
 {
-    public function __construct()
+    public function __construct($config)
     {
+        parent::__construct($config);
         $app = app();
         $requestData = $this->getRequestInformation($app['request']);
 

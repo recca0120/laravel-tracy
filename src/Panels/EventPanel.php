@@ -12,8 +12,9 @@ class EventPanel extends AbstractPanel
 
     private static $initialize = false;
 
-    public function __construct()
+    public function __construct($config)
     {
+        parent::__construct($config);
         if (static::$initialize === false) {
             static::$initialize = true;
             $app = app();

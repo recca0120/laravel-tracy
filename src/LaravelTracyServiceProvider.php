@@ -3,6 +3,8 @@
 namespace Recca0120\LaravelTracy;
 
 use Illuminate\Support\ServiceProvider;
+use Tracy\Debugger;
+use Tracy\Dumper;
 
 class LaravelTracyServiceProvider extends ServiceProvider
 {
@@ -18,7 +20,6 @@ class LaravelTracyServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-tracy');
-
         $this->publishes([
             __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
         ]);
@@ -30,16 +31,44 @@ class LaravelTracyServiceProvider extends ServiceProvider
     {
         if (config('app.debug') === true and $this->app->runningInConsole() === false) {
             $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
-            Debugger::register(config('tracy'));
+
+            $config = array_merge([
+                'maxDepth' => Debugger::$maxDepth,
+                'maxLen' => Debugger::$maxLen,
+                'showLocation' => Debugger::$showLocation,
+                'strictMode' => Debugger::$strictMode,
+                'editor' => Debugger::$editor,
+                'panels' => [
+                    'Recca0120\LaravelTracy\Panels\RoutingPanel',
+                    'Recca0120\LaravelTracy\Panels\ConnectionPanel',
+                    'Recca0120\LaravelTracy\Panels\SessionPanel',
+                    'Recca0120\LaravelTracy\Panels\RequestPanel',
+                    'Recca0120\LaravelTracy\Panels\EventPanel',
+                    'Recca0120\LaravelTracy\Panels\UserPanel',
+                ],
+                'dumpOption' => [
+                    Dumper::COLLAPSE => false,
+                    'live' => true,
+                ],
+            ], config('tracy'));
+
+            $kernel = $this->app['Illuminate\Contracts\Http\Kernel'];
+            $kernel->pushMiddleware('Recca0120\LaravelTracy\Middleware\TracyMiddleware');
+            $this->app->singleton(
+                'Illuminate\Contracts\Debug\ExceptionHandler',
+                'Recca0120\LaravelTracy\Exceptions\Handler'
+            );
+
+            Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
+            Debugger::$maxDepth = array_get($config, 'maxDepth');
+            Debugger::$maxLen = array_get($config, 'maxLen');
+            Debugger::$showLocation = array_get($config, 'showLocation');
+            Debugger::$strictMode = array_get($config, 'strictMode');
+            Debugger::$editor = array_get($config, 'editor');
+
+            foreach ($config['panels'] as $panel) {
+                Debugger::getBar()->addPanel(new $panel($config), $panel);
+            }
         }
-    }
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return ['Illuminate\Contracts\Debug\ExceptionHandler'];
     }
 }

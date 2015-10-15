@@ -5,9 +5,9 @@ namespace Recca0120\LaravelTracy\Middleware;
 use Closure;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
-use Recca0120\LaravelTracy\Debugger;
+use Recca0120\LaravelTracy\Tracy;
 
-class LaravelTracyMiddleware
+class TracyMiddleware
 {
     /**
      * The Laravel Application.
@@ -46,13 +46,34 @@ class LaravelTracyMiddleware
     public function handle($request, Closure $next)
     {
         try {
-            /** @var \Illuminate\Http\Response $response */
             $response = $next($request);
         } catch (\Exception $e) {
             $this->exceptionHandler->report($e);
             $response = $this->exceptionHandler->render($request, $e);
         }
-        $response = Debugger::modifyResponse($request, $response);
+        $response = $this->appendDebuggerInfo($request, $response);
+
+        return $response;
+    }
+
+    public function appendDebuggerInfo($request, $response)
+    {
+        $content = $response->getContent();
+        $pos = strripos($content, '</body>');
+        if ($pos !== false and
+            $request->isJson() === false and
+            $request->wantsJson() === false and
+            $request->ajax() === false and
+            $request->pjax() === false) {
+            $barResponse = Tracy::getBar();
+            $content = substr($content, 0, $pos).$barResponse.substr($content, $pos);
+
+            $response->setContent($content);
+        } else {
+            foreach (str_split(base64_encode(@json_encode($debuggerJavascript)), 4990) as $k => $v) {
+                $response->header('tracy-ajax-'.$k, $v);
+            }
+        }
 
         return $response;
     }

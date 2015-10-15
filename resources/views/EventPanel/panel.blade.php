@@ -18,7 +18,7 @@
                     <td>
                         {!! Tracy\Dumper::toHtml(array_get($event, 'dispatcher.args.1'), array_merge($toHtmlOption, [
                             Tracy\Dumper::TRUNCATE => 50,
-
+                            Tracy\Dumper::COLLAPSE => TRUE,
                         ])) !!}
                     </td>
                 </tr>

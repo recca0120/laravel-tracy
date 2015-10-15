@@ -2,12 +2,18 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use Recca0120\LaravelTracy\Debugger;
 use Tracy\IBarPanel;
 
 abstract class AbstractPanel implements IBarPanel
 {
     public $data = [];
+
+    public $config;
+
+    public function __construct($config)
+    {
+        $this->config = $config;
+    }
 
     public function id()
     {
@@ -53,9 +59,13 @@ abstract class AbstractPanel implements IBarPanel
     public function getTab()
     {
         $data = array_merge($this->getData(), [
-            'toHtmlOption' => Debugger::$config['dumpOption'],
+            'toHtmlOption' => array_get($this->config, 'dumpOption', []),
         ]);
-        $response = (empty($data) === false) ? view('laravel-tracy::'.$this->getClassBasename().'.tab', $data) : null;
+        $view = 'laravel-tracy::'.$this->getClassBasename().'.tab';
+        $response = null;
+        if (view()->exists($view)) {
+            $response = view($view, $data);
+        }
 
         return $response;
     }
@@ -68,9 +78,13 @@ abstract class AbstractPanel implements IBarPanel
     public function getPanel()
     {
         $data = array_merge($this->getData(), [
-            'toHtmlOption' => Debugger::$config['dumpOption'],
+            'toHtmlOption' => array_get($this->config, 'dumpOption', []),
         ]);
-        $response = (empty($data) === false) ? view('laravel-tracy::'.$this->getClassBasename().'.panel', $data) : null;
+        $view = 'laravel-tracy::'.$this->getClassBasename().'.panel';
+        $response = null;
+        if (view()->exists($view)) {
+            $response = view($view, $data);
+        }
 
         return $response;
     }

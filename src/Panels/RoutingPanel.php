@@ -8,8 +8,9 @@ use Illuminate\Routing\Router;
 
 class RoutingPanel extends AbstractPanel
 {
-    public function __construct()
+    public function __construct($config)
     {
+        parent::__construct($config);
         $app = app();
         $app['events']->listen('router.matched', function () use ($app) {
             $request = $app['request'];
