@@ -10,28 +10,23 @@ class EventPanel extends AbstractPanel
 
     public $time;
 
-    private static $initialize = false;
-
     public function __construct($config)
     {
         parent::__construct($config);
-        if (static::$initialize === false) {
-            static::$initialize = true;
-            $app = app();
-            $this->time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
-            $events = $app['events'];
-            $events->listen('*', function () {
-                $dispatcher = static::findDispatcher();
-                if (empty($dispatcher) === false) {
-                    $endTime = microtime(true);
-                    $this->data['events'][] = [
-                        'time' => round(($endTime - $this->time), 2),
-                        'dispatcher' => static::findDispatcher(),
-                    ];
-                    $this->timer = microtime(true);
-                }
-            });
-        }
+        $app = app();
+        $this->time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
+        $events = $app['events'];
+        $events->listen('*', function () {
+            $dispatcher = static::findDispatcher();
+            if (empty($dispatcher) === false) {
+                $endTime = microtime(true);
+                $this->data['events'][] = [
+                    'time' => round(($endTime - $this->time), 2),
+                    'dispatcher' => static::findDispatcher(),
+                ];
+                $this->timer = microtime(true);
+            }
+        });
     }
 
     public static function findDispatcher()

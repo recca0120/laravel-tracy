@@ -14,8 +14,6 @@ class ConnectionPanel extends AbstractPanel
         'queries' => [],
     ];
 
-    private static $initialize = false;
-
     private $count = 0;
 
     private $totalTime = 0;
@@ -25,16 +23,13 @@ class ConnectionPanel extends AbstractPanel
     public function __construct($config)
     {
         parent::__construct($config);
-        if (static::$initialize === false) {
-            static::$initialize = true;
-            $app = app();
-            $events = $app['events'];
-            $events->listen('illuminate.query', function ($sql, $bindings, $time, $name) use ($app) {
-                $db = $app['db'];
-                $connection = $db->connection($name);
-                $this->logQuery($sql, $bindings, $time, $connection);
-            });
-        }
+        $app = app();
+        $events = $app['events'];
+        $events->listen('illuminate.query', function ($sql, $bindings, $time, $name) use ($app) {
+            $db = $app['db'];
+            $connection = $db->connection($name);
+            $this->logQuery($sql, $bindings, $time, $connection);
+        });
     }
 
     protected function logQuery($sql, $bindings, $time, $connection)

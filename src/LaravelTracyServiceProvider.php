@@ -31,7 +31,6 @@ class LaravelTracyServiceProvider extends ServiceProvider
     {
         if (config('app.debug') === true and $this->app->runningInConsole() === false) {
             $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
-
             $config = array_merge([
                 'maxDepth' => Debugger::$maxDepth,
                 'maxLen' => Debugger::$maxLen,
@@ -64,11 +63,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
             }
 
             $kernel = $this->app['Illuminate\Contracts\Http\Kernel'];
-            $kernel->pushMiddleware('Recca0120\LaravelTracy\Middleware\TracyMiddleware');
-            $this->app->singleton(
-                'Illuminate\Contracts\Debug\ExceptionHandler',
-                'Recca0120\LaravelTracy\Exceptions\Handler'
-            );
+            $kernel->pushMiddleware('Recca0120\LaravelTracy\Tracy');
         }
     }
 }
