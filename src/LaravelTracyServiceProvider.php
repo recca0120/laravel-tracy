@@ -63,7 +63,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
             }
 
             $kernel = $this->app['Illuminate\Contracts\Http\Kernel'];
-            $kernel->pushMiddleware('Recca0120\LaravelTracy\TracyMiddleware');
+            $kernel->pushMiddleware('Recca0120\LaravelTracy\Tracy');
         }
     }
 }
