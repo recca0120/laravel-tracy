@@ -3,8 +3,8 @@
 namespace Recca0120\LaravelTracy\Panels;
 
 use PDO;
-use Tracy\Debugger as TracyDebugger;
-use Tracy\Helpers as TracyHelpers;
+use Tracy\Debugger;
+use Tracy\Helpers;
 
 class ConnectionPanel extends AbstractPanel
 {
@@ -68,7 +68,7 @@ class ConnectionPanel extends AbstractPanel
     {
         $link = null;
         if ($source !== null) {
-            $link = substr_replace(TracyHelpers::editorLink($source[0], $source[1]), ' class="nette-DbConnectionPanel-source"', 2, 0);
+            $link = substr_replace(Helpers::editorLink($source[0], $source[1]), ' class="nette-DbConnectionPanel-source"', 2, 0);
         }
 
         return $link;
@@ -99,7 +99,7 @@ class ConnectionPanel extends AbstractPanel
         $source = null;
         $trace = debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : false);
         foreach ($trace as $row) {
-            if (isset($row['file']) === true && TracyDebugger::getBluescreen()->isCollapsed($row['file']) === false) {
+            if (isset($row['file']) === true && Debugger::getBluescreen()->isCollapsed($row['file']) === false) {
                 if ((isset($row['function']) && strpos($row['function'], 'call_user_func') === 0)
                     || (isset($row['class']) && is_subclass_of($row['class'], '\\Illuminate\\Database\\Connection'))
                 ) {
