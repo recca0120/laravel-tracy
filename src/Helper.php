@@ -1,5 +1,6 @@
 <?php
 
+// hm39168
 namespace Recca0120\LaravelTracy;
 
 use Exception;
@@ -44,17 +45,18 @@ class Helper
     {
         $content = $response->getContent();
         $pos = strripos($content, '</body>');
+        $barResponse = static::getBar();
         if ($pos !== false and
-            $request->isJson() === false and
-            $request->wantsJson() === false and
+            // $request->isJson() === false and
+            // $request->wantsJson() === false and
             $request->ajax() === false and
             $request->pjax() === false) {
-            $barResponse = static::getBar();
+            $barResponse .= file_get_contents(__DIR__.'/../resources/views/updateDebugger.blade.php');
             $content = substr($content, 0, $pos).$barResponse.substr($content, $pos);
 
             $response->setContent($content);
         } else {
-            foreach (str_split(base64_encode(@json_encode($debuggerJavascript)), 4990) as $k => $v) {
+            foreach (str_split(base64_encode(@json_encode($barResponse)), 4990) as $k => $v) {
                 $response->header('X-Tracy-Error-Ajax-'.$k, $v);
             }
         }
