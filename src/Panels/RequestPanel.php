@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class RequestPanel extends AbstractPanel
 {
-    public function getData()
+    public function getAttributes()
     {
         $request = $this->app['request'];
         $server = $request->server();
@@ -16,7 +16,7 @@ class RequestPanel extends AbstractPanel
             }
         }
 
-        $data['request'] = [
+        $attributes['request'] = [
             'ip' => $request->ip(),
             'ip' => $request->ip(),
             'ips' => $request->ips(),
@@ -30,6 +30,6 @@ class RequestPanel extends AbstractPanel
             // 'headers' => $request->header(),
         ];
 
-        return $data;
+        return $attributes;
     }
 }

@@ -7,7 +7,7 @@ use Tracy\Debugger;
 
 class EventPanel extends AbstractPanel
 {
-    public $data = [
+    public $attributes = [
         'count' => 0,
         'totalTime' => 0,
         'events' => [],
@@ -21,8 +21,8 @@ class EventPanel extends AbstractPanel
             $execTime = Debugger::timer($key);
             $dispatcher = static::findDispatcher();
             $editorLink = self::getEditorLink(static::findSource());
-            $this->data['totalTime'] += $execTime;
-            $this->data['events'][] = compact('execTime', 'dispatcher', 'editorLink');
+            $this->attributes['totalTime'] += $execTime;
+            $this->attributes['events'][] = compact('execTime', 'dispatcher', 'editorLink');
         });
     }
 

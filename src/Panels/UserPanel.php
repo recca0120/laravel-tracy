@@ -4,7 +4,7 @@ namespace Recca0120\LaravelTracy\Panels;
 
 class UserPanel extends AbstractPanel
 {
-    public function getData()
+    public function getAttributes()
     {
         $auth = auth();
 
@@ -30,12 +30,10 @@ class UserPanel extends AbstractPanel
             $user = $user->toArray();
         }
 
-        $data = [
+        return [
             'isLoggedIn' => $isLoggedIn,
             'name' => $name,
             'user' => $user,
         ];
-
-        return $data;
     }
 }

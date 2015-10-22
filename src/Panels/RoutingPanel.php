@@ -6,7 +6,7 @@ use Illuminate\Routing\Router;
 
 class RoutingPanel extends AbstractPanel
 {
-    public function getData()
+    public function getAttributes()
     {
         $router = $this->app['router'];
         $currentRoute = $router->getCurrentRoute();
@@ -17,7 +17,7 @@ class RoutingPanel extends AbstractPanel
             $action = $currentRoute->getAction();
         }
 
-        return $data = [
+        return [
             'uri' => $uri,
             'action' => $action,
         ];

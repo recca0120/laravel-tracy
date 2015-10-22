@@ -4,7 +4,7 @@ namespace Recca0120\LaravelTracy\Panels;
 
 class SessionPanel extends AbstractPanel
 {
-    public function getData()
+    public function getAttributes()
     {
         $app = app();
         $session = $app['session'];
