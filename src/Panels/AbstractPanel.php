@@ -2,6 +2,7 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
+use Cache;
 use Tracy\Debugger;
 use Tracy\IBarPanel;
 
@@ -24,30 +25,35 @@ abstract class AbstractPanel implements IBarPanel
 
     public function _getData()
     {
-        $cacheKey = get_class($this);
-        if (isset(static::$cache[$cacheKey]) === true) {
-            return static::$cache[$cacheKey];
-        }
+        return Cache::driver('array')->rememberForever(get_class($this), function () {
+            $this->data = array_merge($this->data, [
+                'dumpOption' => &$this->config['dumpOption'],
+            ]);
+            if (method_exists($this, 'getData')) {
+                $this->data = array_merge($this->data, $this->getData());
+            }
 
-        $this->data = array_merge($this->data, [
-            'dumpOption' => &$this->config['dumpOption'],
-        ]);
-
-        if (method_exists($this, 'getData')) {
-            $this->data = array_merge($this->data, $this->getData());
-        }
-        static::$cache[$cacheKey] = $this->data;
-
-        return static::$cache[$cacheKey];
+            return $this->data;
+        });
     }
 
     public function findView($type)
     {
-        $view = 'laravel-tracy::'.$this->getClassBasename().'.'.$type;
-        if (view()->exists($view)) {
-            return view($view, $this->_getData());
-        } else {
-            return;
+        try {
+            ob_start();
+            $view = __DIR__.'/../../resources/views/'.$this->getClassBasename().'/'.$type.'.php';
+            extract($this->_getData());
+            require $view;
+            $content = ob_get_clean();
+            return $content;
+            // $view = 'laravel-tracy::'.$this->getClassBasename().'.'.$type;
+            // if (view()->exists($view)) {
+            //     return view($view, $this->_getData());
+            // } else {
+            //     return;
+            // }
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
     }
 

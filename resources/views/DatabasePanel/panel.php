@@ -1,6 +1,6 @@
 <style class="tracy-debug">#tracy-debug td.laravel-DatabasePanel-sql{background:white!important}#tracy-debug .laravel-DatabasePanel-source{color:#BBB!important}</style>
 
-<h1>Queries: {{ $count }}, time: {{ $totalTime }}</h1>
+<h1>Queries: <?php echo $count ?>, time: <?php echo $totalTime ?></h1>
 <div class="tracy-inner laravel-DatabasePanel">
     <table>
         <thead>
@@ -10,42 +10,40 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($queries as $key => $query)
+            <?php foreach ($queries as $key => $query): ?>
                 <tr>
                     <td>
-                        {{ array_get($query, 'name') }} / {{ array_get($query, 'time') }} ms
-                        @if (count($query['explain']) > 0)
+                        <?php echo array_get($query, 'name') ?> / <?php echo array_get($query, 'time') ?> ms
+                        <?php if (count($query['explain']) > 0): ?>
                             <br /><a class="tracy-toggle tracy-collapsed" data-ref="#tracy-connection-{{ $key }}" data-tracy-ref="#tracy-connection-{{ $key }}">explain</a>
-                        @endif
+                        <?php endif ?>
                     </td>
                     <td class="laravel-DatabasePanel-sql">
-                        {!! array_get($query, 'dumpSql') !!}
-                        @if (count($query['explain']) > 0)
+                        <?php echo array_get($query, 'dumpSql') ?>
+                        <?php if (count($query['explain']) > 0): ?>
                             <table class="tracy-collapsed laravel-DatabasePanel-explain" id="tracy-connection-{{ $key }}">
                                 <thead>
                                     <tr>
-                                        @foreach ($query['explain'][0] as $col => $foo)
+                                        <?php foreach ($query['explain'][0] as $col => $foo): ?>
                                             <th>{!! $col !!}</th>
-                                        @endforeach
+                                        <?php endforeach ?>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($query['explain'] as $row)
+                                    <?php foreach ($query['explain'] as $row): ?>
                                         <tr>
-                                            @foreach ($row as $col)
+                                            <?php foreach ($row as $col): ?>
                                                 <td>{!! $col !!}</td>
-                                            @endforeach
+                                            <?php endforeach ?>
                                         </tr>
-                                    @endforeach
+                                    <?php endforeach ?>
                                 </tbody>
                             </table>
-                        @endif
-                        @if (empty($query['editorLink']) === false)
-                            {!! $query['editorLink'] !!}
-                        @endif
+                        <?php endif ?>
+                        <?php echo (empty($query['editorLink']))?:$query['editorLink'] ?>
                     </td>
                 </tr>
-            @endforeach
+            <?php endforeach ?>
         </tbody>
     </table>
 </div>

@@ -5,18 +5,18 @@
     <div class="tracy-inner">
         <table>
             <tbody>
-                @foreach ($action as $key => $value)
+                <?php foreach ($action as $key => $value): ?>
                     <tr>
-                        <th>{{ $key }}</th>
+                        <th><?php echo $key ?></th>
                         <td>
-                            @if (is_string($value) === true)
-                                {{ $value }}
-                            @else
-                                {!! Tracy\Dumper::toHtml($value, $dumpOption) !!}
-                            @endif
+                            <?php if (is_string($value) === true): ?>
+                                <?php echo $value ?>
+                            <?php else: ?>
+                                <?php echo Tracy\Dumper::toHtml($value, $dumpOption) ?>
+                            <?php endif ?>
                         </td>
                     </tr>
-                @endforeach
+                <?php endforeach ?>
             </tbody>
         </table>
     </div>

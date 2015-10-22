@@ -51,7 +51,7 @@ class Helper
             // $request->wantsJson() === false and
             $request->ajax() === false and
             $request->pjax() === false) {
-            $barResponse .= file_get_contents(__DIR__.'/../resources/views/updateDebugger.blade.php');
+            $barResponse .= file_get_contents(__DIR__.'/../resources/views/updateDebugger.php');
             $content = substr($content, 0, $pos).$barResponse.substr($content, $pos);
 
             $response->setContent($content);

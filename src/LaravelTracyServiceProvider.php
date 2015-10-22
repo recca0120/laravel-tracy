@@ -19,7 +19,6 @@ class LaravelTracyServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-tracy');
         $this->publishes([
             __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
         ]);
@@ -49,8 +48,8 @@ class LaravelTracyServiceProvider extends ServiceProvider
                     Dumper::COLLAPSE => false,
                     'live' => true,
                 ],
-            // ], config('tracy'));
-            ]);
+            ], config('tracy'));
+
             Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
             Debugger::$maxDepth = array_get($config, 'maxDepth');
             Debugger::$maxLen = array_get($config, 'maxLen');

@@ -22,7 +22,7 @@ class EventPanel extends AbstractPanel
             $dispatcher = static::findDispatcher();
             $editorLink = self::getEditorLink(static::findSource());
             $this->data['totalTime'] += $execTime;
-            $this->data['events'][] = compact('time', 'dispatcher', 'editorLink');
+            $this->data['events'][] = compact('execTime', 'dispatcher', 'editorLink');
         });
     }
 
