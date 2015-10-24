@@ -3,12 +3,12 @@
 <div class="laravel-SessionPanel">
     <h1>Session #<?php echo $sessionId  ?> (Lifetime: <?php echo array_get($config, 'lifetime') ?>)</h1>
     <div class="tracy-inner">
-        <?php if (empty($sessionData) === true): ?>
+        <?php if (empty($laravelSession) === true): ?>
             <p><i>empty</i></p>
         <?php else: ?>
             <table>
                 <tbody>
-                    <?php foreach ($sessionData as $key => $value): ?>
+                    <?php foreach ($laravelSession as $key => $value): ?>
                         <tr>
                             <th><?php echo $key  ?></th>
                             <td>
