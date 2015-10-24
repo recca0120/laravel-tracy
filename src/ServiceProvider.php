@@ -2,11 +2,11 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\ServiceProvider as baseServiceProvider;
 use Tracy\Debugger;
 use Tracy\Dumper;
 
-class LaravelTracyServiceProvider extends ServiceProvider
+class ServiceProvider extends baseServiceProvider
 {
     /**
      * Indicates if loading of the provider is deferred.
@@ -67,5 +67,10 @@ class LaravelTracyServiceProvider extends ServiceProvider
                 Debugger::getBar()->addPanel(new $panel($config, $this->app), $panel);
             }
         }
+    }
+
+    public function provides()
+    {
+        return ['Illuminate\Contracts\Debug\ExceptionHandler'];
     }
 }
