@@ -56,8 +56,10 @@ class Helper
 
             $response->setContent($content);
         } else {
-            foreach (str_split(base64_encode(@json_encode($barResponse)), 4990) as $k => $v) {
-                $response->header('X-Tracy-Error-Ajax-'.$k, $v);
+            if (method_exists($response, 'header')) {
+                foreach (str_split(base64_encode(@json_encode($barResponse)), 4990) as $k => $v) {
+                    $response->header('X-Tracy-Error-Ajax-'.$k, $v);
+                }
             }
         }
 

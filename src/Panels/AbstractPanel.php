@@ -8,9 +8,9 @@ use Tracy\IBarPanel;
 
 abstract class AbstractPanel implements IBarPanel
 {
-    public $data = [];
+    protected $attributes = [];
 
-    public $config;
+    protected $config;
 
     public function __construct($config, $app)
     {
@@ -21,40 +21,37 @@ abstract class AbstractPanel implements IBarPanel
         }
     }
 
-    public static $cache = [];
+    public function getAttributes()
+    {
+        return [];
+    }
 
-    public function _getData()
+    public function toArray()
     {
         return Cache::driver('array')->rememberForever(get_class($this), function () {
-            $this->data = array_merge($this->data, [
+            // $this->attributes = array_merge($this->attributes, [
+            //     'dumpOption' => &$this->config['dumpOption'],
+            // ]);
+            // if (method_exists($this, 'getData')) {
+            //     $this->attributes = array_merge($this->attributes, $this->_toArray());
+            // }
+            $attributes = array_merge($this->attributes, $this->getAttributes(), [
                 'dumpOption' => &$this->config['dumpOption'],
             ]);
-            if (method_exists($this, 'getData')) {
-                $this->data = array_merge($this->data, $this->getData());
-            }
 
-            return $this->data;
+            return $attributes;
         });
     }
 
-    public function findView($type)
+    protected function findView($type)
     {
-        try {
-            ob_start();
-            $view = __DIR__.'/../../resources/views/'.$this->getClassBasename().'/'.$type.'.php';
-            extract($this->_getData());
-            require $view;
-            $content = ob_get_clean();
-            return $content;
-            // $view = 'laravel-tracy::'.$this->getClassBasename().'.'.$type;
-            // if (view()->exists($view)) {
-            //     return view($view, $this->_getData());
-            // } else {
-            //     return;
-            // }
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
+        ob_start();
+        $view = __DIR__.'/../../resources/views/'.$this->getClassBasename().'/'.$type.'.php';
+        extract($this->toArray());
+        require $view;
+        $content = ob_get_clean();
+
+        return $content;
     }
 
     public function getTab()
@@ -67,7 +64,7 @@ abstract class AbstractPanel implements IBarPanel
         return $this->findView('panel');
     }
 
-    public function getClassBasename()
+    protected function getClassBasename()
     {
         return class_basename(get_class($this));
     }

@@ -7,7 +7,7 @@ use PDO;
 
 class DatabasePanel extends AbstractPanel
 {
-    public $data = [
+    public $attributes = [
         'count' => 0,
         'totalTime' => 0,
         'queries' => [],
@@ -29,9 +29,9 @@ class DatabasePanel extends AbstractPanel
         $dumpSql = $this->dumpSql($runnableSql);
         $explain = $this->getExplain($sql, $bindings, $pdo);
         $editorLink = static::getEditorLink(static::findSource());
-        $this->data['count']++;
-        $this->data['totalTime'] += $time;
-        $this->data['queries'][] = compact('runnableSql', 'dumpSql', 'explain', 'time', 'name', 'editorLink');
+        $this->attributes['count']++;
+        $this->attributes['totalTime'] += $time;
+        $this->attributes['queries'][] = compact('runnableSql', 'dumpSql', 'explain', 'time', 'name', 'editorLink');
     }
 
     private function createRunnableSql($prepare, $bindings)
