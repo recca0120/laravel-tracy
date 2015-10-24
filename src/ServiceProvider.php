@@ -13,7 +13,7 @@ class ServiceProvider extends baseServiceProvider
      *
      * @var bool
      */
-    protected $defer = false;
+    protected $defer = true;
     /**
      * Bootstrap any application services.
      */
@@ -71,6 +71,6 @@ class ServiceProvider extends baseServiceProvider
 
     public function provides()
     {
-        return ['Illuminate\Contracts\Debug\ExceptionHandler'];
+        return [\Illuminate\Contracts\Debug\ExceptionHandler::class];
     }
 }
