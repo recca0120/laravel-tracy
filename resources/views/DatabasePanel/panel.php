@@ -15,17 +15,17 @@
                     <td>
                         <?php echo array_get($query, 'name') ?> / <?php echo array_get($query, 'time') ?> ms
                         <?php if (count($query['explain']) > 0): ?>
-                            <br /><a class="tracy-toggle tracy-collapsed" data-ref="#tracy-connection-{{ $key }}" data-tracy-ref="#tracy-connection-{{ $key }}">explain</a>
+                            <br /><a class="tracy-toggle tracy-collapsed" data-ref="#tracy-connection-<?php $key ?>" data-tracy-ref="#tracy-connection-<?php $key ?>">explain</a>
                         <?php endif ?>
                     </td>
                     <td class="laravel-DatabasePanel-sql">
                         <?php echo array_get($query, 'dumpSql') ?>
                         <?php if (count($query['explain']) > 0): ?>
-                            <table class="tracy-collapsed laravel-DatabasePanel-explain" id="tracy-connection-{{ $key }}">
+                            <table class="tracy-collapsed laravel-DatabasePanel-explain" id="tracy-connection-<?php $key ?>">
                                 <thead>
                                     <tr>
                                         <?php foreach ($query['explain'][0] as $col => $foo): ?>
-                                            <th>{!! $col !!}</th>
+                                            <th><?php echo $col ?></th>
                                         <?php endforeach ?>
                                     </tr>
                                 </thead>
@@ -33,14 +33,14 @@
                                     <?php foreach ($query['explain'] as $row): ?>
                                         <tr>
                                             <?php foreach ($row as $col): ?>
-                                                <td>{!! $col !!}</td>
+                                                <td><?php echo $col ?></td>
                                             <?php endforeach ?>
                                         </tr>
                                     <?php endforeach ?>
                                 </tbody>
                             </table>
                         <?php endif ?>
-                        <?php echo (empty($query['editorLink']))?:$query['editorLink'] ?>
+                        <?php echo (empty($query['editorLink'])) ?: $query['editorLink'] ?>
                     </td>
                 </tr>
             <?php endforeach ?>

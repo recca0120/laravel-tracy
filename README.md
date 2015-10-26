@@ -31,7 +31,7 @@ Update config/app.php
 ```php
 'providers' => [
     ...
-    'Recca0120\LaravelTracy\LaravelTracyServiceProvider',
+    'Recca0120\LaravelTracy\ServiceProvider',
 ];
 ```
 
@@ -41,7 +41,7 @@ Update config/app.php
 ```php
 'providers' => [
     ...
-    Recca0120\LaravelTracy\LaravelTracyServiceProvider::class,
+    Recca0120\LaravelTracy\ServiceProvider::class,
 ];
 ```
 

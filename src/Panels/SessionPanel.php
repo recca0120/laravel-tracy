@@ -12,7 +12,8 @@ class SessionPanel extends AbstractPanel
         return [
             'sessionId' => $session->getId(),
             'config' => $session->getSessionConfig(),
-            'sessionData' => $session->all(),
+            'laravelSession' => $session->all(),
+            'nativeSession' => $_SESSION,
         ];
     }
 }
