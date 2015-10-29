@@ -27,7 +27,10 @@ class DatabasePanel extends AbstractPanel
     {
         $runnableSql = $this->createRunnableSql($sql, $bindings);
         $dumpSql = $this->dumpSql($runnableSql);
-        $explain = $this->getExplain($sql, $bindings, $pdo);
+        $explain = [];
+        if ($connection->getDriverName() === 'mysql') {
+            $explain = $this->getExplain($sql, $bindings, $pdo);
+        }
         $editorLink = static::getEditorLink(static::findSource());
         $this->attributes['count']++;
         $this->attributes['totalTime'] += $time;

@@ -68,7 +68,7 @@
     });
 
     ajaxButton.on("click", function(e) {
-        xhr = xhrs.shift();
+        var xhr = xhrs.shift();
         updateDebugger(xhr.getAllResponseHeaders());
         if (xhrs.length == 0) {
             ajaxButton.hide();
