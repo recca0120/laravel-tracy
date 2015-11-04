@@ -4,7 +4,6 @@ namespace Recca0120\LaravelTracy;
 
 use Illuminate\Support\ServiceProvider as baseServiceProvider;
 use Tracy\Debugger;
-use Tracy\Dumper;
 
 class ServiceProvider extends baseServiceProvider
 {
@@ -30,25 +29,7 @@ class ServiceProvider extends baseServiceProvider
     {
         if (config('app.debug') === true and $this->app->runningInConsole() === false) {
             $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
-            $config = array_merge([
-                'strictMode' => true,
-                'maxDepth' => 4,
-                'maxLen' => 1000,
-                'showLocation' => true,
-                'editor' => 'subl://open?url=file://%file&line=%line',
-                'panels' => [
-                    'Recca0120\LaravelTracy\Panels\RoutingPanel',
-                    'Recca0120\LaravelTracy\Panels\DatabasePanel',
-                    'Recca0120\LaravelTracy\Panels\SessionPanel',
-                    'Recca0120\LaravelTracy\Panels\RequestPanel',
-                    'Recca0120\LaravelTracy\Panels\EventPanel',
-                    'Recca0120\LaravelTracy\Panels\UserPanel',
-                ],
-                'dumpOption' => [
-                    Dumper::COLLAPSE => false,
-                    'live' => true,
-                ],
-            ], config('tracy'));
+            $config = config('tracy');
 
             Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
             Debugger::$maxDepth = array_get($config, 'maxDepth');

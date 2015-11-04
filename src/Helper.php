@@ -25,6 +25,27 @@ class Helper
             ->render($e);
         $content = ob_get_clean();
 
+        $basePath = config('tracy.base_path');
+
+        if (empty($basePath) === false) {
+            $compiled = '#(?P<uri>'.strtr(Debugger::$editor, [
+                '%file' => '(?P<file>.+)',
+                '%line' => '(?P<line>\d+)',
+                '?' => '\?',
+                '&' => '(&|&amp;)',
+            ]).')#';
+
+            if (preg_match_all($compiled, $content, $matches, PREG_SET_ORDER)) {
+                foreach ($matches as $match) {
+                    $uri = $match['uri'];
+                    $file = str_replace(base_path(), $basePath, rawurldecode($match['file']));
+                    $line = $match['line'];
+                    $editor = strtr(Debugger::$editor, ['%file' => rawurlencode($file), '%line' => $line ? (int) $line : '']);
+                    $content = str_replace($uri, $editor, $content);
+                }
+            }
+        }
+
         return $content;
     }
 
