@@ -2,8 +2,6 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use Illuminate\Routing\Router;
-
 class RoutingPanel extends AbstractPanel
 {
     public function getAttributes()

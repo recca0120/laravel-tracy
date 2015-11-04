@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'base_path' => null,
     'strictMode' => true,
     'maxDepth' => 4,
     'maxLen' => 1000,

@@ -3,7 +3,9 @@
 namespace Recca0120\LaravelTracy\Panels;
 
 use Cache;
+use Recca0120\LaravelTracy\Helper;
 use Tracy\Debugger;
+use Tracy\Helpers as TracyHelpers;
 use Tracy\IBarPanel;
 
 abstract class AbstractPanel implements IBarPanel
@@ -96,7 +98,10 @@ abstract class AbstractPanel implements IBarPanel
         $link = null;
         if ($source !== null) {
             // $link = substr_replace(\Tracy\Helpers::editorLink($source[0], $source[1]), ' class="nette-DbConnectionPanel-source"', 2, 0);
-            $link = \Tracy\Helpers::editorLink($source[0], $source[1]);
+            $file = $source[0];
+            $line = $source[1];
+            $link = TracyHelpers::editorLink($file, $line);
+            $link = Helper::updateEditorUri($link);
         }
 
         return $link;
