@@ -24,7 +24,13 @@ class Helper
         Debugger::getBlueScreen()
             ->render($e);
         $content = ob_get_clean();
+        $content = static::updateEditorUri($content);
 
+        return $content;
+    }
+
+    public static function updateEditorUri($content)
+    {
         $basePath = config('tracy.base_path');
 
         if (empty($basePath) === false) {
@@ -34,7 +40,6 @@ class Helper
                 '?' => '\?',
                 '&' => '(&|&amp;)',
             ]).')#';
-
             if (preg_match_all($compiled, $content, $matches, PREG_SET_ORDER)) {
                 foreach ($matches as $match) {
                     $uri = $match['uri'];
@@ -67,6 +72,7 @@ class Helper
         $content = $response->getContent();
         $pos = strripos($content, '</body>');
         $barResponse = static::getBar();
+
         if ($pos !== false and
             // $request->isJson() === false and
             // $request->wantsJson() === false and

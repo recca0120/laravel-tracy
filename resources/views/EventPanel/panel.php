@@ -1,4 +1,4 @@
-<h1>Events: <?php echo round($totalTime*100, 2) ?> ms</h1>
+<h1>Events: <?php echo round($totalTime * 100, 2) ?> ms</h1>
 <div class="tracy-inner laravel-EventPanel">
     <table>
         <thead>
@@ -16,9 +16,9 @@
                         <span class="tracy-dump-string"><?php echo round(array_get($event, 'execTime', 0) * 100, 2) ?> ms</span>
                     </th>
                     <td>
-                        <?php echo Tracy\Dumper::toHtml(array_get($event, 'dispatcher.args.1'), array_merge($dumpOption, [
+                        <?php echo Tracy\Dumper::toHtml(array_get($event, 'dispatcher.args.1'), array_merge((array) $dumpOption, [
                             Tracy\Dumper::TRUNCATE => 50,
-                            Tracy\Dumper::COLLAPSE => TRUE,
+                            Tracy\Dumper::COLLAPSE => true,
                         ])) ?>
                     </td>
                 </tr>
