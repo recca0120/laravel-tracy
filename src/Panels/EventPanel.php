@@ -2,7 +2,7 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use Illuminate\Events\Dispatcher;
+use Illuminate\Contracts\Events\Dispatcher;
 use Tracy\Debugger;
 
 class EventPanel extends AbstractPanel

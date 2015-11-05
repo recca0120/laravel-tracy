@@ -2,10 +2,10 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Illuminate\Support\ServiceProvider as baseServiceProvider;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Tracy\Debugger;
 
-class ServiceProvider extends baseServiceProvider
+class ServiceProvider extends BaseServiceProvider
 {
     /**
      * Indicates if loading of the provider is deferred.

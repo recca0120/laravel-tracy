@@ -18,7 +18,6 @@ class RequestPanel extends AbstractPanel
 
         $attributes['request'] = [
             'ip' => $request->ip(),
-            'ip' => $request->ip(),
             'ips' => $request->ips(),
             'query' => $request->query(),
             'request' => $request->all(),
