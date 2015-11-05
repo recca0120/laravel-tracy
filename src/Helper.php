@@ -69,6 +69,9 @@ class Helper
 
     public static function appendDebuggerBar($request, $response)
     {
+        if ($response->isRedirection() === true) {
+            return $response;
+        }
         $content = $response->getContent();
         $pos = strripos($content, '</body>');
         $barResponse = static::getBar();
