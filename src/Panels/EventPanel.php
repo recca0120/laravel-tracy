@@ -13,16 +13,18 @@ class EventPanel extends AbstractPanel
         'events' => [],
     ];
 
-    public function subscribe(Dispatcher $events)
+    public function subscribe(Dispatcher $event)
     {
         $key = get_class($this);
         $timer = Debugger::timer($key);
-        $events->listen('*', function () use ($key) {
+        $event->listen('*', function ($params) use ($key, $event) {
             $execTime = Debugger::timer($key);
-            $dispatcher = static::findDispatcher();
+            // $dispatcher = static::findDispatcher();
+            // $firing = array_get($dispatcher, 'dispatcher.args.0');
+            $firing = $event->firing();
             $editorLink = self::getEditorLink(static::findSource());
             $this->attributes['totalTime'] += $execTime;
-            $this->attributes['events'][] = compact('execTime', 'dispatcher', 'editorLink');
+            $this->attributes['events'][] = compact('execTime', 'firing', 'params', 'editorLink');
         });
     }
 

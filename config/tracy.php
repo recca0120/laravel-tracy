@@ -8,11 +8,13 @@ return [
     'showLocation' => true,
     'editor' => 'subl://open?url=file://%file&line=%line',
     'panels' => [
-        'Recca0120\LaravelTracy\Panels\RoutingPanel',
-        'Recca0120\LaravelTracy\Panels\DatabasePanel',
-        'Recca0120\LaravelTracy\Panels\SessionPanel',
-        'Recca0120\LaravelTracy\Panels\RequestPanel',
-        'Recca0120\LaravelTracy\Panels\EventPanel',
-        'Recca0120\LaravelTracy\Panels\UserPanel',
+        'routeing' => true,
+        'database' => true,
+        'session' => true,
+        'request' => true,
+        'event' => false,
+        'user' => true,
+        // custom panel
+        // 'Recca0120\LaravelTracy\Panels\CustomPanel',
     ],
 ];
