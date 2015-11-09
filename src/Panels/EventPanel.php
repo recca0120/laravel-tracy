@@ -13,32 +13,16 @@ class EventPanel extends AbstractPanel
         'events' => [],
     ];
 
-    public function subscribe(Dispatcher $events)
+    public function subscribe(Dispatcher $event)
     {
         $key = get_class($this);
         $timer = Debugger::timer($key);
-        $events->listen('*', function () use ($key) {
+        $event->listen('*', function ($params) use ($key, $event) {
             $execTime = Debugger::timer($key);
-            $dispatcher = static::findDispatcher();
+            $firing = $event->firing();
             $editorLink = self::getEditorLink(static::findSource());
             $this->attributes['totalTime'] += $execTime;
-            $this->attributes['events'][] = compact('execTime', 'dispatcher', 'editorLink');
+            $this->attributes['events'][] = compact('execTime', 'firing', 'params', 'editorLink');
         });
-    }
-
-    public static function findDispatcher()
-    {
-        $backtrace = debug_backtrace();
-        foreach ($backtrace as $trace) {
-            $object = array_get($trace, 'object');
-            if ($object instanceof Dispatcher) {
-                // if (empty($trace['args']['1']) === false) {
-                //     foreach ($trace['args']['1'] as $key => $value) {
-                //         $trace['args']['1'][$key] = (is_object($value) === true) ? get_class($value) : $value;
-                //     }
-                // }
-                return $trace;
-            }
-        }
     }
 }

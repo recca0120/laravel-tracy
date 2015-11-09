@@ -13,9 +13,9 @@ class DatabasePanel extends AbstractPanel
         'queries' => [],
     ];
 
-    public function subscribe(Dispatcher $events)
+    public function subscribe(Dispatcher $event)
     {
-        $events->listen('illuminate.query', function ($sql, $bindings, $time, $name) {
+        $event->listen('illuminate.query', function ($sql, $bindings, $time, $name) {
             $db = $this->app['db'];
             $connection = $db->connection($name);
             $pdo = $connection->getPdo();
