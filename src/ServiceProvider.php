@@ -20,7 +20,7 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->publishes([
             __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
-        ]);
+        ], 'config');
     }
     /**
      * Register the service provider.
