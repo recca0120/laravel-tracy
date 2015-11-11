@@ -16,7 +16,7 @@ class RoutingPanel extends AbstractPanel
         }
 
         return [
-            'uri' => $uri,
+            'uri'    => $uri,
             'action' => $action,
         ];
     }

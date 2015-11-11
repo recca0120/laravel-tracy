@@ -1,6 +1,7 @@
 <?php
 
 // hm39168
+
 namespace Recca0120\LaravelTracy;
 
 use Exception;
@@ -37,8 +38,8 @@ class Helper
             $compiled = '#(?P<uri>'.strtr(Debugger::$editor, [
                 '%file' => '(?P<file>.+)',
                 '%line' => '(?P<line>\d+)',
-                '?' => '\?',
-                '&' => '(&|&amp;)',
+                '?'     => '\?',
+                '&'     => '(&|&amp;)',
             ]).')#';
             if (preg_match_all($compiled, $content, $matches, PREG_SET_ORDER)) {
                 foreach ($matches as $match) {

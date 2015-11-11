@@ -32,8 +32,8 @@ class UserPanel extends AbstractPanel
 
         return [
             'isLoggedIn' => $isLoggedIn,
-            'name' => $name,
-            'user' => $user,
+            'name'       => $name,
+            'user'       => $user,
         ];
     }
 }

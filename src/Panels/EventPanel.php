@@ -8,9 +8,9 @@ use Tracy\Debugger;
 class EventPanel extends AbstractPanel
 {
     public $attributes = [
-        'count' => 0,
+        'count'     => 0,
         'totalTime' => 0,
-        'events' => [],
+        'events'    => [],
     ];
 
     public function subscribe(Dispatcher $event)

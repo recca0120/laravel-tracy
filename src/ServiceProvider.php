@@ -13,6 +13,7 @@ class ServiceProvider extends BaseServiceProvider
      * @var bool
      */
     protected $defer = true;
+
     /**
      * Bootstrap any application services.
      */
@@ -22,6 +23,7 @@ class ServiceProvider extends BaseServiceProvider
             __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
         ], 'config');
     }
+
     /**
      * Register the service provider.
      */

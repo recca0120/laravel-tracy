@@ -17,14 +17,14 @@ class RequestPanel extends AbstractPanel
         }
 
         $attributes['request'] = [
-            'ip' => $request->ip(),
-            'ips' => $request->ips(),
-            'query' => $request->query(),
-            'request' => $request->all(),
-            'file' => $request->file(),
-            'cookies' => $request->cookie(),
-            'format' => $request->format(),
-            'server' => $server,
+            'ip'        => $request->ip(),
+            'ips'       => $request->ips(),
+            'query'     => $request->query(),
+            'request'   => $request->all(),
+            'file'      => $request->file(),
+            'cookies'   => $request->cookie(),
+            'format'    => $request->format(),
+            'server'    => $server,
             'path_info' => $request->getPathInfo(),
             // 'headers' => $request->header(),
         ];
