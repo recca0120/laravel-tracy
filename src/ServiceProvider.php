@@ -44,8 +44,17 @@ class ServiceProvider extends BaseServiceProvider
             $kernel = $this->app['Illuminate\Contracts\Http\Kernel'];
             $kernel->pushMiddleware('Recca0120\LaravelTracy\Middleware\Tracy');
 
-            foreach ($config['panels'] as $panel) {
-                Debugger::getBar()->addPanel(new $panel($config, $this->app), $panel);
+            foreach ($config['panels'] as $key => $enabled) {
+                if ($enabled === true) {
+                    $class = '\Recca0120\LaravelTracy\Panels\\'.ucfirst($key).'Panel';
+                } elseif (is_string($enabled)) {
+                    $class = $enabled;
+                }
+
+                if (class_exists($class) === true) {
+                    $panel = new $class($config, $this->app);
+                    Debugger::getBar()->addPanel($panel, $class);
+                }
             }
         }
     }
