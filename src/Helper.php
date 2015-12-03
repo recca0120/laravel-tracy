@@ -33,21 +33,24 @@ class Helper
     {
         $basePath = config('tracy.base_path');
 
-        if (empty($basePath) === false) {
-            $compiled = '#(?P<uri>'.strtr(Debugger::$editor, [
-                '%file' => '(?P<file>.+)',
-                '%line' => '(?P<line>\d+)',
-                '?' => '\?',
-                '&' => '(&|&amp;)',
-            ]).')#';
-            if (preg_match_all($compiled, $content, $matches, PREG_SET_ORDER)) {
-                foreach ($matches as $match) {
-                    $uri = $match['uri'];
-                    $file = str_replace(base_path(), $basePath, rawurldecode($match['file']));
-                    $line = $match['line'];
-                    $editor = strtr(Debugger::$editor, ['%file' => rawurlencode($file), '%line' => $line ? (int) $line : '']);
-                    $content = str_replace($uri, $editor, $content);
-                }
+        if (empty($basePath) === true) {
+            return $content;
+        }
+
+        $compiled = '#(?P<uri>'.strtr(Debugger::$editor, [
+            '%file' => '(?P<file>.+)',
+            '%line' => '(?P<line>\d+)',
+            '?' => '\?',
+            '&' => '(&|&amp;)',
+        ]).')#';
+
+        if (preg_match_all($compiled, $content, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $match) {
+                $uri = $match['uri'];
+                $file = str_replace(base_path(), $basePath, rawurldecode($match['file']));
+                $line = $match['line'];
+                $editor = strtr(Debugger::$editor, ['%file' => rawurlencode($file), '%line' => $line ? (int) $line : '']);
+                $content = str_replace($uri, $editor, $content);
             }
         }
 
@@ -56,12 +59,12 @@ class Helper
 
     public static function getHttpResponse($content, Exception $e)
     {
+        $statusCode = 500;
+        $headers = [];
+
         if (($e instanceof HttpException) === true) {
             $statusCode = $e->getStatusCode();
             $headers = $e->getHeaders();
-        } else {
-            $statusCode = 500;
-            $headers = [];
         }
 
         return response($content, $statusCode, $headers);
@@ -85,14 +88,16 @@ class Helper
             $content = substr($content, 0, $pos).$barResponse.substr($content, $pos);
 
             $response->setContent($content);
-        } else {
-            // if (method_exists($response, 'header') === true) {
-            //     $barResponse = static::lzwCompress($barResponse);
-            //     foreach (str_split(base64_encode(@json_encode($barResponse)), 4990) as $k => $v) {
-            //         $response->header('X-Tracy-Error-Ajax-'.$k, $v);
-            //     }
-            // }
+
+            return $response;
         }
+
+        // if (method_exists($response, 'header') === true) {
+        //     $barResponse = static::lzwCompress($barResponse);
+        //     foreach (str_split(base64_encode(@json_encode($barResponse)), 4990) as $k => $v) {
+        //         $response->header('X-Tracy-Error-Ajax-'.$k, $v);
+        //     }
+        // }
 
         return $response;
     }

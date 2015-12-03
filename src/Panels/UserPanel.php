@@ -7,14 +7,13 @@ class UserPanel extends AbstractPanel
     public function getAttributes()
     {
         $auth = auth();
+        $isLoggedIn = false;
+        $name = 'Guest';
+        $user = [
 
-        if ($auth->check() === false) {
-            $isLoggedIn = false;
-            $name = 'Guest';
-            $user = [
+        ];
 
-            ];
-        } else {
+        if ($auth->check() === true) {
             $isLoggedIn = true;
             $user = $auth->user();
             $name = $user->getAuthIdentifier();

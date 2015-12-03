@@ -31,31 +31,29 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         if (method_exists($this, 'isUnauthorizedException')) {
-            $response = parent::render($request, $e);
-        } else {
-            if ($this->isHttpException($e)) {
-                $status = $e->getStatusCode();
-                if (view()->exists("errors.{$status}")) {
-                    $response = response()->view("errors.{$status}", [], $status);
-                } else {
-                    $response = $this->convertExceptionToResponse($e);
-                }
-            } else {
-                $response = $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
-            }
+            return parent::render($request, $e);
         }
 
-        return $response;
+        if ($this->isHttpException($e)) {
+            $status = $e->getStatusCode();
+            if (view()->exists("errors.{$status}")) {
+                return response()->view("errors.{$status}", [], $status);
+            }
+
+            return $this->convertExceptionToResponse($e);
+        }
+
+        return $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
         // return Helper::appendDebuggerBar($request, $response);
     }
 
     protected function convertExceptionToResponse(Exception $e)
     {
-        $debug = config('app.debug');
-        if ($debug === false) {
-            return (new SymfonyDisplayer(config('app.debug')))->createResponse($e);
-        } else {
-            return Helper::getHttpResponse(Helper::getBlueScreen($e), $e);
-        }
+        // $debug = config('app.debug');
+        // if ($debug === false) {
+        //     return (new SymfonyDisplayer(config('app.debug')))->createResponse($e);
+        // }
+
+        return Helper::getHttpResponse(Helper::getBlueScreen($e), $e);
     }
 }

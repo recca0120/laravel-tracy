@@ -68,7 +68,7 @@ abstract class AbstractPanel implements IBarPanel
 
     protected function getClassBasename()
     {
-        return class_basename(get_class($this));
+        return class_basename(static::class);
     }
 
     /**

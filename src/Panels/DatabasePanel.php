@@ -52,9 +52,9 @@ class DatabasePanel extends AbstractPanel
             $statement->execute($bindings);
 
             return $explain = $statement->fetchAll(PDO::FETCH_CLASS);
-        } else {
-            return [];
         }
+
+        return [];
     }
 
     /**
