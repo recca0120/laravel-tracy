@@ -3,6 +3,7 @@
 namespace Recca0120\LaravelTracy\Panels;
 
 use Illuminate\Contracts\Events\Dispatcher;
+use Recca0120\LaravelTracy\Helper;
 use Tracy\Debugger;
 
 class EventPanel extends AbstractPanel
@@ -22,7 +23,7 @@ class EventPanel extends AbstractPanel
             // $dispatcher = static::findDispatcher();
             // $firing = array_get($dispatcher, 'dispatcher.args.0');
             $firing = $event->firing();
-            $editorLink = self::getEditorLink(static::findSource());
+            $editorLink = Helper::getEditorLink(Helper::findSource());
             $this->attributes['totalTime'] += $execTime;
             $this->attributes['events'][] = compact('execTime', 'firing', 'params', 'editorLink');
         });

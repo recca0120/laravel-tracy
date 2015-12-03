@@ -1,15 +1,13 @@
 <?php
 
-// hm39168
 namespace Recca0120\LaravelTracy;
 
-use Exception;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tracy\Debugger;
+use Tracy\Helpers as TracyHelpers;
 
 class Helper
 {
-    public static function getBar()
+    public static function getBarResponse()
     {
         ob_start();
         Debugger::getBar()->render();
@@ -21,8 +19,7 @@ class Helper
     public static function getBlueScreen($e)
     {
         ob_start();
-        Debugger::getBlueScreen()
-            ->render($e);
+        Debugger::getBlueScreen()->render($e);
         $content = ob_get_clean();
         $content = static::updateEditorUri($content);
 
@@ -33,68 +30,98 @@ class Helper
     {
         $basePath = config('tracy.base_path');
 
-        if (empty($basePath) === false) {
-            $compiled = '#(?P<uri>'.strtr(Debugger::$editor, [
-                '%file' => '(?P<file>.+)',
-                '%line' => '(?P<line>\d+)',
-                '?' => '\?',
-                '&' => '(&|&amp;)',
-            ]).')#';
-            if (preg_match_all($compiled, $content, $matches, PREG_SET_ORDER)) {
-                foreach ($matches as $match) {
-                    $uri = $match['uri'];
-                    $file = str_replace(base_path(), $basePath, rawurldecode($match['file']));
-                    $line = $match['line'];
-                    $editor = strtr(Debugger::$editor, ['%file' => rawurlencode($file), '%line' => $line ? (int) $line : '']);
-                    $content = str_replace($uri, $editor, $content);
-                }
+        if (empty($basePath) === true) {
+            return $content;
+        }
+
+        $compiled = '#(?P<uri>'.strtr(Debugger::$editor, [
+            '%file' => '(?P<file>.+)',
+            '%line' => '(?P<line>\d+)',
+            '?' => '\?',
+            '&' => '(&|&amp;)',
+        ]).')#';
+
+        if (preg_match_all($compiled, $content, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $match) {
+                $uri = $match['uri'];
+                $file = str_replace(base_path(), $basePath, rawurldecode($match['file']));
+                $line = $match['line'];
+                $editor = strtr(Debugger::$editor, ['%file' => rawurlencode($file), '%line' => $line ? (int) $line : '']);
+                $content = str_replace($uri, $editor, $content);
             }
         }
 
         return $content;
     }
 
-    public static function getHttpResponse($content, Exception $e)
-    {
-        if (($e instanceof HttpException) === true) {
-            $statusCode = $e->getStatusCode();
-            $headers = $e->getHeaders();
-        } else {
-            $statusCode = 500;
-            $headers = [];
-        }
-
-        return response($content, $statusCode, $headers);
-    }
-
-    public static function appendDebuggerBar($request, $response)
+    public static function appendDebugbar($request, $response)
     {
         if ($response->isRedirection() === true) {
             return $response;
         }
-        $content = $response->getContent();
+
+        $content = $response->content();
+
+        // $request->isJson() === true or
+        // $request->wantsJson() === true or
+        // if ($request->ajax() === true or
+        //     $request->pjax() === true) {
+
+        //     if (method_exists($response, 'header') === true) {
+        //         $barResponse = static::lzwCompress($barResponse);
+        //         foreach (str_split(base64_encode(@json_encode($barResponse)), 4990) as $k => $v) {
+        //             $response->header('X-Tracy-Error-Ajax-'.$k, $v);
+        //         }
+        //     }
+        //     return $response;
+        // }
+
         $pos = strripos($content, '</body>');
-        $barResponse = static::getBar();
-
-        if ($pos !== false and
-            // $request->isJson() === false and
-            // $request->wantsJson() === false and
-            $request->ajax() === false and
-            $request->pjax() === false) {
-            // $barResponse .= file_get_contents(__DIR__.'/../resources/views/updateDebugger.php');
-            $content = substr($content, 0, $pos).$barResponse.substr($content, $pos);
-
-            $response->setContent($content);
-        } else {
-            // if (method_exists($response, 'header') === true) {
-            //     $barResponse = static::lzwCompress($barResponse);
-            //     foreach (str_split(base64_encode(@json_encode($barResponse)), 4990) as $k => $v) {
-            //         $response->header('X-Tracy-Error-Ajax-'.$k, $v);
-            //     }
-            // }
+        if ($pos === false) {
+            return $response;
         }
 
+        $response->setContent(
+            substr($content, 0, $pos).static::getBarResponse().substr($content, $pos)
+        );
+
         return $response;
+    }
+
+    /**
+     * Use a backtrace to search for the origin of the query.
+     */
+    public static function findSource()
+    {
+        $source = null;
+        $trace = debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : false);
+        foreach ($trace as $row) {
+            if (isset($row['file']) === true && Debugger::getBluescreen()->isCollapsed($row['file']) === false) {
+                if ((isset($row['function']) && strpos($row['function'], 'call_user_func') === 0)
+                    || (isset($row['class']) && is_subclass_of($row['class'], '\\Illuminate\\Database\\Connection'))
+                ) {
+                    continue;
+                }
+
+                return $source = [$row['file'], (int) $row['line']];
+            }
+        }
+
+        return $source;
+    }
+
+    public static function getEditorLink($source)
+    {
+        $link = null;
+        if ($source !== null) {
+            // $link = substr_replace(\Tracy\Helpers::editorLink($source[0], $source[1]), ' class="nette-DbConnectionPanel-source"', 2, 0);
+            $file = $source[0];
+            $line = $source[1];
+            $link = TracyHelpers::editorLink($file, $line);
+            $link = self::updateEditorUri($link);
+        }
+
+        return $link;
     }
 
     public static function lzwCompress($string)

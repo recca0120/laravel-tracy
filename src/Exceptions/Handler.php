@@ -3,59 +3,56 @@
 namespace Recca0120\LaravelTracy\Exceptions;
 
 use Exception;
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Foundation\Exceptions\Handler as BaseHandler;
 use Recca0120\LaravelTracy\Helper;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyDisplayer;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class Handler extends ExceptionHandler
+class Handler extends BaseHandler
 {
-    /**
-     * A list of the exception types that should not be reported.
-     *
-     * @var array
-     */
-    protected $dontReport = [
-        'Symfony\Component\HttpKernel\Exception\HttpException',
-        'Illuminate\Database\Eloquent\ModelNotFoundException',
-    ];
+    protected $exceptionHandler;
 
-    /*
-     * Render an exception into an HTTP response.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \Exception               $e
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct(ExceptionHandler $exceptionHandler)
+    {
+        $this->exceptionHandler = $exceptionHandler;
+    }
+
+    public function report(Exception $e)
+    {
+        return $this->exceptionHandler->report($e);
+    }
 
     public function render($request, Exception $e)
     {
-        if (method_exists($this, 'isUnauthorizedException')) {
-            $response = parent::render($request, $e);
-        } else {
-            if ($this->isHttpException($e)) {
-                $status = $e->getStatusCode();
-                if (view()->exists("errors.{$status}")) {
-                    $response = response()->view("errors.{$status}", [], $status);
-                } else {
-                    $response = $this->convertExceptionToResponse($e);
-                }
-            } else {
-                $response = $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
+        if (method_exists($this, 'toIlluminateResponse') === true) {
+            return parent::render($request, $e);
+        }
+
+        if ($this->isHttpException($e)) {
+            $status = $e->getStatusCode();
+            if (view()->exists("errors.{$status}")) {
+                return response()->view("errors.{$status}", [], $status);
             }
         }
 
-        return $response;
-        // return Helper::appendDebuggerBar($request, $response);
+        return $this->convertExceptionToResponse($e);
     }
 
     protected function convertExceptionToResponse(Exception $e)
     {
-        $debug = config('app.debug');
-        if ($debug === false) {
-            return (new SymfonyDisplayer(config('app.debug')))->createResponse($e);
-        } else {
-            return Helper::getHttpResponse(Helper::getBlueScreen($e), $e);
+        // $debug = config('app.debug');
+        // if ($debug === false) {
+        //     return (new SymfonyDisplayer(config('app.debug')))->createResponse($e);
+        // }
+        $statusCode = 500;
+        $headers = [];
+
+        if (($e instanceof HttpException) === true) {
+            $statusCode = $e->getStatusCode();
+            $headers = $e->getHeaders();
         }
+
+        return response(Helper::getBlueScreen($e), $statusCode, $headers);
     }
 }

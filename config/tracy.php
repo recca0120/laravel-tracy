@@ -8,7 +8,7 @@ return [
     'showLocation' => true,
     'editor' => 'subl://open?url=file://%file&line=%line',
     'panels' => [
-        'routeing' => true,
+        'routing' => true,
         'database' => true,
         'session' => true,
         'request' => true,
