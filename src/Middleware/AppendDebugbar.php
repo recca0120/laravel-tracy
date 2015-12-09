@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Recca0120\LaravelTracy\Helper;
 
-class TracyMiddleware
+class AppendDebugbar
 {
     protected $exceptionHandler;
 

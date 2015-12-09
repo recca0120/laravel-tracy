@@ -22,7 +22,7 @@ class ServiceProvider extends BaseServiceProvider
                 'Recca0120\LaravelTracy\Exceptions\Handler'
             );
 
-            $kernel->pushMiddleware('Recca0120\LaravelTracy\Middleware\TracyMiddleware');
+            $kernel->pushMiddleware('Recca0120\LaravelTracy\Middleware\AppendDebugbar');
 
             $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
             $config = config('tracy');
