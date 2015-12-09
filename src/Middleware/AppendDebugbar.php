@@ -31,7 +31,7 @@ class AppendDebugbar
             $this->exceptionHandler->report($e);
             $response = $this->exceptionHandler->render($request, $e);
         }
-        $response = Helper::appendDebuggerBar($request, $response);
+        $response = Helper::appendDebugbar($request, $response);
 
         return $response;
     }

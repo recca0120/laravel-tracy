@@ -3,8 +3,6 @@
 // hm39168
 namespace Recca0120\LaravelTracy;
 
-use Exception;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tracy\Debugger;
 
 class Helper
@@ -57,20 +55,7 @@ class Helper
         return $content;
     }
 
-    public static function getHttpResponse($content, Exception $e)
-    {
-        $statusCode = 500;
-        $headers = [];
-
-        if (($e instanceof HttpException) === true) {
-            $statusCode = $e->getStatusCode();
-            $headers = $e->getHeaders();
-        }
-
-        return response($content, $statusCode, $headers);
-    }
-
-    public static function appendDebuggerBar($request, $response)
+    public static function appendDebugbar($request, $response)
     {
         if ($response->isRedirection() === true) {
             return $response;

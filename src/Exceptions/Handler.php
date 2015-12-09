@@ -6,31 +6,25 @@ use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Recca0120\LaravelTracy\Helper;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyDisplayer;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
 {
-    /**
-     * A list of the exception types that should not be reported.
-     *
-     * @var array
-     */
-    protected $dontReport = [
-        'Symfony\Component\HttpKernel\Exception\HttpException',
-        'Illuminate\Database\Eloquent\ModelNotFoundException',
-    ];
+    protected $exceptionHandler;
 
-    /*
-     * Render an exception into an HTTP response.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \Exception               $e
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct(ExceptionHandler $exceptionHandler)
+    {
+        $this->exceptionHandler = $exceptionHandler;
+    }
+
+    public function report(Exception $e)
+    {
+        return $this->exceptionHandler->report($e);
+    }
 
     public function render($request, Exception $e)
     {
-        if (method_exists($this, 'isUnauthorizedException')) {
+        if (method_exists($this, 'toIlluminateResponse') === true) {
             return parent::render($request, $e);
         }
 
@@ -39,12 +33,9 @@ class Handler extends ExceptionHandler
             if (view()->exists("errors.{$status}")) {
                 return response()->view("errors.{$status}", [], $status);
             }
-
-            return $this->convertExceptionToResponse($e);
         }
 
-        return $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
-        // return Helper::appendDebuggerBar($request, $response);
+        return $this->convertExceptionToResponse($e);
     }
 
     protected function convertExceptionToResponse(Exception $e)
@@ -54,6 +45,14 @@ class Handler extends ExceptionHandler
         //     return (new SymfonyDisplayer(config('app.debug')))->createResponse($e);
         // }
 
-        return Helper::getHttpResponse(Helper::getBlueScreen($e), $e);
+        $statusCode = 500;
+        $headers = [];
+
+        if (($e instanceof HttpException) === true) {
+            $statusCode = $e->getStatusCode();
+            $headers = $e->getHeaders();
+        }
+
+        return response(Helper::getBlueScreen($e), $statusCode, $headers);
     }
 }
