@@ -6,17 +6,17 @@ class RoutingPanel extends AbstractPanel
 {
     public function getAttributes()
     {
-        $router = $this->app['router'];
+        $router       = $this->app['router'];
         $currentRoute = $router->getCurrentRoute();
-        $uri = 404;
-        $action = [];
+        $uri          = 404;
+        $action       = [];
         if ($currentRoute !== null) {
-            $uri = $currentRoute->uri();
+            $uri    = $currentRoute->uri();
             $action = $currentRoute->getAction();
         }
 
         return [
-            'uri' => $uri,
+            'uri'    => $uri,
             'action' => $action,
         ];
     }

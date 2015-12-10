@@ -15,20 +15,7 @@ class ServiceProvider extends BaseServiceProvider
 
     public function boot(Kernel $kernel)
     {
-        $this->publishes([
-            __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
-        ], 'config');
-
-        if ($this->isEnabled() === false) {
-            return;
-        }
-
-        $kernel->pushMiddleware(AppendDebugbar::class);
-    }
-
-    public function register()
-    {
-        $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
+        $this->handlePublishes();
 
         if ($this->isEnabled() === false) {
             return;
@@ -36,6 +23,11 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->registerExceptionHandler();
         $this->registerDebugger();
+        $kernel->pushMiddleware(AppendDebugbar::class);
+    }
+
+    public function register()
+    {
     }
 
     protected function registerExceptionHandler()
@@ -48,24 +40,33 @@ class ServiceProvider extends BaseServiceProvider
 
     protected function registerDebugger()
     {
-        $config = $this->app['config']['tracy'];
-        Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
-        Debugger::$maxDepth = array_get($config, 'maxDepth');
-        Debugger::$maxLen = array_get($config, 'maxLen');
+        $config                 = $this->app['config']['tracy'];
+        Debugger::$time         = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
+        Debugger::$maxDepth     = array_get($config, 'maxDepth');
+        Debugger::$maxLen       = array_get($config, 'maxLen');
         Debugger::$showLocation = array_get($config, 'showLocation');
-        Debugger::$strictMode = array_get($config, 'strictMode');
-        Debugger::$editor = array_get($config, 'editor');
+        Debugger::$strictMode   = array_get($config, 'strictMode');
+        Debugger::$editor       = array_get($config, 'editor');
 
         $bar = Debugger::getBar();
         foreach ($config['panels'] as $key => $enabled) {
             if ($enabled === true or $enabled === '1') {
-                $class = '\Recca0120\LaravelTracy\Panels\\'.ucfirst($key).'Panel';
+                $class = '\\'.__NAMESPACE__.'\Panels\\'.ucfirst($key).'Panel';
                 $bar->addPanel(new $class($config, $this->app), $class);
             } elseif (is_string($enabled) === true) {
                 $class = $enabled;
                 $bar->addPanel(new $class($config, $this->app), $class);
             }
         }
+    }
+
+    protected function handlePublishes()
+    {
+        $this->publishes([
+            __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
+        ], 'config');
+
+        $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
     }
 
     protected function isEnabled()
@@ -75,6 +76,6 @@ class ServiceProvider extends BaseServiceProvider
 
     public function provides()
     {
-        return ['Illuminate\Contracts\Debug\ExceptionHandler', 'config'];
+        return [ExceptionHandler::class];
     }
 }

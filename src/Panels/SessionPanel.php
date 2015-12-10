@@ -6,14 +6,14 @@ class SessionPanel extends AbstractPanel
 {
     public function getAttributes()
     {
-        $app = app();
+        $app     = app();
         $session = $app['session'];
 
         return [
-            'sessionId' => $session->getId(),
-            'config' => $session->getSessionConfig(),
+            'sessionId'      => $session->getId(),
+            'config'         => $session->getSessionConfig(),
             'laravelSession' => $session->all(),
-            'nativeSession' => $_SESSION,
+            'nativeSession'  => $_SESSION,
         ];
     }
 }

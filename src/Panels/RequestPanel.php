@@ -9,7 +9,7 @@ class RequestPanel extends AbstractPanel
     public function getAttributes()
     {
         $request = $this->app['request'];
-        $server = $request->server();
+        $server  = $request->server();
         foreach (['HTTP_HOST', 'HTTP_COOKIE'] as $v) {
             if (isset($server[$v])) {
                 unset($server[$v]);
@@ -17,14 +17,14 @@ class RequestPanel extends AbstractPanel
         }
 
         $attributes['request'] = [
-            'ip' => $request->ip(),
-            'ips' => $request->ips(),
-            'query' => $request->query(),
-            'request' => $request->all(),
-            'file' => $request->file(),
-            'cookies' => $request->cookie(),
-            'format' => $request->format(),
-            'server' => $server,
+            'ip'        => $request->ip(),
+            'ips'       => $request->ips(),
+            'query'     => $request->query(),
+            'request'   => $request->all(),
+            'file'      => $request->file(),
+            'cookies'   => $request->cookie(),
+            'format'    => $request->format(),
+            'server'    => $server,
             'path_info' => $request->getPathInfo(),
             // 'headers' => $request->header(),
         ];

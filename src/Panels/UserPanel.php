@@ -6,17 +6,17 @@ class UserPanel extends AbstractPanel
 {
     public function getAttributes()
     {
-        $auth = auth();
+        $auth       = auth();
         $isLoggedIn = false;
-        $name = 'Guest';
-        $user = [
+        $name       = 'Guest';
+        $user       = [
 
         ];
 
         if ($auth->check() === true) {
             $isLoggedIn = true;
-            $user = $auth->user();
-            $name = $user->getAuthIdentifier();
+            $user       = $auth->user();
+            $name       = $user->getAuthIdentifier();
             if (is_numeric($name)) {
                 if ($user->username) {
                     $name = $user->username;
@@ -31,8 +31,8 @@ class UserPanel extends AbstractPanel
 
         return [
             'isLoggedIn' => $isLoggedIn,
-            'name' => $name,
-            'user' => $user,
+            'name'       => $name,
+            'user'       => $user,
         ];
     }
 }

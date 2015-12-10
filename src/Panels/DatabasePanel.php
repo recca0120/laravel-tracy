@@ -9,26 +9,40 @@ use Recca0120\LaravelTracy\Helper;
 class DatabasePanel extends AbstractPanel
 {
     public $attributes = [
-        'count' => 0,
+        'count'     => 0,
         'totalTime' => 0,
-        'queries' => [],
+        'queries'   => [],
     ];
 
-    public function subscribe(Dispatcher $event)
+    public function subscribe(Dispatcher $dispatcher)
     {
-        $event->listen('illuminate.query', function ($sql, $bindings, $time, $name) {
-            $db = $this->app['db'];
-            $connection = $db->connection($name);
+        $db = $this->app['db'];
+        if (method_exists(app(), 'bindShared') === false) {
+            $listen = 'Illuminate\Database\Events\QueryExecuted';
+        } else {
+            $listen = 'illuminate.query';
+        }
+        $dispatcher->listen($listen, function ($event) use ($db, $listen) {
+            if ($listen === 'illuminate.query') {
+                list($sql, $bindings, $time, $connectionName) = func_get_args();
+                $connection = $db->connection($connectionName);
+            } else {
+                $sql = $event->sql;
+                $bindings = $event->bindings;
+                $time = $event->time;
+                $connection = $event->connection;
+                $connectionName = $event->connectionName;
+            }
             $pdo = $connection->getPdo();
-            $this->onQuery($sql, $bindings, $time, $name, $db, $connection, $pdo);
+            $this->logQuery($sql, $bindings, $time, $connectionName, $db, $connection, $pdo);
         });
     }
 
-    public function onQuery($sql, $bindings, $time, $name, $db, $connection, $pdo)
+    public function logQuery($sql, $bindings, $time, $connectionName, $db, $connection, $pdo)
     {
         $runnableSql = $this->createRunnableSql($sql, $bindings);
-        $dumpSql = $this->dumpSql($runnableSql);
-        $explain = [];
+        $dumpSql     = $this->dumpSql($runnableSql);
+        $explain     = [];
         if ($connection->getDriverName() === 'mysql') {
             $explain = $this->getExplain($sql, $bindings, $pdo);
         }
@@ -41,7 +55,7 @@ class DatabasePanel extends AbstractPanel
     private function createRunnableSql($prepare, $bindings)
     {
         $prepare = str_replace(['%', '?'], ['%%', '%s'], $prepare);
-        $sql = vsprintf($prepare, $bindings);
+        $sql     = vsprintf($prepare, $bindings);
 
         return $sql;
     }

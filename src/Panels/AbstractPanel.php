@@ -13,7 +13,7 @@ abstract class AbstractPanel implements IBarPanel
     public function __construct($config, $app)
     {
         $this->config = $config;
-        $this->app = $app;
+        $this->app    = $app;
         if (method_exists($this, 'subscribe')) {
             $app->events->subscribe($this);
         }

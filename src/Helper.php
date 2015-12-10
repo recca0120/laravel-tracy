@@ -37,16 +37,16 @@ class Helper
         $compiled = '#(?P<uri>'.strtr(Debugger::$editor, [
             '%file' => '(?P<file>.+)',
             '%line' => '(?P<line>\d+)',
-            '?' => '\?',
-            '&' => '(&|&amp;)',
+            '?'     => '\?',
+            '&'     => '(&|&amp;)',
         ]).')#';
 
         if (preg_match_all($compiled, $content, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
-                $uri = $match['uri'];
-                $file = str_replace(base_path(), $basePath, rawurldecode($match['file']));
-                $line = $match['line'];
-                $editor = strtr(Debugger::$editor, ['%file' => rawurlencode($file), '%line' => $line ? (int) $line : '']);
+                $uri     = $match['uri'];
+                $file    = str_replace(base_path(), $basePath, rawurldecode($match['file']));
+                $line    = $match['line'];
+                $editor  = strtr(Debugger::$editor, ['%file' => rawurlencode($file), '%line' => $line ? (int) $line : '']);
                 $content = str_replace($uri, $editor, $content);
             }
         }
@@ -60,12 +60,10 @@ class Helper
             return $response;
         }
 
-        $content = $response->content();
-
         // $request->isJson() === true or
         // $request->wantsJson() === true or
-        // if ($request->ajax() === true or
-        //     $request->pjax() === true) {
+        if ($request->ajax() === true or
+            $request->pjax() === true) {
 
         //     if (method_exists($response, 'header') === true) {
         //         $barResponse = static::lzwCompress($barResponse);
@@ -73,8 +71,10 @@ class Helper
         //             $response->header('X-Tracy-Error-Ajax-'.$k, $v);
         //         }
         //     }
-        //     return $response;
-        // }
+            return $response;
+        }
+
+        $content = $response->getContent();
 
         $pos = strripos($content, '</body>');
         if ($pos === false) {
@@ -94,7 +94,7 @@ class Helper
     public static function findSource()
     {
         $source = null;
-        $trace = debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : false);
+        $trace  = debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : false);
         foreach ($trace as $row) {
             if (isset($row['file']) === true && Debugger::getBluescreen()->isCollapsed($row['file']) === false) {
                 if ((isset($row['function']) && strpos($row['function'], 'call_user_func') === 0)
@@ -128,25 +128,25 @@ class Helper
     {
         // compression
         $dictionary = array_flip(range("\0", "\xFF"));
-        $word = '';
-        $codes = [];
+        $word       = '';
+        $codes      = [];
         for ($i = 0; $i <= strlen($string); $i++) {
             $x = substr($string, $i, 1);
             if (strlen($x) && isset($dictionary[$word.$x])) {
                 $word .= $x;
             } elseif ($i) {
-                $codes[] = $dictionary[$word];
+                $codes[]              = $dictionary[$word];
                 $dictionary[$word.$x] = count($dictionary);
-                $word = $x;
+                $word                 = $x;
             }
         }
 
         // convert codes to binary string
         $dictionary_count = 256;
-        $bits = 8; // ceil(log($dictionary_count, 2))
-        $return = '';
-        $rest = 0;
-        $rest_length = 0;
+        $bits             = 8; // ceil(log($dictionary_count, 2))
+        $return           = '';
+        $rest             = 0;
+        $rest_length      = 0;
         foreach ($codes as $code) {
             $rest = ($rest << $bits) + $code;
             $rest_length += $bits;
