@@ -2,10 +2,6 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use Cache;
-use Recca0120\LaravelTracy\Helper;
-use Tracy\Debugger;
-use Tracy\Helpers as TracyHelpers;
 use Tracy\IBarPanel;
 
 abstract class AbstractPanel implements IBarPanel
@@ -30,7 +26,7 @@ abstract class AbstractPanel implements IBarPanel
 
     public function toArray()
     {
-        return Cache::driver('array')->rememberForever(get_class($this), function () {
+        return app('cache')->driver('array')->rememberForever(get_class($this), function () {
             // $this->attributes = array_merge($this->attributes, [
             //     'dumpOption' => &$this->config['dumpOption'],
             // ]);
@@ -48,7 +44,7 @@ abstract class AbstractPanel implements IBarPanel
     protected function findView($type)
     {
         ob_start();
-        $view = __DIR__.'/../../resources/views/'.$this->getClassBasename().'/'.$type.'.php';
+        $view = __DIR__.'/../../resources/views/'.substr(static::class, strrpos(static::class, '\\') + 1).'/'.$type.'.php';
         extract($this->toArray());
         require $view;
         $content = ob_get_clean();
@@ -64,46 +60,5 @@ abstract class AbstractPanel implements IBarPanel
     public function getPanel()
     {
         return $this->findView('panel');
-    }
-
-    protected function getClassBasename()
-    {
-        return class_basename(static::class);
-    }
-
-    /**
-     * Use a backtrace to search for the origin of the query.
-     */
-    protected static function findSource()
-    {
-        $source = null;
-        $trace = debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : false);
-        foreach ($trace as $row) {
-            if (isset($row['file']) === true && Debugger::getBluescreen()->isCollapsed($row['file']) === false) {
-                if ((isset($row['function']) && strpos($row['function'], 'call_user_func') === 0)
-                    || (isset($row['class']) && is_subclass_of($row['class'], '\\Illuminate\\Database\\Connection'))
-                ) {
-                    continue;
-                }
-
-                return $source = [$row['file'], (int) $row['line']];
-            }
-        }
-
-        return $source;
-    }
-
-    protected static function getEditorLink($source)
-    {
-        $link = null;
-        if ($source !== null) {
-            // $link = substr_replace(\Tracy\Helpers::editorLink($source[0], $source[1]), ' class="nette-DbConnectionPanel-source"', 2, 0);
-            $file = $source[0];
-            $line = $source[1];
-            $link = TracyHelpers::editorLink($file, $line);
-            $link = Helper::updateEditorUri($link);
-        }
-
-        return $link;
     }
 }

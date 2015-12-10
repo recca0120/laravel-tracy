@@ -1,13 +1,13 @@
 <?php
 
-// hm39168
 namespace Recca0120\LaravelTracy;
 
 use Tracy\Debugger;
+use Tracy\Helpers as TracyHelpers;
 
 class Helper
 {
-    public static function getBar()
+    public static function getBarResponse()
     {
         ob_start();
         Debugger::getBar()->render();
@@ -19,8 +19,7 @@ class Helper
     public static function getBlueScreen($e)
     {
         ob_start();
-        Debugger::getBlueScreen()
-            ->render($e);
+        Debugger::getBlueScreen()->render($e);
         $content = ob_get_clean();
         $content = static::updateEditorUri($content);
 
@@ -60,31 +59,69 @@ class Helper
         if ($response->isRedirection() === true) {
             return $response;
         }
-        $content = $response->getContent();
+
+        $content = $response->content();
+
+        // $request->isJson() === true or
+        // $request->wantsJson() === true or
+        // if ($request->ajax() === true or
+        //     $request->pjax() === true) {
+
+        //     if (method_exists($response, 'header') === true) {
+        //         $barResponse = static::lzwCompress($barResponse);
+        //         foreach (str_split(base64_encode(@json_encode($barResponse)), 4990) as $k => $v) {
+        //             $response->header('X-Tracy-Error-Ajax-'.$k, $v);
+        //         }
+        //     }
+        //     return $response;
+        // }
+
         $pos = strripos($content, '</body>');
-        $barResponse = static::getBar();
-
-        if ($pos !== false and
-            // $request->isJson() === false and
-            // $request->wantsJson() === false and
-            $request->ajax() === false and
-            $request->pjax() === false) {
-            // $barResponse .= file_get_contents(__DIR__.'/../resources/views/updateDebugger.php');
-            $content = substr($content, 0, $pos).$barResponse.substr($content, $pos);
-
-            $response->setContent($content);
-
+        if ($pos === false) {
             return $response;
         }
 
-        // if (method_exists($response, 'header') === true) {
-        //     $barResponse = static::lzwCompress($barResponse);
-        //     foreach (str_split(base64_encode(@json_encode($barResponse)), 4990) as $k => $v) {
-        //         $response->header('X-Tracy-Error-Ajax-'.$k, $v);
-        //     }
-        // }
+        $response->setContent(
+            substr($content, 0, $pos).static::getBarResponse().substr($content, $pos)
+        );
 
         return $response;
+    }
+
+    /**
+     * Use a backtrace to search for the origin of the query.
+     */
+    public static function findSource()
+    {
+        $source = null;
+        $trace = debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : false);
+        foreach ($trace as $row) {
+            if (isset($row['file']) === true && Debugger::getBluescreen()->isCollapsed($row['file']) === false) {
+                if ((isset($row['function']) && strpos($row['function'], 'call_user_func') === 0)
+                    || (isset($row['class']) && is_subclass_of($row['class'], '\\Illuminate\\Database\\Connection'))
+                ) {
+                    continue;
+                }
+
+                return $source = [$row['file'], (int) $row['line']];
+            }
+        }
+
+        return $source;
+    }
+
+    public static function getEditorLink($source)
+    {
+        $link = null;
+        if ($source !== null) {
+            // $link = substr_replace(\Tracy\Helpers::editorLink($source[0], $source[1]), ' class="nette-DbConnectionPanel-source"', 2, 0);
+            $file = $source[0];
+            $line = $source[1];
+            $link = TracyHelpers::editorLink($file, $line);
+            $link = self::updateEditorUri($link);
+        }
+
+        return $link;
     }
 
     public static function lzwCompress($string)

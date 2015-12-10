@@ -4,6 +4,7 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use PDO;
+use Recca0120\LaravelTracy\Helper;
 
 class DatabasePanel extends AbstractPanel
 {
@@ -31,7 +32,7 @@ class DatabasePanel extends AbstractPanel
         if ($connection->getDriverName() === 'mysql') {
             $explain = $this->getExplain($sql, $bindings, $pdo);
         }
-        $editorLink = static::getEditorLink(static::findSource());
+        $editorLink = Helper::getEditorLink(Helper::findSource());
         $this->attributes['count']++;
         $this->attributes['totalTime'] += $time;
         $this->attributes['queries'][] = compact('runnableSql', 'dumpSql', 'explain', 'time', 'name', 'editorLink');

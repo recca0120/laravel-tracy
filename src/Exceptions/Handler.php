@@ -3,12 +3,13 @@
 namespace Recca0120\LaravelTracy\Exceptions;
 
 use Exception;
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Foundation\Exceptions\Handler as BaseHandler;
 use Recca0120\LaravelTracy\Helper;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyDisplayer;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class Handler extends ExceptionHandler
+class Handler extends BaseHandler
 {
     protected $exceptionHandler;
 
@@ -44,7 +45,6 @@ class Handler extends ExceptionHandler
         // if ($debug === false) {
         //     return (new SymfonyDisplayer(config('app.debug')))->createResponse($e);
         // }
-
         $statusCode = 500;
         $headers = [];
 

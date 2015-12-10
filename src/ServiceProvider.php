@@ -11,7 +11,7 @@ use Tracy\Debugger;
 
 class ServiceProvider extends BaseServiceProvider
 {
-    protected $enabled = null;
+    protected $defer = true;
 
     public function boot(Kernel $kernel)
     {
@@ -19,28 +19,23 @@ class ServiceProvider extends BaseServiceProvider
             __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
         ], 'config');
 
-        if ($this->isEnabled()) {
-            $kernel->pushMiddleware(AppendDebugbar::class);
+        if ($this->isEnabled() === false) {
+            return;
         }
+
+        $kernel->pushMiddleware(AppendDebugbar::class);
     }
 
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
 
-        if ($this->isEnabled() === true) {
-            $this->registerExceptionHandler();
-            $this->registerDebugger();
-        }
-    }
-
-    protected function isEnabled()
-    {
-        if ($this->enabled !== null) {
-            return $this->enabled;
+        if ($this->isEnabled() === false) {
+            return;
         }
 
-        return $this->enabled = config('app.debug') == true && $this->app->runningInConsole() === false;
+        $this->registerExceptionHandler();
+        $this->registerDebugger();
     }
 
     protected function registerExceptionHandler()
@@ -53,7 +48,7 @@ class ServiceProvider extends BaseServiceProvider
 
     protected function registerDebugger()
     {
-        $config = config('tracy');
+        $config = $this->app['config']['tracy'];
         Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
         Debugger::$maxDepth = array_get($config, 'maxDepth');
         Debugger::$maxLen = array_get($config, 'maxLen');
@@ -61,22 +56,25 @@ class ServiceProvider extends BaseServiceProvider
         Debugger::$strictMode = array_get($config, 'strictMode');
         Debugger::$editor = array_get($config, 'editor');
 
+        $bar = Debugger::getBar();
         foreach ($config['panels'] as $key => $enabled) {
-            if ($enabled === true) {
+            if ($enabled === true or $enabled === '1') {
                 $class = '\Recca0120\LaravelTracy\Panels\\'.ucfirst($key).'Panel';
+                $bar->addPanel(new $class($config, $this->app), $class);
             } elseif (is_string($enabled) === true) {
                 $class = $enabled;
-            }
-
-            if (class_exists($class) === true) {
-                $panel = new $class($config, $this->app);
-                Debugger::getBar()->addPanel($panel, $class);
+                $bar->addPanel(new $class($config, $this->app), $class);
             }
         }
     }
 
+    protected function isEnabled()
+    {
+        return $this->app['config']['app.debug'] == true and $this->app->runningInConsole() === false;
+    }
+
     public function provides()
     {
-        return [];
+        return ['Illuminate\Contracts\Debug\ExceptionHandler', 'config'];
     }
 }

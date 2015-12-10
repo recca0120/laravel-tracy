@@ -15,14 +15,6 @@ class AppendDebugbar
         $this->exceptionHandler = $exceptionHandler;
     }
 
-    /**
-     * Handle an incoming request.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure                 $next
-     *
-     * @return mixed
-     */
     public function handle($request, Closure $next)
     {
         try {
@@ -31,8 +23,7 @@ class AppendDebugbar
             $this->exceptionHandler->report($e);
             $response = $this->exceptionHandler->render($request, $e);
         }
-        $response = Helper::appendDebugbar($request, $response);
 
-        return $response;
+        return Helper::appendDebugbar($request, $response);
     }
 }
