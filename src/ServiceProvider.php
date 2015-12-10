@@ -75,6 +75,6 @@ class ServiceProvider extends BaseServiceProvider
 
     public function provides()
     {
-        return ['Illuminate\Contracts\Debug\ExceptionHandler', 'config'];
+        return [ExceptionHandler::class];
     }
 }

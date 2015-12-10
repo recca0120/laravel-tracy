@@ -60,12 +60,10 @@ class Helper
             return $response;
         }
 
-        $content = $response->content();
-
         // $request->isJson() === true or
         // $request->wantsJson() === true or
-        // if ($request->ajax() === true or
-        //     $request->pjax() === true) {
+        if ($request->ajax() === true or
+            $request->pjax() === true) {
 
         //     if (method_exists($response, 'header') === true) {
         //         $barResponse = static::lzwCompress($barResponse);
@@ -73,8 +71,10 @@ class Helper
         //             $response->header('X-Tracy-Error-Ajax-'.$k, $v);
         //         }
         //     }
-        //     return $response;
-        // }
+            return $response;
+        }
+
+        $content = $response->getContent();
 
         $pos = strripos($content, '</body>');
         if ($pos === false) {

@@ -14,17 +14,31 @@ class DatabasePanel extends AbstractPanel
         'queries' => [],
     ];
 
-    public function subscribe(Dispatcher $event)
+    public function subscribe(Dispatcher $dispatcher)
     {
-        $event->listen('illuminate.query', function ($sql, $bindings, $time, $name) {
-            $db = $this->app['db'];
-            $connection = $db->connection($name);
+        $db = $this->app['db'];
+        if (method_exists(app(), 'bindShared') === false) {
+            $listen = 'Illuminate\Database\Events\QueryExecuted';
+        } else {
+            $listen = 'illuminate.query';
+        }
+        $dispatcher->listen($listen, function ($event) use ($db, $listen) {
+            if ($listen === 'illuminate.query') {
+                list($sql, $bindings, $time, $connectionName) = func_get_args();
+                $connection = $db->connection($connectionName);
+            } else {
+                $sql = $event->sql;
+                $bindings = $event->bindings;
+                $time = $event->time;
+                $connection = $event->connection;
+                $connectionName = $event->connectionName;
+            }
             $pdo = $connection->getPdo();
-            $this->onQuery($sql, $bindings, $time, $name, $db, $connection, $pdo);
+            $this->logQuery($sql, $bindings, $time, $connectionName, $db, $connection, $pdo);
         });
     }
 
-    public function onQuery($sql, $bindings, $time, $name, $db, $connection, $pdo)
+    public function logQuery($sql, $bindings, $time, $connectionName, $db, $connection, $pdo)
     {
         $runnableSql = $this->createRunnableSql($sql, $bindings);
         $dumpSql = $this->dumpSql($runnableSql);
