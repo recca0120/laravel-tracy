@@ -54,7 +54,7 @@ class ServiceProvider extends BaseServiceProvider
         $bar = Debugger::getBar();
         foreach ($config['panels'] as $key => $enabled) {
             if ($enabled === true or $enabled === '1') {
-                $class = '\Recca0120\LaravelTracy\Panels\\'.ucfirst($key).'Panel';
+                $class = '\\'.__NAMESPACE__.'\Panels\\'.ucfirst($key).'Panel';
                 $bar->addPanel(new $class($config, $this->app), $class);
             } elseif (is_string($enabled) === true) {
                 $class = $enabled;
