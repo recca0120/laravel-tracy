@@ -15,27 +15,22 @@ class ServiceProvider extends BaseServiceProvider
 
     public function boot(Kernel $kernel)
     {
-        $this->publishes([
-            __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
-        ], 'config');
-
         if ($this->isEnabled() === false) {
             return;
         }
 
+        $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
+        $this->publishes([
+            __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
+        ], 'config');
+
+        $this->registerExceptionHandler();
+        $this->registerDebugger();
         $kernel->pushMiddleware(AppendDebugbar::class);
     }
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
-
-        if ($this->isEnabled() === false) {
-            return;
-        }
-
-        $this->registerExceptionHandler();
-        $this->registerDebugger();
     }
 
     protected function registerExceptionHandler()
