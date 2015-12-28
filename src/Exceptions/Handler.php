@@ -20,7 +20,7 @@ class Handler extends BaseHandler
 
     public function report(Exception $e)
     {
-        return $this->exceptionHandler->report($e);
+        $this->exceptionHandler->report($e);
     }
 
     public function render($request, Exception $e)
