@@ -15,6 +15,9 @@
         "tracy/tracy": "~2.3.5"
     },
     "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
         "psr-4": {
             "Recca0120\\LaravelTracy\\": "src/"
         }
