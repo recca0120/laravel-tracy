@@ -15,14 +15,11 @@ class ServiceProvider extends BaseServiceProvider
 
     public function boot(Kernel $kernel)
     {
+        $this->handlePublishes();
+
         if ($this->isEnabled() === false) {
             return;
         }
-
-        $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
-        $this->publishes([
-            __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
-        ], 'config');
 
         $this->registerExceptionHandler();
         $this->registerDebugger();
@@ -61,6 +58,15 @@ class ServiceProvider extends BaseServiceProvider
                 $bar->addPanel(new $class($config, $this->app), $class);
             }
         }
+    }
+
+    protected function handlePublishes()
+    {
+        $this->publishes([
+            __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
+        ], 'config');
+
+        $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
     }
 
     protected function isEnabled()
