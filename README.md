@@ -7,7 +7,7 @@ Add Presenter to your composer.json file:
 
 ```js
 "require": {
-    "recca0120/config": "~1.1.1"
+    "recca0120/laravel-tracy": "~1.0.1"
 }
 ```
 Now, run a composer update on the command line from the root of your project:
