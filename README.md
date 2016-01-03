@@ -28,10 +28,16 @@ Include the service provider within `app/config/app.php`. The service povider is
 
 ### Editor Link
 
+windows
 ```
 copy <vendor path>/recca0120/laravel-tracy/tools/subl-handler/subl-handler.vbs to any directory where you want to place
 
 double click subl-handler.vbs and select editor (support eclipse, sublime, notepad++, else...)
+```
+
+OSX
+```
+https://github.com/dhoulb/subl
 ```
 
 ## ScreenShot
