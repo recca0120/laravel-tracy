@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'base_path' => dirname(dirname(__FILE__)),
+    'base_path' => null,
     'strictMode' => true,
     'maxDepth' => 4,
     'maxLen' => 1000,
