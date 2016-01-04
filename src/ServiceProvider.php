@@ -40,13 +40,13 @@ class ServiceProvider extends BaseServiceProvider
 
     protected function registerDebugger()
     {
-        $config                 = $this->app['config']['tracy'];
-        Debugger::$time         = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
-        Debugger::$maxDepth     = array_get($config, 'maxDepth');
-        Debugger::$maxLen       = array_get($config, 'maxLen');
+        $config = $this->app['config']['tracy'];
+        Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
+        Debugger::$maxDepth = array_get($config, 'maxDepth');
+        Debugger::$maxLen = array_get($config, 'maxLen');
         Debugger::$showLocation = array_get($config, 'showLocation');
-        Debugger::$strictMode   = array_get($config, 'strictMode');
-        Debugger::$editor       = array_get($config, 'editor');
+        Debugger::$strictMode = array_get($config, 'strictMode');
+        Debugger::$editor = array_get($config, 'editor');
 
         $bar = Debugger::getBar();
         foreach ($config['panels'] as $key => $enabled) {
@@ -71,7 +71,7 @@ class ServiceProvider extends BaseServiceProvider
 
     protected function isEnabled()
     {
-        return $this->app['config']['app.debug'] == true and $this->app->runningInConsole() === false;
+        return $this->app['config']['app.debug'] == true && $this->app->runningInConsole() === false;
     }
 
     public function provides()

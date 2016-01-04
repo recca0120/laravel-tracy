@@ -8,6 +8,8 @@ use Recca0120\LaravelTracy\Helper;
 
 class DatabasePanel extends AbstractPanel
 {
+    public static $sqlVersion = [];
+
     public $attributes = [
         'count'     => 0,
         'totalTime' => 0,
@@ -22,40 +24,49 @@ class DatabasePanel extends AbstractPanel
         } else {
             $listen = 'illuminate.query';
         }
+
         $dispatcher->listen($listen, function ($event) use ($db, $listen) {
             if ($listen === 'illuminate.query') {
-                list($sql, $bindings, $time, $connectionName) = func_get_args();
-                $connection = $db->connection($connectionName);
+                list($sql, $bindings, $time, $name) = func_get_args();
+                $connection = $db->connection($name);
             } else {
                 $sql = $event->sql;
                 $bindings = $event->bindings;
                 $time = $event->time;
                 $connection = $event->connection;
-                $connectionName = $event->connectionName;
+                $name = $event->connectionName;
             }
-            $pdo = $connection->getPdo();
-            $this->logQuery($sql, $bindings, $time, $connectionName, $db, $connection, $pdo);
+            $this->logQuery($sql, $bindings, $time, $name, $db, $connection);
         });
     }
 
-    public function logQuery($sql, $bindings, $time, $connectionName, $db, $connection, $pdo)
+    public function logQuery($sql, $bindings, $time, $name, $db, $connection)
     {
+        $driver = $connection->getDriverName();
+        $pdo = $connection->getPdo();
+        if (empty(self::$sqlVersion[$name]) === true) {
+            self::$sqlVersion[$name] = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+        }
+        $sqlVersion = self::$sqlVersion[$name];
+
         $runnableSql = $this->createRunnableSql($sql, $bindings);
-        $dumpSql     = $this->dumpSql($runnableSql);
-        $explain     = [];
-        if ($connection->getDriverName() === 'mysql') {
+        $dumpSql = $this->dumpSql($runnableSql);
+
+        $hints = static::performQueryAnalysis($runnableSql, $sqlVersion, $driver);
+        $explain = [];
+        if ($driver === 'mysql') {
             $explain = $this->getExplain($sql, $bindings, $pdo);
         }
         $editorLink = Helper::getEditorLink(Helper::findSource());
         $this->attributes['count']++;
         $this->attributes['totalTime'] += $time;
-        $this->attributes['queries'][] = compact('runnableSql', 'dumpSql', 'explain', 'time', 'name', 'editorLink');
+        $this->attributes['queries'][] = compact('runnableSql', 'dumpSql', 'explain', 'hints', 'time', 'name', 'editorLink');
     }
 
     private function createRunnableSql($prepare, $bindings)
     {
         $prepare = str_replace(['%', '?'], ['%%', '%s'], $prepare);
-        $sql     = vsprintf($prepare, $bindings);
+        $sql = vsprintf($prepare, $bindings);
 
         return $sql;
     }
@@ -97,13 +108,13 @@ class DatabasePanel extends AbstractPanel
         // syntax highlight
         $sql = htmlSpecialChars($sql, ENT_IGNORE, 'UTF-8');
         $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is", function ($matches) {
-            if (! empty($matches[1])) { // comment
+            if (!empty($matches[1])) { // comment
                 return '<em style="color:gray">'.$matches[1].'</em>';
-            } elseif (! empty($matches[2])) { // error
+            } elseif (!empty($matches[2])) { // error
                 return '<strong style="color:red">'.$matches[2].'</strong>';
-            } elseif (! empty($matches[3])) { // most important keywords
+            } elseif (!empty($matches[3])) { // most important keywords
                 return '<strong style="color:blue; text-transform: uppercase;">'.$matches[3].'</strong>';
-            } elseif (! empty($matches[4])) { // other keywords
+            } elseif (!empty($matches[4])) { // other keywords
                 return '<strong style="color:green">'.$matches[4].'</strong>';
             }
         }, $sql);
@@ -111,7 +122,7 @@ class DatabasePanel extends AbstractPanel
         // parameters
         $sql = preg_replace_callback('#\?#', function () use ($params, $connection) {
             static $i = 0;
-            if (! isset($params[$i])) {
+            if (!isset($params[$i])) {
                 return '?';
             }
             $param = $params[$i++];
@@ -135,5 +146,39 @@ class DatabasePanel extends AbstractPanel
         }, $sql);
 
         return '<pre class="dump">'.trim($sql)."</pre>\n";
+    }
+
+    public static function performQueryAnalysis($sql, $sqlVersion, $driver)
+    {
+        $hints = [];
+        if (preg_match('/^\\s*SELECT\\s*`?[a-zA-Z0-9]*`?\\.?\\*/i', $sql)) {
+            $hints[] = 'Use <code>SELECT *</code> only if you need all columns from table';
+        }
+        if (preg_match('/ORDER BY RAND()/i', $sql)) {
+            $hints[] = '<code>ORDER BY RAND()</code> is slow, try to avoid if you can.
+                You can <a href="http://stackoverflow.com/questions/2663710/how-does-mysqls-order-by-rand-work">read this</a>
+                or <a href="http://stackoverflow.com/questions/1244555/how-can-i-optimize-mysqls-order-by-rand-function">this</a>';
+        }
+        if (strpos($sql, '!=') !== false) {
+            $hints[] = 'The <code>!=</code> operator is not standard. Use the <code>&lt;&gt;</code> operator to test for inequality instead.';
+        }
+        if (stripos($sql, 'WHERE') === false) {
+            $hints[] = 'The <code>SELECT</code> statement has no <code>WHERE</code> clause and could examine many more rows than intended';
+        }
+        if (preg_match('/LIMIT\\s/i', $sql) && stripos($sql, 'ORDER BY') === false) {
+            $hints[] = '<code>LIMIT</code> without <code>ORDER BY</code> causes non-deterministic results, depending on the query execution plan';
+        }
+        if (preg_match('/LIKE\\s[\'"](%.*?)[\'"]/i', $sql, $matches)) {
+            $hints[] = 'An argument has a leading wildcard character: <code>'.$matches[1].'</code>.
+                                The predicate with this argument is not sargable and cannot use an index if one exists.';
+        }
+        if ($sqlVersion < 5.5) {
+            if (preg_match('/\\sIN\\s*\\(\\s*SELECT/i', $sql)) {
+                $hints[] = '<code>IN()</code> and <code>NOT IN()</code> subqueries are poorly optimized in that MySQL version : '.$sqlVersion.
+                                    '. MySQL executes the subquery as a dependent subquery for each row in the outer query';
+            }
+        }
+
+        return $hints;
     }
 }
