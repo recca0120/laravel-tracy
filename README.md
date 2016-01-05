@@ -12,7 +12,9 @@ Add Presenter to your composer.json file:
 ```
 Now, run a composer update on the command line from the root of your project:
 
-    composer update
+```
+composer update
+```
 
 ### Registering the Package
 
@@ -43,3 +45,39 @@ https://github.com/dhoulb/subl
 ## ScreenShot
 ![Panel](http://2.bp.blogspot.com/-gabdqGXuKkk/VnEl-Y6R5UI/AAAAAAAANsc/g3FoEX42ElE/s1600/Image%2B3.png)
 ![Debug](http://3.bp.blogspot.com/-Y-omvzldG-Q/VnEl_Vv8LhI/AAAAAAAANsk/QBxZfz-7sQk/s1600/Image%2B4.png)
+
+# NEW FEATURE
+![Terminal](http://3.bp.blogspot.com/-FTEKX8wtKoo/VotlUs5P_pI/AAAAAAAANvM/85YsBhaaRN4/s1600/Image%2B8.png)
+
+Add Presenter to your composer.json file:
+
+```js
+"require": {
+    "recca0120/terminal": "~2.0.5"
+}
+```
+
+Now, run a composer update on the command line from the root of your project:
+
+```
+composer update
+```
+
+Include the service provider within app/config/app.php. The service povider is needed for the generator artisan command.
+
+```php
+'providers' => [
+    ...
+    Recca0120\Terminal\ServiceProvider::class,
+    ...
+];
+```
+
+Publish assets files
+
+```php
+artisan vendor:publish --provider="Recca0120\Terminal\ServiceProvider"
+```
+
+## INFO
+[about terminal](https://github.com/recca0120/terminal)

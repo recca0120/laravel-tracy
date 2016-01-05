@@ -48,6 +48,10 @@ class ServiceProvider extends BaseServiceProvider
         Debugger::$strictMode = array_get($config, 'strictMode');
         Debugger::$editor = array_get($config, 'editor');
 
+        if (class_exists('\Recca0120\Terminal\Http\Controllers\TerminalController') === false) {
+            $config['panels']['terminal'] = false;
+        }
+
         $bar = Debugger::getBar();
         foreach ($config['panels'] as $key => $enabled) {
             if ($enabled === true or $enabled === '1') {

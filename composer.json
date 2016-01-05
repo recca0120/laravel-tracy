@@ -14,6 +14,9 @@
         "laravel/framework": "~5.0",
         "tracy/tracy": "~2.3.5"
     },
+    "suggest": {
+        "recca0120/terminal": "Required to use the Terminal Panel (~2.0.5)"
+    },
     "autoload": {
         "psr-4": {
             "Recca0120\\LaravelTracy\\": "src/"
