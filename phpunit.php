@@ -10,7 +10,9 @@
 | loading of any our classes "manually". Feels great to relax.
 |
 */
+
 require __DIR__.'/vendor/autoload.php';
+
 /*
 |--------------------------------------------------------------------------
 | Set The Default Timezone
@@ -21,5 +23,6 @@ require __DIR__.'/vendor/autoload.php';
 | the PHP date and date-time functions throughout the application.
 |
 */
+
 date_default_timezone_set('UTC');
 Carbon\Carbon::setTestNow(Carbon\Carbon::now());

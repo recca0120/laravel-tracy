@@ -4,19 +4,21 @@ namespace Recca0120\LaravelTracy\Panels;
 
 class UserPanel extends AbstractPanel
 {
-    public function getAttributes()
+    public function boot()
     {
-        $auth       = auth();
-        $isLoggedIn = false;
-        $name       = 'Guest';
-        $user       = [
-
+        $this->attributes = [
+            'logged' => false,
+            'name'   => 'Guest',
+            'user'   => [],
         ];
 
-        if ($auth->check() === true) {
-            $isLoggedIn = true;
-            $user       = $auth->user();
-            $name       = $user->getAuthIdentifier();
+        if ($this->isLaravel() === true) {
+            $auth = $this->app['auth'];
+            if ($auth->check() === false) {
+                return;
+            }
+            $user = $auth->user();
+            $name = $user->getAuthIdentifier();
             if (is_numeric($name)) {
                 if ($user->username) {
                     $name = $user->username;
@@ -26,13 +28,11 @@ class UserPanel extends AbstractPanel
                     $name = $user->name;
                 }
             }
-            $user = $user->toArray();
+            $this->attributes = [
+                'logged' => true,
+                'name'   => $name,
+                'user'   => $user->toArray(),
+            ];
         }
-
-        return [
-            'isLoggedIn' => $isLoggedIn,
-            'name'       => $name,
-            'user'       => $user,
-        ];
     }
 }

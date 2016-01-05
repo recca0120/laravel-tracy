@@ -48,18 +48,16 @@ class ServiceProvider extends BaseServiceProvider
         Debugger::$strictMode = array_get($config, 'strictMode');
         Debugger::$editor = array_get($config, 'editor');
 
-        if (class_exists('\Recca0120\Terminal\Http\Controllers\TerminalController') === false) {
-            $config['panels']['terminal'] = false;
-        }
-
+        $panels = [];
         $bar = Debugger::getBar();
         foreach ($config['panels'] as $key => $enabled) {
-            if ($enabled === true or $enabled === '1') {
+            if ($enabled === true) {
                 $class = '\\'.__NAMESPACE__.'\Panels\\'.ucfirst($key).'Panel';
-                $bar->addPanel(new $class($config, $this->app), $class);
-            } elseif (is_string($enabled) === true) {
-                $class = $enabled;
-                $bar->addPanel(new $class($config, $this->app), $class);
+                if (class_exists($class) === false) {
+                    $class = $key;
+                }
+                $panels[$key] = new $class($this->app, $config);
+                $bar->addPanel($panels[$key], $class);
             }
         }
     }

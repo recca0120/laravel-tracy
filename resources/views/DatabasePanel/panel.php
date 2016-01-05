@@ -20,24 +20,25 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($queries as $key => $query): ?>
+            <?php foreach ($logs as $key => $log): ?>
                 <?php
-                    $name = array_get($query, 'name');
-                    $time = array_get($query, 'time');
-                    $dumpSql = array_get($query, 'dumpSql');
-                    $editorLink = array_get($query, 'editorLink');
-                    $hints = array_get($query, 'hints', []);
-                    $explain = array_get($query, 'explain', []);
+                    $name = array_get($log, 'name');
+                    $time = array_get($log, 'time');
+                    $formattedSql = array_get($log, 'formattedSql');
+                    $editorLink = array_get($log, 'editorLink');
+                    $hints = array_get($log, 'hints', []);
+                    $explains = array_get($log, 'explains', []);
+                    $explainId = 'tracy-connection-'.$key;
                 ?>
                 <tr>
                     <td>
                         <?php echo $name ?> / <?php echo $time ?> ms
-                        <?php if (count($explain) > 0): ?>
-                            <br /><a class="tracy-toggle tracy-collapsed" data-ref="#tracy-connection-<?php $key ?>" data-tracy-ref="#tracy-connection-<?php $key ?>">explain</a>
+                        <?php if (count($explains) > 0): ?>
+                            <br /><a class="tracy-toggle tracy-collapsed" data-ref="#<?php echo $explainId ?>" data-tracy-ref="#<?php echo $explainId ?>">explain</a>
                         <?php endif ?>
                     </td>
                     <td class="laravel-DatabasePanel-sql">
-                        <?php echo $dumpSql ?>
+                        <?php echo $formattedSql ?>
 
                         <?php if (count($hints) > 0): ?>
                             <br />
@@ -57,18 +58,18 @@
                                 </tbody>
                             </table>
                         <?php endif ?>
-                        <?php if (count($explain) > 0): ?>
+                        <?php if (count($explains) > 0): ?>
                             <br />
-                            <table class="tracy-collapsed laravel-DatabasePanel-explain" id="tracy-connection-<?php $key ?>">
+                            <table class="tracy-collapsed laravel-DatabasePanel-explain" id="<?php echo $explainId ?>">
                                 <thead>
                                     <tr>
-                                        <?php foreach ($explain[0] as $col => $foo): ?>
+                                        <?php foreach ($explains[0] as $col => $foo): ?>
                                             <th><?php echo $col ?></th>
                                         <?php endforeach ?>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($explain as $row): ?>
+                                    <?php foreach ($explains as $row): ?>
                                         <tr>
                                             <?php foreach ($row as $col): ?>
                                                 <td><?php echo $col ?></td>
@@ -77,6 +78,7 @@
                                     <?php endforeach ?>
                                 </tbody>
                             </table>
+                            <br />
                         <?php endif ?>
                         <?php echo (empty($editorLink)) ?: $editorLink ?>
                     </td>

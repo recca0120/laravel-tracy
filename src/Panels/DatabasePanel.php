@@ -2,31 +2,25 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use PDO;
 use Recca0120\LaravelTracy\Helper;
 
 class DatabasePanel extends AbstractPanel
 {
-    public static $sqlVersion = [];
+    protected $db;
 
-    public $attributes = [
+    protected $attributes = [
         'count'     => 0,
         'totalTime' => 0,
-        'queries'   => [],
+        'logs'      => [],
     ];
 
-    public function subscribe(Dispatcher $dispatcher)
+    public function subscribe()
     {
-        $db = $this->app['db'];
-        if (method_exists(app(), 'bindShared') === false) {
-            $listen = 'Illuminate\Database\Events\QueryExecuted';
-        } else {
-            $listen = 'illuminate.query';
-        }
-
-        $dispatcher->listen($listen, function ($event) use ($db, $listen) {
-            if ($listen === 'illuminate.query') {
+        $this->db = $this->app['db'];
+        $eventName = $this->getEventName();
+        $this->app['events']->listen($eventName, function ($event) use ($eventName) {
+            if ($eventName === 'illuminate.query') {
                 list($sql, $bindings, $time, $name) = func_get_args();
                 $connection = $db->connection($name);
             } else {
@@ -36,34 +30,41 @@ class DatabasePanel extends AbstractPanel
                 $connection = $event->connection;
                 $name = $event->connectionName;
             }
-            $this->logQuery($sql, $bindings, $time, $name, $db, $connection);
+            call_user_func_array([$this, 'logQuery'], compact('sql', 'bindings', 'time', 'name', 'connection'));
         });
     }
 
-    public function logQuery($sql, $bindings, $time, $name, $db, $connection)
+    protected function getEventName()
+    {
+        if (method_exists($this->app, 'bindShared') === false) {
+            return 'Illuminate\Database\Events\QueryExecuted';
+        }
+
+        return 'illuminate.query';
+    }
+
+    public function logQuery($prepare, $bindings, $time, $name, $connection)
     {
         $driver = $connection->getDriverName();
         $pdo = $connection->getPdo();
-        if (empty(self::$sqlVersion[$name]) === true) {
-            self::$sqlVersion[$name] = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
-        }
-        $sqlVersion = self::$sqlVersion[$name];
+        $version = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
 
-        $runnableSql = $this->createRunnableSql($sql, $bindings);
-        $dumpSql = $this->dumpSql($runnableSql);
-
-        $hints = static::performQueryAnalysis($runnableSql, $sqlVersion, $driver);
-        $explain = [];
-        if ($driver === 'mysql') {
-            $explain = $this->getExplain($sql, $bindings, $pdo);
-        }
+        $sql = static::prepareBinding($prepare, $bindings);
+        $formattedSql = static::formatSql($sql);
+        $hints = static::performQueryAnalysis($sql, $version, $driver);
         $editorLink = Helper::getEditorLink(Helper::findSource());
+
+        $explains = [];
+        if ($driver === 'mysql') {
+            $explains = $this->explains($prepare, $bindings, $pdo);
+        }
+
         $this->attributes['count']++;
         $this->attributes['totalTime'] += $time;
-        $this->attributes['queries'][] = compact('runnableSql', 'dumpSql', 'explain', 'hints', 'time', 'name', 'editorLink');
+        $this->attributes['logs'][] = compact('sql', 'formattedSql', 'hints', 'explains', 'editorLink', 'prepare', 'bindings', 'time', 'name');
     }
 
-    private function createRunnableSql($prepare, $bindings)
+    private static function prepareBinding($prepare, $bindings)
     {
         $prepare = str_replace(['%', '?'], ['%%', '%s'], $prepare);
         $sql = vsprintf($prepare, $bindings);
@@ -71,13 +72,13 @@ class DatabasePanel extends AbstractPanel
         return $sql;
     }
 
-    private function getExplain($sql, $bindings, $pdo)
+    private static function explains($prepare, $bindings, $pdo)
     {
-        if (stripos($sql, 'select') === 0) {
-            $statement = $pdo->prepare('EXPLAIN '.$sql);
+        if (stripos($prepare, 'select') === 0) {
+            $statement = $pdo->prepare('EXPLAIN '.$prepare);
             $statement->execute($bindings);
 
-            return $explain = $statement->fetchAll(PDO::FETCH_CLASS);
+            return $statement->fetchAll(PDO::FETCH_CLASS);
         }
 
         return [];
@@ -90,7 +91,7 @@ class DatabasePanel extends AbstractPanel
      *
      * @return string
      */
-    private static function dumpSql($sql, array $params = null, $connection = null)
+    private static function formatSql($sql, array $params = null, $connection = null)
     {
         static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
         static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|[RI]?LIKE|REGEXP|TRUE|FALSE';
@@ -148,7 +149,7 @@ class DatabasePanel extends AbstractPanel
         return '<pre class="dump">'.trim($sql)."</pre>\n";
     }
 
-    public static function performQueryAnalysis($sql, $sqlVersion, $driver)
+    public static function performQueryAnalysis($sql, $version = null, $driver = null)
     {
         $hints = [];
         if (preg_match('/^\\s*SELECT\\s*`?[a-zA-Z0-9]*`?\\.?\\*/i', $sql)) {
@@ -172,9 +173,9 @@ class DatabasePanel extends AbstractPanel
             $hints[] = 'An argument has a leading wildcard character: <code>'.$matches[1].'</code>.
                                 The predicate with this argument is not sargable and cannot use an index if one exists.';
         }
-        if ($sqlVersion < 5.5) {
+        if ($version < 5.5 && $driver === 'mysql') {
             if (preg_match('/\\sIN\\s*\\(\\s*SELECT/i', $sql)) {
-                $hints[] = '<code>IN()</code> and <code>NOT IN()</code> subqueries are poorly optimized in that MySQL version : '.$sqlVersion.
+                $hints[] = '<code>IN()</code> and <code>NOT IN()</code> subqueries are poorly optimized in that MySQL version : '.$version.
                                     '. MySQL executes the subquery as a dependent subquery for each row in the outer query';
             }
         }

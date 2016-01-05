@@ -4,11 +4,10 @@ namespace Recca0120\LaravelTracy\Panels;
 
 class TerminalPanel extends AbstractPanel
 {
-    // public function
-    public function getAttributes()
+    public function boot()
     {
-        return [
-            'src' => action('\Recca0120\Terminal\Http\Controllers\TerminalController@index'),
-        ];
+        if ($this->isLaravel() === true) {
+            $this->attributes['src'] = action('\Recca0120\Terminal\Http\Controllers\TerminalController@index');
+        }
     }
 }
