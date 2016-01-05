@@ -1,6 +1,6 @@
 <div class="laravel-UserPanel">
-    <h1><?php echo $isLoggedIn === true ? 'Logged in' : 'Unlogged' ?></h1>
-    <?php if ($isLoggedIn === false): ?>
+    <h1><?php echo $logged === true ? 'Logged in' : 'Unlogged' ?></h1>
+    <?php if ($logged === false): ?>
         <p>no identity</p>
     <?php else: ?>
         <table>

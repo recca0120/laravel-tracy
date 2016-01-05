@@ -12,10 +12,10 @@ return [
         'database' => true,
         'session'  => true,
         'request'  => true,
-        'event'    => false,
+        'event'    => true,
         'user'     => true,
         'terminal' => true,
         // custom panel
-        // 'Recca0120\LaravelTracy\Panels\CustomPanel',
+        // 'Recca0120\LaravelTracy\Panels\CustomPanel' => true,
     ],
 ];

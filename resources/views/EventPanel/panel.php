@@ -8,15 +8,15 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($events as $event): ?>
+            <?php foreach ($logs as $log): ?>
                 <tr>
                     <th>
-                        <span class="tracy-dump-object"><?php echo array_get($event, 'firing') ?></span><br />
-                        <?php echo array_get($event, 'editorLink') ?><br />
-                        <span class="tracy-dump-string"><?php echo round(array_get($event, 'execTime', 0) * 100, 2) ?> ms</span>
+                        <span class="tracy-dump-object"><?php echo array_get($log, 'firing') ?></span><br />
+                        <?php echo array_get($log, 'editorLink') ?><br />
+                        <span class="tracy-dump-string"><?php echo round(array_get($log, 'execTime', 0) * 100, 2) ?> ms</span>
                     </th>
                     <td>
-                        <?php echo Tracy\Dumper::toHtml(array_get($event, 'params'), array_merge((array) $dumpOption, [
+                        <?php echo Tracy\Dumper::toHtml(array_get($log, 'params'), array_merge((array) $dumpOption, [
                             Tracy\Dumper::TRUNCATE => 50,
                             Tracy\Dumper::COLLAPSE => true,
                         ])) ?>

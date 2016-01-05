@@ -1,5 +1,12 @@
-# Laravel Tracy Debugbar
+## Laravel Tracy Debugbar
 Laravel with Nette Tracy Debug Tool
+
+[![Latest Stable Version](https://poser.pugx.org/recca0120/laravel-tracy/v/stable)](https://packagist.org/packages/recca0120/laravel-tracy)
+[![Total Downloads](https://poser.pugx.org/recca0120/laravel-tracy/downloads)](https://packagist.org/packages/recca0120/laravel-tracy)
+[![Latest Unstable Version](https://poser.pugx.org/recca0120/laravel-tracy/v/unstable)](https://packagist.org/packages/recca0120/laravel-tracy)
+[![License](https://poser.pugx.org/recca0120/laravel-tracy/license)](https://packagist.org/packages/recca0120/laravel-tracy)
+[![Monthly Downloads](https://poser.pugx.org/recca0120/laravel-tracy/d/monthly)](https://packagist.org/packages/recca0120/laravel-tracy)
+[![Daily Downloads](https://poser.pugx.org/recca0120/laravel-tracy/d/daily)](https://packagist.org/packages/recca0120/laravel-tracy)
 
 ## Installation
 
@@ -18,7 +25,7 @@ composer update
 
 ### Registering the Package
 
-Include the service provider within `app/config/app.php`. The service povider is needed for the generator artisan command.
+Include the service provider within `app/laravel-tracy/app.php`. The service povider is needed for the generator artisan command.
 
 ```php
 'providers' => [
