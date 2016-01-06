@@ -22,7 +22,7 @@ class DatabasePanel extends AbstractPanel
         $this->app['events']->listen($eventName, function ($event) use ($eventName) {
             if ($eventName === 'illuminate.query') {
                 list($sql, $bindings, $time, $name) = func_get_args();
-                $connection = $db->connection($name);
+                $connection = $this->db->connection($name);
             } else {
                 $sql = $event->sql;
                 $bindings = $event->bindings;
