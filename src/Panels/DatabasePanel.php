@@ -3,7 +3,6 @@
 namespace Recca0120\LaravelTracy\Panels;
 
 use PDO;
-use Recca0120\LaravelTracy\Helper;
 
 class DatabasePanel extends AbstractPanel
 {
@@ -15,14 +14,21 @@ class DatabasePanel extends AbstractPanel
         'logs'      => [],
     ];
 
-    public function subscribe()
+    protected $source = true;
+
+    public function source($source = true)
+    {
+        $this->source = $source;
+    }
+
+    protected function subscribe()
     {
         $this->db = $this->app['db'];
         $eventName = $this->getEventName();
         $this->app['events']->listen($eventName, function ($event) use ($eventName) {
             if ($eventName === 'illuminate.query') {
                 list($sql, $bindings, $time, $name) = func_get_args();
-                $connection = $db->connection($name);
+                $connection = $this->db->connection($name);
             } else {
                 $sql = $event->sql;
                 $bindings = $event->bindings;
@@ -30,7 +36,7 @@ class DatabasePanel extends AbstractPanel
                 $connection = $event->connection;
                 $name = $event->connectionName;
             }
-            call_user_func_array([$this, 'logQuery'], compact('sql', 'bindings', 'time', 'name', 'connection'));
+            call_user_func_array([$this, 'logQuery'], [$sql, $bindings, $time, $name, $connection->getPdo()]);
         });
     }
 
@@ -43,28 +49,42 @@ class DatabasePanel extends AbstractPanel
         return 'illuminate.query';
     }
 
-    public function logQuery($prepare, $bindings, $time, $name, $connection)
+    public function logQuery($prepare, $bindings = [], $time = 0, $name = null, $pdo = null, $driver = 'mysql')
     {
-        $driver = $connection->getDriverName();
-        $pdo = $connection->getPdo();
-        $version = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
-
         $sql = static::prepareBinding($prepare, $bindings);
         $formattedSql = static::formatSql($sql);
-        $hints = static::performQueryAnalysis($sql, $version, $driver);
-        $editorLink = Helper::getEditorLink(Helper::findSource());
 
         $explains = [];
-        if ($driver === 'mysql') {
-            $explains = $this->explains($prepare, $bindings, $pdo);
+        if ($pdo instanceof PDO) {
+            $version = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+            $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+            if ($driver === 'mysql') {
+                $explains = $this->explains($prepare, $bindings, $pdo);
+            }
+        } else {
+            $version = 0;
         }
+
+        $hints = static::performQueryAnalysis($sql, $version, $driver);
+
+        $editorLink = ($this->source === true) ? static::getEditorLink(static::findSource()) : '';
 
         $this->attributes['count']++;
         $this->attributes['totalTime'] += $time;
-        $this->attributes['logs'][] = compact('sql', 'formattedSql', 'hints', 'explains', 'editorLink', 'prepare', 'bindings', 'time', 'name');
+        $this->attributes['logs'][] = [
+            'sql'          => $sql,
+            'formattedSql' => $formattedSql,
+            'hints'        => $hints,
+            'explains'     => $explains,
+            'editorLink'   => $editorLink,
+            'prepare'      => $prepare,
+            'bindings'     => $bindings,
+            'time'         => $time,
+            'name'         => $name,
+        ];
     }
 
-    private static function prepareBinding($prepare, $bindings)
+    public static function prepareBinding($prepare, $bindings)
     {
         $prepare = str_replace(['%', '?'], ['%%', '%s'], $prepare);
         $sql = vsprintf($prepare, $bindings);
@@ -72,7 +92,7 @@ class DatabasePanel extends AbstractPanel
         return $sql;
     }
 
-    private static function explains($prepare, $bindings, $pdo)
+    public static function explains($prepare, $bindings, $pdo)
     {
         if (stripos($prepare, 'select') === 0) {
             $statement = $pdo->prepare('EXPLAIN '.$prepare);
@@ -91,7 +111,7 @@ class DatabasePanel extends AbstractPanel
      *
      * @return string
      */
-    private static function formatSql($sql, array $params = null, $connection = null)
+    public static function formatSql($sql, array $params = null, $connection = null)
     {
         static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
         static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|[RI]?LIKE|REGEXP|TRUE|FALSE';

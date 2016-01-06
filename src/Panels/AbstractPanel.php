@@ -2,9 +2,11 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use Tracy\IBarPanel;
 use ArrayAccess;
 use JsonSerializable;
+use Tracy\Debugger;
+use Tracy\Helpers;
+use Tracy\IBarPanel;
 
 abstract class AbstractPanel implements IBarPanel, ArrayAccess, JsonSerializable
 {
@@ -233,5 +235,40 @@ abstract class AbstractPanel implements IBarPanel, ArrayAccess, JsonSerializable
     public function __unset($key)
     {
         unset($this->attributes[$key]);
+    }
+
+    /**
+     * Use a backtrace to search for the origin of the query.
+     */
+    public static function findSource()
+    {
+        $source = null;
+        $trace = debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : false);
+        foreach ($trace as $row) {
+            if (isset($row['file']) === true && Debugger::getBluescreen()->isCollapsed($row['file']) === false) {
+                if ((isset($row['function']) && strpos($row['function'], 'call_user_func') === 0)
+                    || (isset($row['class']) && is_subclass_of($row['class'], '\\Illuminate\\Database\\Connection'))
+                ) {
+                    continue;
+                }
+
+                return $source = [$row['file'], (int) $row['line']];
+            }
+        }
+
+        return $source;
+    }
+
+    public static function getEditorLink($source)
+    {
+        $link = null;
+        if ($source !== null) {
+            $file = $source[0];
+            $line = $source[1];
+            $link = Helpers::editorLink($file, $line);
+            // $link = self::updateEditorUri($link);
+        }
+
+        return $link;
     }
 }
