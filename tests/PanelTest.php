@@ -1,6 +1,5 @@
 <?php
 
-use Mockery as m;
 
 class PanelTest extends PHPUnit_Framework_TestCase
 {
@@ -24,11 +23,6 @@ class PanelTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function tearDown()
-    {
-        m::close();
-    }
-
     public function testPanels()
     {
         foreach ($this->panels as $panel) {
@@ -36,5 +30,8 @@ class PanelTest extends PHPUnit_Framework_TestCase
             $this->assertTrue(is_string($panel->getTab()));
             $this->assertTrue(is_string($panel->getPanel()));
         }
+        $this->panels['database']->logQuery('select * from querylogs;');
+        $this->assertTrue(strpos('querylogs', $this->panels['database']->getPanel()) !== -1);
+        $this->assertTrue(strpos(basename(__DIR__), $this->panels['database']->getPanel()) !== -1);
     }
 }

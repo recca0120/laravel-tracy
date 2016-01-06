@@ -12,7 +12,7 @@ return [
         'database' => true,
         'session'  => true,
         'request'  => true,
-        'event'    => true,
+        // 'event'    => true,
         'user'     => true,
         'terminal' => true,
         // custom panel

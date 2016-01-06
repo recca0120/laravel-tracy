@@ -2,7 +2,6 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use Recca0120\LaravelTracy\Helper;
 use Tracy\Debugger;
 
 class EventPanel extends AbstractPanel
@@ -21,7 +20,7 @@ class EventPanel extends AbstractPanel
         $event->listen('*', function ($params) use ($key, $event) {
             $execTime = Debugger::timer($key);
             $firing = $event->firing();
-            $editorLink = Helper::getEditorLink(Helper::findSource());
+            $editorLink = static::getEditorLink(static::findSource());
             $this->attributes['count']++;
             $this->attributes['totalTime'] += $execTime;
             $this->attributes['logs'][] = compact('execTime', 'firing', 'params', 'editorLink');

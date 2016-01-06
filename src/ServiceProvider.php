@@ -2,6 +2,7 @@
 
 namespace Recca0120\LaravelTracy;
 
+use Event;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
@@ -23,7 +24,9 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->registerExceptionHandler();
         $this->registerDebugger();
-        $kernel->pushMiddleware(AppendDebugbar::class);
+        Event::listen('kernel.handled', function ($request, $response) {
+            return Helper::appendDebugbar($request, $response);
+        });
     }
 
     public function register()
