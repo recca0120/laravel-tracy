@@ -25,7 +25,7 @@ abstract class AbstractPanel implements IBarPanel, ArrayAccess, JsonSerializable
 
     protected $booted = false;
 
-    public function __construct($app, $config = [])
+    public function __construct($app = null, $config = [])
     {
         $this->app = $app;
         $this->config = $config;

@@ -5,7 +5,7 @@ namespace Recca0120\LaravelTracy\Exceptions;
 use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Foundation\Exceptions\Handler as BaseHandler;
-use Recca0120\LaravelTracy\Helper;
+use Recca0120\LaravelTracy\Debugger;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyDisplayer;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -53,6 +53,6 @@ class Handler extends BaseHandler
             $headers = $e->getHeaders();
         }
 
-        return response(Helper::getBlueScreen($e), $statusCode, $headers);
+        return response(Debugger::getBlueScreen($e), $statusCode, $headers);
     }
 }
