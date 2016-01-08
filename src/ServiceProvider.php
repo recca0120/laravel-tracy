@@ -2,19 +2,17 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Event;
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Recca0120\LaravelTracy\Exceptions\Handler;
-use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
 use Tracy\Debugger;
 
 class ServiceProvider extends BaseServiceProvider
 {
     protected $defer = true;
 
-    public function boot(Kernel $kernel)
+    public function boot(Dispatcher $dispatcher)
     {
         $this->handlePublishes();
 
@@ -24,7 +22,7 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->registerExceptionHandler();
         $this->registerDebugger();
-        Event::listen('kernel.handled', function ($request, $response) {
+        $dispatcher->listen('kernel.handled', function ($request, $response) {
             return Helper::appendDebugbar($request, $response);
         });
     }
