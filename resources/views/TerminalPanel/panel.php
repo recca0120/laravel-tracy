@@ -4,7 +4,7 @@
         <?php if (empty($src) === false): ?>
             <iframe src="<?php echo $src ?>" style="width: 700px; height: 600px;"></iframe>
         <?php else: ?>
-
+            composer require recca0120/terminal
         <?php endif ?>
     </div>
 </div>
