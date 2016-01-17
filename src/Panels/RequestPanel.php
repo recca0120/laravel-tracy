@@ -4,6 +4,11 @@ namespace Recca0120\LaravelTracy\Panels;
 
 class RequestPanel extends AbstractPanel
 {
+    /**
+     * initialize.
+     *
+     * @return void
+     */
     public function boot()
     {
         $this->attributes['request'] = [];

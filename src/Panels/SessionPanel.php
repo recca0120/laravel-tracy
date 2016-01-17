@@ -4,6 +4,11 @@ namespace Recca0120\LaravelTracy\Panels;
 
 class SessionPanel extends AbstractPanel
 {
+    /**
+     * initialize.
+     *
+     * @return void
+     */
     public function boot()
     {
         if ($this->isLaravel() === true) {

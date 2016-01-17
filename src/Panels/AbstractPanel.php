@@ -17,56 +17,96 @@ abstract class AbstractPanel implements IBarPanel, ArrayAccess, JsonSerializable
      */
     protected $attributes = [];
 
-    protected $defer = true;
-
+    /**
+     * @var \Illuminate\Contracts\Foundation\Application
+     */
     protected $app;
 
+    /**
+     * config.
+     *
+     * @var array
+     */
     protected $config;
 
+    /**
+     * is booted.
+     *
+     * @var bool
+     */
     protected $booted = false;
 
+    /**
+     * construct.
+     *
+     * @param \Illuminate\Contracts\Foundation\Application $app
+     * @param array $config
+     */
     public function __construct($app = null, $config = [])
     {
         $this->app = $app;
         $this->config = $config;
-        if ($this->isLaravel() === true) {
+        if ($this->isLaravel() === true && method_exists($this, 'subscribe')) {
             $this->subscribe();
         }
     }
 
+    /**
+     * boot.
+     *
+     * @return void
+     */
     protected function isBooted()
     {
-        if ($this->booted === true) {
+        if ($this->booted === true && method_exists($this, 'boot')) {
             return;
         }
         $this->boot();
         $this->booted = true;
     }
 
+    /**
+     * is laravel.
+     * @return bool
+     */
     protected function isLaravel()
     {
         return is_a($this->app, 'Illuminate\Foundation\Application');
     }
 
-    protected function subscribe()
-    {
-    }
-
+    /**
+     * render tab.
+     *
+     * @return string
+     */
     public function getTab()
     {
-        return $this->findView('tab');
+        return $this->renderView('tab');
     }
 
+    /**
+     * render panel.
+     *
+     * @return string
+     */
     public function getPanel()
     {
-        return $this->findView('panel');
+        return $this->renderView('panel');
     }
 
-    protected function findView($type)
+    /**
+     * render view.
+     *
+     * @param  string $type
+     * @return string
+     */
+    protected function renderView($type)
     {
         $this->isBooted();
         ob_start();
-        $view = __DIR__.'/../../resources/views/'.substr(static::class, strrpos(static::class, '\\') + 1).'/'.$type.'.php';
+        $view = __DIR__.'/../../resources/views/'.
+            substr(static::class, strrpos(static::class, '\\') + 1).
+            '/'.$type.'.php';
         extract(array_merge($this->toArray(), [
             'dumpOption' => &$this->config,
         ]));
@@ -259,6 +299,11 @@ abstract class AbstractPanel implements IBarPanel, ArrayAccess, JsonSerializable
         return $source;
     }
 
+    /**
+     * editor link.
+     * @param  string $source
+     * @return string
+     */
     public static function getEditorLink($source)
     {
         $link = null;

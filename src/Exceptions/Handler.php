@@ -11,18 +11,41 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends BaseHandler
 {
+    /**
+     * exception handler.
+     *
+     * @var \Illuminate\Contracts\Debug\ExceptionHandler
+     */
     protected $exceptionHandler;
 
+    /**
+     * construct.
+     *
+     * @param \Illuminate\Contracts\Debug\ExceptionHandler $exceptionHandler
+     */
     public function __construct(ExceptionHandler $exceptionHandler)
     {
         $this->exceptionHandler = $exceptionHandler;
     }
 
+    /**
+     * report.
+     *
+     * @param  \Exception $e
+     * @return void
+     */
     public function report(Exception $e)
     {
         $this->exceptionHandler->report($e);
     }
 
+    /**
+     * render.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Exception $e
+     * @return \Illuminate\Http\Response
+     */
     public function render($request, Exception $e)
     {
         if (method_exists($this, 'toIlluminateResponse') === true) {
@@ -39,6 +62,12 @@ class Handler extends BaseHandler
         return $this->convertExceptionToResponse($e);
     }
 
+    /**
+     * response.
+     *
+     * @param  Exception $e
+     * @return \Illuminate\Http\Response
+     */
     protected function convertExceptionToResponse(Exception $e)
     {
         // $debug = config('app.debug');

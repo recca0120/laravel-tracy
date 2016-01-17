@@ -8,8 +8,18 @@ use Recca0120\LaravelTracy\Exceptions\Handler;
 
 class ServiceProvider extends BaseServiceProvider
 {
+    /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
     protected $defer = true;
 
+    /**
+     * boot.
+     *
+     * @return void
+     */
     public function boot()
     {
         $this->handlePublishes();
@@ -20,6 +30,11 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->instance('tracy.debugger', $this->app->make('tracy.debugger'));
     }
 
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
     public function register()
     {
         $this->app->singleton('tracy.debugger', function ($app) {
@@ -30,6 +45,11 @@ class ServiceProvider extends BaseServiceProvider
         });
     }
 
+    /**
+     * handle publishes.
+     *
+     * @return void
+     */
     protected function handlePublishes()
     {
         $this->publishes([
@@ -39,11 +59,21 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
     }
 
+    /**
+     * enable when php isn't cli and debug is true.
+     *
+     * @return bool
+     */
     protected function isEnabled()
     {
         return $this->app['config']['app.debug'] == true && $this->app->runningInConsole() === false;
     }
 
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
     public function provides()
     {
         return [ExceptionHandler::class];

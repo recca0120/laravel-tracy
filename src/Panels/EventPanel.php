@@ -6,12 +6,22 @@ use Tracy\Debugger;
 
 class EventPanel extends AbstractPanel
 {
+    /**
+     * All of the attributes set on the container.
+     *
+     * @var array
+     */
     public $attributes = [
         'count'     => 0,
         'totalTime' => 0,
         'logs'      => [],
     ];
 
+    /**
+     * if laravel will auto subscribe.
+     *
+     * @return void
+     */
     public function subscribe()
     {
         $key = get_class($this);

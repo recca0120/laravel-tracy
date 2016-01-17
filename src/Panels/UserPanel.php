@@ -4,6 +4,11 @@ namespace Recca0120\LaravelTracy\Panels;
 
 class UserPanel extends AbstractPanel
 {
+    /**
+     * initialize.
+     *
+     * @return void
+     */
     public function boot()
     {
         $this->attributes = [

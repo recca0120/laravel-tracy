@@ -8,19 +8,40 @@ class DatabasePanel extends AbstractPanel
 {
     protected $db;
 
+    /**
+     * All of the attributes set on the container.
+     *
+     * @var array
+     */
     protected $attributes = [
         'count'     => 0,
         'totalTime' => 0,
         'logs'      => [],
     ];
 
+    /**
+     * find source.
+     *
+     * @var bool
+     */
     protected $source = true;
 
+    /**
+     * find source.
+     *
+     * @param  bool $source
+     * @return void
+     */
     public function source($source = true)
     {
         $this->source = $source;
     }
 
+    /**
+     * if laravel will auto subscribe.
+     *
+     * @return void
+     */
     protected function subscribe()
     {
         $this->db = $this->app['db'];
@@ -40,6 +61,12 @@ class DatabasePanel extends AbstractPanel
         });
     }
 
+    /**
+     * laravel 5.2 event name is Illuminate\Database\Events\QueryExecuted
+     * laravel 5.1 event is illuminate.query.
+     *
+     * @return string
+     */
     protected function getEventName()
     {
         if (method_exists($this->app, 'bindShared') === false) {
@@ -49,7 +76,18 @@ class DatabasePanel extends AbstractPanel
         return 'illuminate.query';
     }
 
-    public function logQuery($prepare, $bindings = [], $time = 0, $name = null, $pdo = null, $driver = 'mysql')
+    /**
+     * log query.
+     *
+     * @param  string $prepare
+     * @param  array $binding
+     * @param  int $time
+     * @param  string $name
+     * @param  \PDO $pdo
+     * @param  string $driver
+     * @return void
+     */
+    public function logQuery($prepare, $bindings = [], $time = 0, $name = null, PDO $pdo = null, $driver = 'mysql')
     {
         $sql = static::prepareBinding($prepare, $bindings);
         $formattedSql = static::formatSql($sql);
@@ -84,7 +122,14 @@ class DatabasePanel extends AbstractPanel
         ];
     }
 
-    public static function prepareBinding($prepare, $bindings)
+    /**
+     * prepare sql.
+     *
+     * @param  string $prepare
+     * @param  array $bindings
+     * @return string
+     */
+    public static function prepareBinding($prepare, $bindings = [])
     {
         $prepare = str_replace(['%', '?'], ['%%', '%s'], $prepare);
         $sql = vsprintf($prepare, $bindings);
@@ -92,7 +137,15 @@ class DatabasePanel extends AbstractPanel
         return $sql;
     }
 
-    public static function explains($prepare, $bindings, $pdo)
+    /**
+     * explain sql.
+     *
+     * @param  string $prepare
+     * @param  [type] $bindings
+     * @param  |PDO $pdo
+     * @return array
+     */
+    public static function explains($prepare, $bindings = [], PDO $pdo)
     {
         if (stripos($prepare, 'select') === 0) {
             $statement = $pdo->prepare('EXPLAIN '.$prepare);
@@ -107,11 +160,12 @@ class DatabasePanel extends AbstractPanel
     /**
      * Returns syntax highlighted SQL command.
      *
-     * @param  string
-     *
+     * @param string $sql
+     * @param array $params
+     * @param \PDO $connection
      * @return string
      */
-    public static function formatSql($sql, array $params = null, $connection = null)
+    public static function formatSql($sql, array $params = null, PDO $connection = null)
     {
         static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
         static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|[RI]?LIKE|REGEXP|TRUE|FALSE';
@@ -169,6 +223,14 @@ class DatabasePanel extends AbstractPanel
         return '<pre class="dump">'.trim($sql)."</pre>\n";
     }
 
+    /**
+     * perform quer analysis hint.
+     *
+     * @param string $sql
+     * @param string $version
+     * @param float $driver
+     * @return array
+     */
     public static function performQueryAnalysis($sql, $version = null, $driver = null)
     {
         $hints = [];

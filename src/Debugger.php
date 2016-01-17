@@ -9,12 +9,34 @@ use Tracy\Debugger as TracyDebugger;
 
 class Debugger
 {
+    /**
+     * bar panel instances.
+     *
+     * @var Tracy\IBarPanel
+     */
     public $panels = [];
 
+    /**
+     * options.
+     *
+     * @var array
+     */
     public static $options = [];
 
-    public function __construct($options = [], Application $app = null, RepositoryContract $config = null, Dispatcher $dispatcher = null)
-    {
+    /**
+     * construct.
+     *
+     * @param array $options
+     * @param \Illuminate\Contracts\Foundation\Application $app
+     * @param \Illuminate\Contracts\Config\Repository $config
+     * @param Illuminate\Contracts\Events\Dispatcher $events
+     */
+    public function __construct(
+        $options = [],
+        Application $app = null,
+        RepositoryContract $config = null,
+        Dispatcher $events = null
+    ) {
         static::$options = ($config !== null) ? array_merge($options, $config->get('tracy')) : $options;
         TracyDebugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
         TracyDebugger::$maxDepth = array_get(static::$options, 'maxDepth');
@@ -35,8 +57,8 @@ class Debugger
             }
         }
 
-        if ($dispatcher !== null) {
-            $dispatcher->listen('kernel.handled', function ($request, $response) {
+        if ($events !== null) {
+            $events->listen('kernel.handled', function ($request, $response) {
                 return static::appendDebugbar($request, $response);
             });
         } else {
@@ -44,6 +66,12 @@ class Debugger
         }
     }
 
+    /**
+     * update editor uri.
+     *
+     * @param  string $content
+     * @return string
+     */
     public static function updateEditorUri($content)
     {
         $basePath = array_get(static::$options, 'base_path');
@@ -64,7 +92,10 @@ class Debugger
                 $uri = $match['uri'];
                 $file = str_replace(base_path(), $basePath, rawurldecode($match['file']));
                 $line = $match['line'];
-                $editor = strtr(TracyDebugger::$editor, ['%file' => rawurlencode($file), '%line' => $line ? (int) $line : '']);
+                $editor = strtr(TracyDebugger::$editor, [
+                    '%file' => rawurlencode($file),
+                    '%line' => $line ? (int) $line : '',
+                ]);
                 $content = str_replace($uri, $editor, $content);
             }
         }
@@ -72,6 +103,11 @@ class Debugger
         return $content;
     }
 
+    /**
+     * get tracy bar panel.
+     *
+     * @return string
+     */
     public static function getBarResponse()
     {
         ob_start();
@@ -81,6 +117,12 @@ class Debugger
         return $content;
     }
 
+    /**
+     * get tracy bluescreen.
+     *
+     * @param  \Exception $e
+     * @return string
+     */
     public static function getBlueScreen($e)
     {
         ob_start();
@@ -91,23 +133,21 @@ class Debugger
         return $content;
     }
 
+    /**
+     * append debugger to Response.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Response $response
+     * @return \Illuminate\Http\Response
+     */
     public static function appendDebugbar($request, $response)
     {
         if ($response->isRedirection() === true) {
             return $response;
         }
 
-        // $request->isJson() === true or
-        // $request->wantsJson() === true or
         if ($request->ajax() === true or
             $request->pjax() === true) {
-
-        //     if (method_exists($response, 'header') === true) {
-        //         $barResponse = static::lzwCompress($barResponse);
-        //         foreach (str_split(base64_encode(@json_encode($barResponse)), 4990) as $k => $v) {
-        //             $response->header('X-Tracy-Error-Ajax-'.$k, $v);
-        //         }
-        //     }
             return $response;
         }
 
