@@ -13,7 +13,7 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @var bool
      */
-    protected $defer = true;
+    protected $defer = false;
 
     /**
      * boot.
