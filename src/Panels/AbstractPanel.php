@@ -307,12 +307,17 @@ abstract class AbstractPanel implements IBarPanel, ArrayAccess, JsonSerializable
     public static function getEditorLink($source)
     {
         $link = null;
-        if ($source !== null) {
+
+        if (is_string($source) === true) {
+            $file = $source;
+            $line = null;
+        } else {
             $file = $source[0];
             $line = $source[1];
-            $link = Helpers::editorLink($file, $line);
-            // $link = self::updateEditorUri($link);
         }
+
+        $link = Helpers::editorLink($file, $line);
+        // $link = self::updateEditorUri($link);
 
         return $link;
     }

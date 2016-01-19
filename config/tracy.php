@@ -10,6 +10,7 @@ return [
     'panels'       => [
         'routing'  => true,
         'database' => true,
+        'view'     => true,
         'session'  => true,
         'request'  => true,
         'event'    => false,
