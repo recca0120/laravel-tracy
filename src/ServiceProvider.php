@@ -38,7 +38,7 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->app->singleton('tracy.debugger', function ($app) {
-            return $app->make(Debugger::class);
+            return new Debugger([], $app);
         });
         $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
             return new Handler($exceptionHandler);

@@ -2,9 +2,6 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Illuminate\Contracts\Config\Repository as RepositoryContract;
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Foundation\Application;
 use Tracy\Debugger as TracyDebugger;
 
 class Debugger
@@ -28,16 +25,21 @@ class Debugger
      *
      * @param array $options
      * @param \Illuminate\Contracts\Foundation\Application $app
-     * @param \Illuminate\Contracts\Config\Repository $config
-     * @param Illuminate\Contracts\Events\Dispatcher $events
      */
     public function __construct(
         $options = [],
-        Application $app = null,
-        RepositoryContract $config = null,
-        Dispatcher $events = null
+        $app = null
     ) {
-        static::$options = ($config !== null) ? array_merge($options, $config->get('tracy')) : $options;
+        if ($app !== null) {
+            $options = array_merge($options, $app['config']->get('tracy'));
+            $app['events']->listen('kernel.handled', function ($request, $response) {
+                return static::appendDebugbar($request, $response);
+            });
+        } else {
+            TracyDebugger::enable();
+        }
+
+        static::$options = $options;
         TracyDebugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
         TracyDebugger::$maxDepth = array_get(static::$options, 'maxDepth');
         TracyDebugger::$maxLen = array_get(static::$options, 'maxLen');
@@ -55,14 +57,6 @@ class Debugger
                 $this->panels[$key] = new $class($app, static::$options);
                 $bar->addPanel($this->panels[$key], $class);
             }
-        }
-
-        if ($events !== null) {
-            $events->listen('kernel.handled', function ($request, $response) {
-                return static::appendDebugbar($request, $response);
-            });
-        } else {
-            TracyDebugger::enable();
         }
     }
 
