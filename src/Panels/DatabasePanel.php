@@ -97,7 +97,7 @@ class DatabasePanel extends AbstractPanel
             $version = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
             $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
             if ($driver === 'mysql') {
-                $explains = $this->explains($prepare, $bindings, $pdo);
+                $explains = $this->explains($pdo, $prepare, $bindings);
             }
         } else {
             $version = 0;
@@ -145,7 +145,7 @@ class DatabasePanel extends AbstractPanel
      * @param  |PDO $pdo
      * @return array
      */
-    public static function explains($prepare, $bindings = [], PDO $pdo)
+    public static function explains(PDO $pdo, $prepare, $bindings = [])
     {
         if (stripos($prepare, 'select') === 0) {
             $statement = $pdo->prepare('EXPLAIN '.$prepare);
@@ -253,12 +253,12 @@ class DatabasePanel extends AbstractPanel
         }
         if (preg_match('/LIKE\\s[\'"](%.*?)[\'"]/i', $sql, $matches)) {
             $hints[] = 'An argument has a leading wildcard character: <code>'.$matches[1].'</code>.
-                                The predicate with this argument is not sargable and cannot use an index if one exists.';
+                The predicate with this argument is not sargable and cannot use an index if one exists.';
         }
         if ($version < 5.5 && $driver === 'mysql') {
             if (preg_match('/\\sIN\\s*\\(\\s*SELECT/i', $sql)) {
                 $hints[] = '<code>IN()</code> and <code>NOT IN()</code> subqueries are poorly optimized in that MySQL version : '.$version.
-                                    '. MySQL executes the subquery as a dependent subquery for each row in the outer query';
+                    '. MySQL executes the subquery as a dependent subquery for each row in the outer query';
             }
         }
 
