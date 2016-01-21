@@ -16,11 +16,10 @@ class ViewPanel extends AbstractPanel
     protected function subscribe()
     {
         $this->app['events']->listen('composing:*', function ($view) {
-            $this->attributes['logs'][] = [
-                'name' => $view->getName(),
-                'data' => $view->getData(),
-                'path' => static::getEditorLink($view->getPath()),
-            ];
+            $name = $view->getName();
+            $data = array_except($view->getData(), ['__env', 'app']);
+            $path = static::getEditorLink($view->getPath());
+            $this->attributes['logs'][] = compact('name', 'data', 'path');
         });
     }
 }
