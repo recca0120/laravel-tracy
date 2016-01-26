@@ -37,6 +37,7 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
         $this->app->singleton('tracy.debugger', function ($app) {
             return new Debugger([], $app);
         });
@@ -55,8 +56,6 @@ class ServiceProvider extends BaseServiceProvider
         $this->publishes([
             __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
         ], 'config');
-
-        $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
     }
 
     /**
