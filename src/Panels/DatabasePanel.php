@@ -69,11 +69,8 @@ class DatabasePanel extends AbstractPanel
      */
     protected function getEventName()
     {
-        if (method_exists($this->app, 'bindShared') === false) {
-            return 'Illuminate\Database\Events\QueryExecuted';
-        }
-
-        return 'illuminate.query';
+        return (version_compare($this->app->version(), 5.2, '>=') === true) ?
+            'Illuminate\Database\Events\QueryExecuted' : 'illuminate.query';
     }
 
     /**
@@ -131,6 +128,11 @@ class DatabasePanel extends AbstractPanel
      */
     public static function prepareBinding($prepare, $bindings = [])
     {
+        array_walk($bindings, function (&$v) {
+            if (is_string($v) === true) {
+                $v = "'".addslashes($v)."'";
+            }
+        });
         $prepare = str_replace(['%', '?'], ['%%', '%s'], $prepare);
         $sql = vsprintf($prepare, $bindings);
 
