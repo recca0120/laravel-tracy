@@ -15,8 +15,9 @@
         "tracy/tracy": "~2.3.5"
     },
     "require-dev": {
-        "nesbot/carbon": "~1.20",
+        "illuminate/container": "~5.0",
         "mockery/mockery": "~0.9.2",
+        "nesbot/carbon": "~1.20",
         "phpunit/phpunit": "~4.1"
     },
     "suggest": {

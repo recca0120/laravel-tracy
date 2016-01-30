@@ -26,10 +26,8 @@ class Debugger
      * @param array $options
      * @param \Illuminate\Contracts\Foundation\Application $app
      */
-    public function __construct(
-        $options = [],
-        $app = null
-    ) {
+    public function __construct($options = [], $app = null)
+    {
         if ($app !== null) {
             $options = array_merge($options, $app['config']->get('tracy'));
             $app['events']->listen('kernel.handled', function ($request, $response) {
@@ -114,13 +112,13 @@ class Debugger
     /**
      * get tracy bluescreen.
      *
-     * @param  \Exception $e
+     * @param  \Exception $exception
      * @return string
      */
-    public static function getBlueScreen($e)
+    public static function getBlueScreen($exception)
     {
         ob_start();
-        TracyDebugger::getBlueScreen()->render($e);
+        TracyDebugger::getBlueScreen()->render($exception);
         $content = ob_get_clean();
         $content = static::updateEditorUri($content);
 

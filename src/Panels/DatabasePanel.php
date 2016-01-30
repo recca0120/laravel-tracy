@@ -86,7 +86,7 @@ class DatabasePanel extends AbstractPanel
      */
     public function logQuery($prepare, $bindings = [], $time = 0, $name = null, PDO $pdo = null, $driver = 'mysql')
     {
-        $sql = static::prepareBinding($prepare, $bindings);
+        $sql = static::prepareBindings($prepare, $bindings);
         $formattedSql = static::formatSql($sql);
 
         $explains = [];
@@ -126,11 +126,11 @@ class DatabasePanel extends AbstractPanel
      * @param  array $bindings
      * @return string
      */
-    public static function prepareBinding($prepare, $bindings = [])
+    public static function prepareBindings($prepare, $bindings = [])
     {
-        array_walk($bindings, function (&$v) {
-            if (is_string($v) === true) {
-                $v = "'".addslashes($v)."'";
+        array_walk($bindings, function (&$binding) {
+            if (is_string($binding) === true) {
+                $binding = "'".addslashes($binding)."'";
             }
         });
         $prepare = str_replace(['%', '?'], ['%%', '%s'], $prepare);
