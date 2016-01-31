@@ -4,7 +4,6 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use ArrayAccess;
 use JsonSerializable;
-use Tracy\Debugger;
 use Tracy\Helpers;
 use Tracy\IBarPanel;
 
@@ -285,15 +284,24 @@ abstract class AbstractPanel implements IBarPanel, ArrayAccess, JsonSerializable
         $source = null;
         $trace = debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : false);
         foreach ($trace as $row) {
-            if (isset($row['file']) === true && Debugger::getBluescreen()->isCollapsed($row['file']) === false) {
-                if ((isset($row['function']) && strpos($row['function'], 'call_user_func') === 0)
-                    || (isset($row['class']) && is_subclass_of($row['class'], '\\Illuminate\\Database\\Connection'))
-                ) {
-                    continue;
-                }
-
-                return $source = [$row['file'], (int) $row['line']];
+            if (isset($row['file']) === false) {
+                continue;
             }
+
+            if (isset($row['function']) === true && strpos($row['function'], 'call_user_func') === 0) {
+                continue;
+            }
+
+            if (isset($row['class']) === true &&
+                (
+                    is_subclass_of($row['class'], '\Tracy\IBarPanel') === true ||
+                    strpos($row['class'], 'Illuminate\\') === 0
+                )
+            ) {
+                continue;
+            }
+
+            return $source = [$row['file'], (int) $row['line']];
         }
 
         return $source;
