@@ -3,6 +3,7 @@
 namespace Recca0120\LaravelTracy\Exceptions;
 
 use Exception;
+use Illuminate\Contracts\Config\Repository as ConfigRepositoryContract;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Foundation\Exceptions\Handler as BaseHandler;
 use Recca0120\LaravelTracy\Debugger;
@@ -22,10 +23,12 @@ class Handler extends BaseHandler
      * construct.
      *
      * @param \Illuminate\Contracts\Debug\ExceptionHandler $exceptionHandler
+     * @param \Illuminate\Contracts\Config\Repository $exceptionHandler
      */
-    public function __construct(ExceptionHandler $exceptionHandler)
+    public function __construct(ExceptionHandler $exceptionHandler, ConfigRepositoryContract $config)
     {
         $this->exceptionHandler = $exceptionHandler;
+        $this->config = $config;
     }
 
     /**
@@ -70,9 +73,9 @@ class Handler extends BaseHandler
      */
     protected function convertExceptionToResponse(Exception $e)
     {
-        // $debug = config('app.debug');
+        // $debug = $this->config->get('app.debug');
         // if ($debug === false) {
-        //     return (new SymfonyDisplayer(config('app.debug')))->createResponse($e);
+        //     return (new SymfonyDisplayer($this->config->get('app.debug')))->createResponse($e);
         // }
         $statusCode = 500;
         $headers = [];
