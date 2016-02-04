@@ -2,7 +2,8 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
+use Illuminate\Contracts\Routing\ResponseFactory as ResponseFactoryContract;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 
@@ -41,8 +42,8 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->singleton('tracy.debugger', function ($app) {
             return new Debugger([], $app);
         });
-        $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
-            return new Handler($exceptionHandler);
+        $this->app->extend(ExceptionHandlerContract::class, function ($exceptionHandler) {
+            return new Handler($this->app->make(ResponseFactoryContract::class), $exceptionHandler);
         });
     }
 

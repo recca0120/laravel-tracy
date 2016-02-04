@@ -3,88 +3,99 @@
 namespace Recca0120\LaravelTracy\Exceptions;
 
 use Exception;
-use Illuminate\Contracts\Config\Repository as ConfigRepositoryContract;
-use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Foundation\Exceptions\Handler as BaseHandler;
+use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
+use Illuminate\Contracts\Routing\ResponseFactory as ResponseFactoryContract;
 use Recca0120\LaravelTracy\Debugger;
-use Symfony\Component\Debug\ExceptionHandler as SymfonyDisplayer;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class Handler extends BaseHandler
+class Handler implements ExceptionHandlerContract
 {
     /**
-     * exception handler.
-     *
+     * response factory.
+     * @var \Illuminate\Contracts\Routing\ResponseFactory
+     */
+    protected $responseFactory;
+
+    /**
+     * app exception handler.
      * @var \Illuminate\Contracts\Debug\ExceptionHandler
      */
     protected $exceptionHandler;
 
     /**
-     * construct.
-     *
+     * __construct.
+     * @param \Illuminate\Contracts\Routing\ResponseFactory       $responseFactory
      * @param \Illuminate\Contracts\Debug\ExceptionHandler $exceptionHandler
-     * @param \Illuminate\Contracts\Config\Repository $exceptionHandler
      */
-    public function __construct(ExceptionHandler $exceptionHandler, ConfigRepositoryContract $config)
-    {
+    public function __construct(
+        ResponseFactoryContract $responseFactory,
+        ExceptionHandlerContract $exceptionHandler = null
+    ) {
+        $this->responseFactory = $responseFactory;
         $this->exceptionHandler = $exceptionHandler;
-        $this->config = $config;
     }
 
     /**
-     * report.
+     * Report or log an exception.
      *
-     * @param  \Exception $e
+     * @param  \Exception  $e
      * @return void
      */
     public function report(Exception $e)
     {
-        $this->exceptionHandler->report($e);
+        if (is_null($this->exceptionHandler) === false) {
+            $this->exceptionHandler->report($e);
+        }
     }
 
     /**
-     * render.
+     * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \Exception $e
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Exception  $e
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $e)
     {
-        if (method_exists($this, 'toIlluminateResponse') === true) {
-            return parent::render($request, $e);
-        }
-
-        if ($this->isHttpException($e)) {
-            $status = $e->getStatusCode();
-            if (view()->exists("errors.{$status}")) {
-                return response()->view("errors.{$status}", [], $status);
+        $statusCode = 500;
+        $headers = [];
+        if (is_null($this->exceptionHandler) === false) {
+            if ($this->isHttpException($e) === true) {
+                $statusCode = $e->getStatusCode();
+                $headers = $e->getHeaders();
+                try {
+                    return $this->responseFactory->view("errors.{$statusCode}", [], $statusCode);
+                } catch (Exception $fileNotFoundException) {
+                }
+                // run in console
+                // $this->exceptionHandler->render($request, $e);
             }
         }
 
-        return $this->convertExceptionToResponse($e);
+        return $this->responseFactory->make(Debugger::getBlueScreen($e), $statusCode, $headers);
     }
 
     /**
-     * response.
+     * Render an exception to the console.
      *
-     * @param  Exception $e
-     * @return \Illuminate\Http\Response
+     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
+     * @param  \Exception  $e
+     * @return void
      */
-    protected function convertExceptionToResponse(Exception $e)
+    public function renderForConsole($output, Exception $e)
     {
-        // $debug = $this->config->get('app.debug');
-        // if ($debug === false) {
-        //     return (new SymfonyDisplayer($this->config->get('app.debug')))->createResponse($e);
-        // }
-        $statusCode = 500;
-        $headers = [];
-
-        if (($e instanceof HttpException) === true) {
-            $statusCode = $e->getStatusCode();
-            $headers = $e->getHeaders();
+        if (is_null($this->exceptionHandler) === false) {
+            $this->exceptionHandler->renderForConsole($output, $e);
         }
+    }
 
-        return response(Debugger::getBlueScreen($e), $statusCode, $headers);
+    /**
+     * is http exception.
+     * @param  \Exception $e
+     * @return bool
+     */
+    protected function isHttpException(Exception $e)
+    {
+        return ($e instanceof HttpException) === true;
     }
 }
