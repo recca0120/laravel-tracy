@@ -37,10 +37,10 @@ abstract class AbstractPanel extends Fluent implements IBarPanel
     /**
      * construct.
      *
-     * @param \Illuminate\Contracts\Foundation\Application $app
      * @param array $config
+     * @param \Illuminate\Contracts\Foundation\Application $app
      */
-    public function __construct($app = null, $config = [])
+    public function __construct($config = [], $app = null)
     {
         $this->app = $app;
         $this->config = $config;
@@ -133,7 +133,7 @@ abstract class AbstractPanel extends Fluent implements IBarPanel
             if (isset($row['class']) === true &&
                 (
                     is_subclass_of($row['class'], '\Tracy\IBarPanel') === true ||
-                    strpos($row['class'], 'Illuminate\\') === 0
+                    strpos(str_replace('/', '\\', $row['file']), 'Illuminate\\') !== false
                 )
             ) {
                 continue;

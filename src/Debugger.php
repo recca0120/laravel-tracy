@@ -2,10 +2,15 @@
 
 namespace Recca0120\LaravelTracy;
 
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tracy\Debugger as TracyDebugger;
 
 class Debugger
 {
+    protected static $basePath = null;
+
     /**
      * bar panel instances.
      *
@@ -18,7 +23,7 @@ class Debugger
      *
      * @var array
      */
-    public static $options = [];
+    public $options = [];
 
     /**
      * construct.
@@ -26,36 +31,137 @@ class Debugger
      * @param array $options
      * @param \Illuminate\Contracts\Foundation\Application $app
      */
-    public function __construct($options = [], $app = null)
+    public function __construct($config = [], $app = null)
     {
-        if ($app !== null) {
-            $options = array_merge($options, $app['config']->get('tracy'));
-            $app['events']->listen('kernel.handled', function ($request, $response) {
-                return static::appendDebugbar($request, $response);
-            });
-        } else {
+        if ($app === null) {
             TracyDebugger::enable();
         }
 
-        static::$options = $options;
+        $this->config = $config;
         TracyDebugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
-        TracyDebugger::$maxDepth = array_get(static::$options, 'maxDepth');
-        TracyDebugger::$maxLen = array_get(static::$options, 'maxLen');
-        TracyDebugger::$showLocation = array_get(static::$options, 'showLocation');
-        TracyDebugger::$strictMode = array_get(static::$options, 'strictMode');
-        TracyDebugger::$editor = array_get(static::$options, 'editor');
+        TracyDebugger::$maxDepth = array_get($this->config, 'maxDepth');
+        TracyDebugger::$maxLen = array_get($this->config, 'maxLen');
+        TracyDebugger::$showLocation = array_get($this->config, 'showLocation');
+        TracyDebugger::$strictMode = array_get($this->config, 'strictMode');
+        TracyDebugger::$editor = array_get($this->config, 'editor');
 
         $bar = TracyDebugger::getBar();
-        foreach (array_get(static::$options, 'panels') as $key => $enabled) {
+        foreach (array_get($this->config, 'panels') as $key => $enabled) {
             if ($enabled === true) {
                 $class = '\\'.__NAMESPACE__.'\Panels\\'.ucfirst($key).'Panel';
                 if (class_exists($class) === false) {
                     $class = $key;
                 }
-                $this->panels[$key] = new $class($app, static::$options);
+                $this->panels[$key] = new $class($this->config, $app);
                 $bar->addPanel($this->panels[$key], $class);
             }
         }
+    }
+
+    /**
+     * bar dump.
+     *
+     * return mixed
+     */
+    public function barDump()
+    {
+        return call_user_func_array('\Tracy\Debugger::barDump', func_get_args());
+    }
+
+    /**
+     * get tracy bar panel.
+     *
+     * @return string
+     */
+    public function getBarResponse()
+    {
+        ob_start();
+        TracyDebugger::getBar()->render();
+        $content = ob_get_clean();
+
+        return $content;
+    }
+
+    /**
+     * append debugger to Response.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Response $response
+     * @return \Illuminate\Http\Response
+     */
+    public function appendDebugbar($request, $response)
+    {
+        if ($response->isRedirection() === true ||
+            strpos(strtolower($response->headers->get('content-type')), 'text/html') === false ||
+            $response instanceof BinaryFileResponse ||
+            $response instanceof StreamedResponse
+        ) {
+            return $response;
+        }
+
+        $isJsonResponse = $response instanceof JsonResponse;
+
+        $content = $response->getContent();
+        $barResponse = $this->getBarResponse();
+
+        if ($request->ajax() === true ||
+            $request->pjax() === true ||
+            $request->wantsJson() === true ||
+            $isJsonResponse === true
+        ) {
+            $startString = 'var debug =';
+            $startPos = strpos($barResponse, $startString);
+            $endString = "debug.style.display = 'block';";
+            $endPos = strpos($barResponse, $endString) - $startPos + strlen($endString);
+            $barResponse = '(function(){ var n = document.getElementById("tracy-debug"); if (n) { document.body.removeChild(n);'.substr($barResponse, $startPos, $endPos).'};})();';
+        }
+
+        if ($request->wantsJson() === true || $isJsonResponse === true) {
+            // $response->setCookie($barResponse);
+            // $content = json_decode($content, true);
+            // $content['TracyDebug'] = $barResponse;
+            // $content = json_encode($content);
+        } elseif ($request->pjax() === true || $request->ajax() === true) {
+            $content .= '<script>'.$barResponse.'</script>';
+        } else {
+            // $barResponse .= $this->ajaxMonitor();
+            $pos = strripos($content, '</body>');
+            if ($pos !== false) {
+                $content = substr($content, 0, $pos).$barResponse.substr($content, $pos);
+            } else {
+                $content .= $barResponse;
+            }
+        }
+        $response->setContent($content);
+
+        return $response;
+    }
+
+    protected function ajaxMonitor()
+    {
+        return '<script>'.file_get_contents(__DIR__.'/../public/js/monitor.js').'</script>';
+        // return  '<script>!function(){var AjaxMonitor=function(request){return function(mode){var req=new request(mode),onReadyStateChange=function(){if(4===req.readyState&&200===req.status)try{if("arraybuffer"!=req.responseType.toLowerCase()){var data=eval("("+req.responseText+")");if(data.TracyDebug){var code=data.TracyDebug;eval(code)}}}catch(e){}};return req.addEventListener("readystatechange",onReadyStateChange),req}};window.ActiveXObject&&(window.ActiveXObject=AjaxMonitor(window.ActiveXObject)),window.XMLHttpRequest&&(window.XMLHttpRequest=AjaxMonitor(window.XMLHttpRequest))}();</script>';
+    }
+
+    public function setBasePath($basePath)
+    {
+        static::$basePath = $basePath;
+    }
+
+    /**
+     * get tracy bluescreen.
+     *
+     * @param  \Exception $exception
+     * @return string
+     */
+    public static function getBlueScreen($exception)
+    {
+        ob_start();
+        TracyDebugger::getBlueScreen()->render($exception);
+        $content = ob_get_clean();
+        // $content = $this->updateEditorUri($content);
+
+        return $content;
     }
 
     /**
@@ -64,9 +170,9 @@ class Debugger
      * @param  string $content
      * @return string
      */
-    public static function updateEditorUri($content)
+    protected static function updateEditorUri($content)
     {
-        $basePath = array_get(static::$options, 'base_path');
+        $basePath = static::$basePath;
 
         if (empty($basePath) === true) {
             return $content;
@@ -93,67 +199,5 @@ class Debugger
         }
 
         return $content;
-    }
-
-    /**
-     * get tracy bar panel.
-     *
-     * @return string
-     */
-    public static function getBarResponse()
-    {
-        ob_start();
-        TracyDebugger::getBar()->render();
-        $content = ob_get_clean();
-
-        return $content;
-    }
-
-    /**
-     * get tracy bluescreen.
-     *
-     * @param  \Exception $exception
-     * @return string
-     */
-    public static function getBlueScreen($exception)
-    {
-        ob_start();
-        TracyDebugger::getBlueScreen()->render($exception);
-        $content = ob_get_clean();
-        $content = static::updateEditorUri($content);
-
-        return $content;
-    }
-
-    /**
-     * append debugger to Response.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \Illuminate\Http\Response $response
-     * @return \Illuminate\Http\Response
-     */
-    public static function appendDebugbar($request, $response)
-    {
-        if ($response->isRedirection() === true) {
-            return $response;
-        }
-
-        if ($request->ajax() === true or
-            $request->pjax() === true) {
-            return $response;
-        }
-
-        $content = $response->getContent();
-
-        $pos = strripos($content, '</body>');
-        if ($pos === false) {
-            return $response;
-        }
-
-        $response->setContent(
-            substr($content, 0, $pos).static::getBarResponse().substr($content, $pos)
-        );
-
-        return $response;
     }
 }
