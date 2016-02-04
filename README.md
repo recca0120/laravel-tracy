@@ -60,7 +60,7 @@ Add Presenter to your composer.json file:
 
 ```js
 "require": {
-    "recca0120/terminal": "~2.0.5"
+    "recca0120/terminal": "~2.3.1"
 }
 ```
 

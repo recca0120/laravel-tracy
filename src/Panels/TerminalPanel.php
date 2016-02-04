@@ -12,11 +12,12 @@ class TerminalPanel extends AbstractPanel
     public function boot()
     {
         if ($this->isLaravel() === true) {
-            $src = null;
+            $html = null;
             if (class_exists('\Recca0120\Terminal\Http\Controllers\TerminalController') === true) {
-                $src = action('\Recca0120\Terminal\Http\Controllers\TerminalController@index');
+                $controller = $this->app->make('\Recca0120\Terminal\Http\Controllers\TerminalController');
+                $html = $this->app->call([$controller, 'index'], ['panel' => true])->render();
             }
-            $this->attributes['src'] = $src;
+            $this->attributes['html'] = $html;
         }
     }
 }

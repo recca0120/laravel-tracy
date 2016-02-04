@@ -133,7 +133,7 @@ abstract class AbstractPanel extends Fluent implements IBarPanel
             if (isset($row['class']) === true &&
                 (
                     is_subclass_of($row['class'], '\Tracy\IBarPanel') === true ||
-                    strpos($row['class'], 'Illuminate\\') === 0
+                    strpos(str_replace('/', '\\', $row['file']), 'Illuminate\\') !== false
                 )
             ) {
                 continue;

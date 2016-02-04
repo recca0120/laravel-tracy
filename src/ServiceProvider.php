@@ -42,8 +42,8 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->singleton('tracy.debugger', function ($app) {
             return new Debugger([], $app);
         });
-        $this->app->extend(ExceptionHandlerContract::class, function ($exceptionHandler) {
-            return new Handler($this->app->make(ResponseFactoryContract::class), $exceptionHandler);
+        $this->app->extend(ExceptionHandlerContract::class, function ($exceptionHandler, $app) {
+            return new Handler($app->make(ResponseFactoryContract::class), $exceptionHandler);
         });
     }
 
