@@ -134,16 +134,25 @@ class Debugger
      */
     public static function appendDebugbar($request, $response)
     {
-        if ($response->isRedirection() === true) {
-            return $response;
-        }
-
-        if ($request->ajax() === true or
-            $request->pjax() === true) {
+        if ($response->isRedirection() === true ||
+            ($request->ajax() === true && $request->pjax() === false)
+        ) {
             return $response;
         }
 
         $content = $response->getContent();
+        $barResponse = static::getBarResponse();
+
+        if ($request->pjax() === true) {
+            $startString = 'var debug =';
+            $startPos = strpos($barResponse, $startString);
+            $endString = "debug.style.display = 'block';";
+            $endPos = strpos($barResponse, $endString) - $startPos + strlen($endString);
+            $barResponse = '<script>(function(){ var n = document.getElementById("tracy-debug"); if (n) { document.body.removeChild(n);'.substr($barResponse, $startPos, $endPos).'};})();</script>';
+            $response->setContent($content.$barResponse);
+
+            return $response;
+        }
 
         $pos = strripos($content, '</body>');
         if ($pos === false) {
@@ -151,7 +160,7 @@ class Debugger
         }
 
         $response->setContent(
-            substr($content, 0, $pos).static::getBarResponse().substr($content, $pos)
+            substr($content, 0, $pos).$barResponse.substr($content, $pos)
         );
 
         return $response;
