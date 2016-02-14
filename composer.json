@@ -11,10 +11,10 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/contracts": "~5.0",
-        "illuminate/support": "~5.0",
-        "tracy/tracy": "~2.3.5",
-        "illuminate/routing": "~5.0"
+        "illuminate/contracts": "^5.0",
+        "illuminate/support": "^5.0",
+        "tracy/tracy": "^2.3.5",
+        "illuminate/routing": "^5.0"
     },
     "require-dev": {
         "mockery/mockery": "~0.9.2",
