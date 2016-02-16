@@ -2,6 +2,9 @@
 
 namespace Recca0120\LaravelTracy;
 
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tracy\Debugger as TracyDebugger;
 
 class Debugger
@@ -135,34 +138,53 @@ class Debugger
     public static function appendDebugbar($request, $response)
     {
         if ($response->isRedirection() === true ||
-            ($request->ajax() === true && $request->pjax() === false)
+            $response instanceof BinaryFileResponse ||
+            $response instanceof StreamedResponse
         ) {
             return $response;
         }
 
+        $isJsonResponse = $response instanceof JsonResponse;
+
         $content = $response->getContent();
         $barResponse = static::getBarResponse();
 
-        if ($request->pjax() === true) {
+        if ($request->ajax() === true ||
+            $request->pjax() === true ||
+            $request->wantsJson() === true ||
+            $isJsonResponse === true
+        ) {
             $startString = 'var debug =';
             $startPos = strpos($barResponse, $startString);
             $endString = "debug.style.display = 'block';";
             $endPos = strpos($barResponse, $endString) - $startPos + strlen($endString);
-            $barResponse = '<script>(function(){ var n = document.getElementById("tracy-debug"); if (n) { document.body.removeChild(n);'.substr($barResponse, $startPos, $endPos).'};})();</script>';
-            $response->setContent($content.$barResponse);
-
-            return $response;
+            $barResponse = '(function(){ var n = document.getElementById("tracy-debug"); if (n) { document.body.removeChild(n);'.substr($barResponse, $startPos, $endPos).'};})();';
         }
 
-        $pos = strripos($content, '</body>');
-        if ($pos === false) {
-            return $response;
+        if ($request->wantsJson() === true || $isJsonResponse === true) {
+            // $response->setCookie($barResponse);
+            // $content = json_decode($content, true);
+            // $content['TracyDebug'] = $barResponse;
+            // $content = json_encode($content);
+        } elseif ($request->pjax() === true || $request->ajax() === true) {
+            $content .= '<script>'.$barResponse.'</script>';
+        } else {
+            // $barResponse .= static::ajaxMonitor();
+            $pos = strripos($content, '</body>');
+            if ($pos !== false) {
+                $content = substr($content, 0, $pos).$barResponse.substr($content, $pos);
+            } else {
+                $content .= $barResponse;
+            }
         }
-
-        $response->setContent(
-            substr($content, 0, $pos).$barResponse.substr($content, $pos)
-        );
+        $response->setContent($content);
 
         return $response;
+    }
+
+    public static function ajaxMonitor()
+    {
+        return '<script>'.file_get_contents(__DIR__.'/../public/js/monitor.js').'</script>';
+        // return  '<script>!function(){var AjaxMonitor=function(request){return function(mode){var req=new request(mode),onReadyStateChange=function(){if(4===req.readyState&&200===req.status)try{if("arraybuffer"!=req.responseType.toLowerCase()){var data=eval("("+req.responseText+")");if(data.TracyDebug){var code=data.TracyDebug;eval(code)}}}catch(e){}};return req.addEventListener("readystatechange",onReadyStateChange),req}};window.ActiveXObject&&(window.ActiveXObject=AjaxMonitor(window.ActiveXObject)),window.XMLHttpRequest&&(window.XMLHttpRequest=AjaxMonitor(window.XMLHttpRequest))}();</script>';
     }
 }
