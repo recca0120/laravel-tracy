@@ -1,5 +1,6 @@
-## Laravel Tracy Debugbar
-Laravel with Nette Tracy Debug Tool
+## [Nette Tracy](https://github.com/nette/tracy.git) for Laravel 5
+
+Better Laravel Exception Handler
 
 [![Latest Stable Version](https://poser.pugx.org/recca0120/laravel-tracy/v/stable)](https://packagist.org/packages/recca0120/laravel-tracy)
 [![Total Downloads](https://poser.pugx.org/recca0120/laravel-tracy/downloads)](https://packagist.org/packages/recca0120/laravel-tracy)
@@ -8,24 +9,35 @@ Laravel with Nette Tracy Debug Tool
 [![Monthly Downloads](https://poser.pugx.org/recca0120/laravel-tracy/d/monthly)](https://packagist.org/packages/recca0120/laravel-tracy)
 [![Daily Downloads](https://poser.pugx.org/recca0120/laravel-tracy/d/daily)](https://packagist.org/packages/recca0120/laravel-tracy)
 
-## Installation
+![Laravel Tracy](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/tracy.png)
 
-Add Presenter to your composer.json file:
+## Features
+- Visualization of errors and exceptions
+- Debugger Bar
+- Exception stack trace contains values of all method arguments.
 
-```js
-"require": {
-    "recca0120/laravel-tracy": "^1.0.1"
+## Online Demo
+[Demo](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/tracy-exception.html)
+
+## Installing
+
+To get the latest version of Laravel Exceptions, simply require the project using [Composer](https://getcomposer.org):
+
+```bash
+composer require recca0120/laravel-tracy
+```
+
+Instead, you may of course manually update your require block and run `composer update` if you so choose:
+
+```json
+{
+    "require": {
+        "recca0120/laravel-tracy": "^1.3.5"
+    }
 }
 ```
-Now, run a composer update on the command line from the root of your project:
 
-```
-composer update
-```
-
-### Registering the Package
-
-Include the service provider within `app/laravel-tracy/app.php`. The service povider is needed for the generator artisan command.
+Include the service provider within `config/app.php`. The service povider is needed for the generator artisan command.
 
 ```php
 'providers' => [
@@ -33,6 +45,12 @@ Include the service provider within `app/laravel-tracy/app.php`. The service pov
     Recca0120\LaravelTracy\ServiceProvider::class,
     ...
 ];
+```
+
+publish
+
+```bash
+artisan vendor:publish --provider="Recca0120\LaravelTracy\ServiceProvider"
 ```
 
 ### Editor Link
@@ -49,28 +67,50 @@ OSX
 https://github.com/dhoulb/subl
 ```
 
-## ScreenShot
-![Panel](http://2.bp.blogspot.com/-gabdqGXuKkk/VnEl-Y6R5UI/AAAAAAAANsc/g3FoEX42ElE/s1600/Image%2B3.png)
-![Debug](http://3.bp.blogspot.com/-Y-omvzldG-Q/VnEl_Vv8LhI/AAAAAAAANsk/QBxZfz-7sQk/s1600/Image%2B4.png)
+## Debugger Bar
 
-# NEW FEATURE
-![Terminal](http://3.bp.blogspot.com/-FTEKX8wtKoo/VotlUs5P_pI/AAAAAAAANvM/85YsBhaaRN4/s1600/Image%2B8.png)
+### SystemInfo
+![SystemInfo](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/systeminfo.png)
 
-Add Presenter to your composer.json file:
+### Route
+![Route](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/route.png)
 
-```js
-"require": {
-    "recca0120/terminal": "^1.3.3"
+### View
+![View](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/view.png)
+
+### Session
+![Session](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/session.png)
+
+### Request
+![Request](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/request.png)
+
+### Login
+![Login](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/login.png)
+
+# Web Artisan
+you can execute artisan command in website
+![Terminal](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/terminal.png)
+
+web artisan is another package [recca0120/terminal](git@github.com:recca0120/laravel-terminal.git), you must install recca0120/terminal
+
+## Installing Terminal
+To get the latest version of Laravel Exceptions, simply require the project using [Composer](https://getcomposer.org):
+
+```bash
+composer require recca0120/terminal
+```
+
+Instead, you may of course manually update your require block and run `composer update` if you so choose:
+
+```json
+{
+    "require": {
+        "recca0120/terminal": "^1.3.3"
+    }
 }
 ```
 
-Now, run a composer update on the command line from the root of your project:
-
-```
-composer update
-```
-
-Include the service provider within app/config/app.php. The service povider is needed for the generator artisan command.
+Include the service provider within `config/app.php`. The service povider is needed for the generator artisan command.
 
 ```php
 'providers' => [
@@ -80,11 +120,8 @@ Include the service provider within app/config/app.php. The service povider is n
 ];
 ```
 
-Publish assets files
+publish
 
-```php
-artisan vendor:publish --provider="Recca0120\Terminal\ServiceProvider"
+```bash
+artisan vendor:publish --provider="Recca0120\LaravelTracy\ServiceProvider"
 ```
-
-## INFO
-[about terminal](https://github.com/recca0120/terminal)
