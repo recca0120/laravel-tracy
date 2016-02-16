@@ -1,7 +1,7 @@
 {
     "name": "recca0120/laravel-tracy",
     "description": "A Laravel Package to integrate Nette Tracy Debugger",
-    "keywords": ["laravel", "debugbar", "profiler", "debug", "webprofiler", "nette", "tracy"],
+    "keywords": ["laravel", "debugbar", "profiler", "debug", "webprofiler", "nette", "tracy", "error", "error handler"],
     "license": "MIT",
     "authors": [
         {
