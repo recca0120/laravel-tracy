@@ -6,7 +6,6 @@ use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
 use Illuminate\Contracts\Routing\ResponseFactory as ResponseFactoryContract;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Recca0120\LaravelTracy\Exceptions\Handler;
-use Recca0120\Terminal\ServiceProvider as TerminalServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -41,7 +40,6 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
-        $this->registerTerminal();
 
         $this->app->singleton('tracy.debugger', function ($app) {
             $config = $app['config']->get('tracy');
@@ -58,20 +56,6 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->extend(ExceptionHandlerContract::class, function ($exceptionHandler, $app) {
             return new Handler($app->make(ResponseFactoryContract::class), $exceptionHandler);
         });
-    }
-
-    /**
-     * register terminal.
-     *
-     * @return void
-     */
-    protected function registerTerminal()
-    {
-        $config = $this->app['config']->get('tracy');
-        if (array_get($config, 'panels.terminal') === true) {
-            $serviceProvider = TerminalServiceProvider::class;
-            $this->app->register($serviceProvider);
-        }
     }
 
     /**
