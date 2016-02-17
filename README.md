@@ -87,41 +87,7 @@ https://github.com/dhoulb/subl
 ### Login
 ![Login](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/login.png)
 
-# Web Artisan
-you can execute artisan command in website
+### Web Artisan
 ![Terminal](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/terminal.png)
 
-web artisan is another package [recca0120/terminal](git@github.com:recca0120/laravel-terminal.git), you must install recca0120/terminal
-
-## Installing Terminal
-To get the latest version of Laravel Exceptions, simply require the project using [Composer](https://getcomposer.org):
-
-```bash
-composer require recca0120/terminal
-```
-
-Instead, you may of course manually update your require block and run `composer update` if you so choose:
-
-```json
-{
-    "require": {
-        "recca0120/terminal": "^1.3.3"
-    }
-}
-```
-
-Include the service provider within `config/app.php`. The service povider is needed for the generator artisan command.
-
-```php
-'providers' => [
-    ...
-    Recca0120\Terminal\ServiceProvider::class,
-    ...
-];
-```
-
-publish
-
-```bash
-artisan vendor:publish --provider="Recca0120\LaravelTracy\ServiceProvider"
-```
+web artisan is another package [recca0120/terminal](git@github.com:recca0120/laravel-terminal.git)
