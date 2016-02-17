@@ -59,6 +59,13 @@ class Debugger
                 $bar->addPanel($this->panels[$key], $class);
             }
         }
+
+        if (array_get(static::$options, 'panels.terminal') === true) {
+            $serviceProvider = '\Recca0120\Terminal\ServiceProvider';
+            if ($app->getProvider($serviceProvider) === null) {
+                $app->register($serviceProvider);
+            }
+        }
     }
 
     /**
@@ -138,6 +145,7 @@ class Debugger
     public static function appendDebugbar($request, $response)
     {
         if ($response->isRedirection() === true ||
+            strpos(strtolower($response->headers->get('content-type')), 'text/html') === false ||
             $response instanceof BinaryFileResponse ||
             $response instanceof StreamedResponse
         ) {

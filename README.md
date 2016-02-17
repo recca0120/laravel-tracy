@@ -88,6 +88,8 @@ https://github.com/dhoulb/subl
 ![Login](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/login.png)
 
 ### Web Artisan
+web artisan is another package [recca0120/terminal](https://github.com/recca0120/laravel-terminal)
 ![Terminal](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/terminal.png)
 
-web artisan is another package [recca0120/terminal](git@github.com:recca0120/laravel-terminal.git)
+#### notice
+if you install terminal before, this panel will throw errors, please remove folder `app/resources/views/vendor/terminal`

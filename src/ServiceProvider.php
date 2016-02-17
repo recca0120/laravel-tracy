@@ -23,7 +23,10 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot()
     {
-        $this->handlePublishes();
+        if ($this->app->runningInConsole() === true) {
+            $this->handlePublishes();
+        }
+
         if ($this->isEnabled() === false) {
             return;
         }

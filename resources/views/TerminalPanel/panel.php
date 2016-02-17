@@ -6,7 +6,7 @@
     overflow-x: hidden;
 }
 
-#tracy-debug .laravel-TerminalPanel #shell {
+#tracy-debug .laravel-TerminalPanel #panel-shell {
     margin: 10px 15px;
 }
 
