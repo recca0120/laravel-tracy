@@ -23,9 +23,7 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot()
     {
-        if ($this->app->runningInConsole() === true) {
-            $this->handlePublishes();
-        }
+        $this->handlePublishes();
 
         if ($this->isEnabled() === false) {
             return;
@@ -42,9 +40,19 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
+
         $this->app->singleton('tracy.debugger', function ($app) {
-            return new Debugger([], $app);
+            $config = $app['config']->get('tracy');
+            $debugger = new Debugger($config, $app);
+            $debugger->setBasePath(array_get($config, 'base_path'));
+
+            $this->app['events']->listen('kernel.handled', function ($request, $response) use ($debugger) {
+                return $debugger->appendDebugbar($request, $response);
+            });
+
+            return $debugger;
         });
+
         $this->app->extend(ExceptionHandlerContract::class, function ($exceptionHandler, $app) {
             return new Handler($app->make(ResponseFactoryContract::class), $exceptionHandler);
         });

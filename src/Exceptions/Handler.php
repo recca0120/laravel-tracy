@@ -25,7 +25,7 @@ class Handler implements ExceptionHandlerContract
     /**
      * __construct.
      * @param \Illuminate\Contracts\Routing\ResponseFactory       $responseFactory
-     * @param \Illuminate\Contracts\Debug\ExceptionHandler $exceptionHandler
+     * @param \Illuminate\Contracts\Debug\ExceptionHandler        $exceptionHandler
      */
     public function __construct(
         ResponseFactoryContract $responseFactory,
