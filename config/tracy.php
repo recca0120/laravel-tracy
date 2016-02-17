@@ -15,6 +15,7 @@ return [
         'request'  => true,
         'event'    => false,
         'user'     => true,
+        'terminal' => true,
         // custom panel
         // 'Recca0120\LaravelTracy\Panels\CustomPanel' => true,
     ],
