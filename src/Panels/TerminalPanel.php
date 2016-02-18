@@ -13,7 +13,7 @@ class TerminalPanel extends AbstractPanel
     {
         if ($this->isLaravel() === true) {
             $html = null;
-            $controller = $this->app->make('\Recca0120\Terminal\Http\Controllers\TerminalController');
+            $controller = $this->app->make(\Recca0120\Terminal\Http\Controllers\TerminalController::class);
             $html = $this->app->call([$controller, 'index'], ['panel' => true])->render();
             $this->attributes['html'] = $html;
         }

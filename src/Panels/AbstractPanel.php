@@ -37,10 +37,10 @@ abstract class AbstractPanel extends Fluent implements IBarPanel
     /**
      * construct.
      *
-     * @param \Illuminate\Contracts\Foundation\Application $app
      * @param array $config
+     * @param \Illuminate\Contracts\Foundation\Application $app
      */
-    public function __construct($app = null, $config = [])
+    public function __construct($config = [], $app = null)
     {
         $this->app = $app;
         $this->config = $config;
