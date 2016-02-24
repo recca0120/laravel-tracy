@@ -124,7 +124,9 @@ class Debugger
         } elseif ($request->pjax() === true || $request->ajax() === true) {
             $content .= '<script>'.$barResponse.'</script>';
         } else {
-            // $barResponse .= $this->ajaxMonitor();
+            $barResponse =
+                $this->getJavascript('tracy.js').
+                $barResponse;
             $pos = strripos($content, '</body>');
             if ($pos !== false) {
                 $content = substr($content, 0, $pos).$barResponse.substr($content, $pos);
@@ -137,12 +139,20 @@ class Debugger
         return $response;
     }
 
-    protected function ajaxMonitor()
+    /**
+     * get javascript.
+     * @param  string $file
+     * @return string
+     */
+    protected function getJavascript($file)
     {
-        return '<script>'.file_get_contents(__DIR__.'/../public/js/monitor.js').'</script>';
-        // return  '<script>!function(){var AjaxMonitor=function(request){return function(mode){var req=new request(mode),onReadyStateChange=function(){if(4===req.readyState&&200===req.status)try{if("arraybuffer"!=req.responseType.toLowerCase()){var data=eval("("+req.responseText+")");if(data.TracyDebug){var code=data.TracyDebug;eval(code)}}}catch(e){}};return req.addEventListener("readystatechange",onReadyStateChange),req}};window.ActiveXObject&&(window.ActiveXObject=AjaxMonitor(window.ActiveXObject)),window.XMLHttpRequest&&(window.XMLHttpRequest=AjaxMonitor(window.XMLHttpRequest))}();</script>';
+        return '<script>'.file_get_contents(__DIR__.'/../public/js/'.$file).'</script>';
     }
 
+    /**
+     * set base path.
+     * @param string $basePath
+     */
     public function setBasePath($basePath)
     {
         static::$basePath = $basePath;

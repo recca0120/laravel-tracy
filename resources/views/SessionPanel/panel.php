@@ -1,6 +1,4 @@
-<style class="tracy-debug">#tracy-debug .laravel-SessionPanel .tracy-inner{width:700px}#tracy-debug .laravel-SessionPanel .tracy-inner table{width:100%}#tracy-debug .laravel-SessionPanel-parameters pre{background:#FDF5CE;padding:.4em .7em;border:1px dotted silver;overflow:auto}</style>
-
-<div class="laravel-SessionPanel">
+<div id="Laravel-SessionPanel">
     <h1>Session #<?php echo $sessionId  ?> (Lifetime: <?php echo array_get($config, 'lifetime') ?>)</h1>
     <div class="tracy-inner">
         <?php if (empty($laravelSession) === true): ?>
@@ -12,11 +10,17 @@
                         <tr>
                             <th><?php echo $key  ?></th>
                             <td>
-                                <?php if (is_string($value) === true): ?>
-                                    <?php echo $value  ?>
-                                <?php else: ?>
-                                    <?php echo Tracy\Dumper::toHtml($value, $dumpOption) ?>
-                                <?php endif ?>
+                                <div id="Laravel-SessionPanel-<?php echo $key; ?>">
+                                </div>
+                                <script>
+                                (function() {
+                                    var el = document.getElementById("Laravel-SessionPanel-<?php echo $key; ?>");
+                                    el.innerHTML = TracyDump(<?php echo json_encode($value) ?>);
+                                })();
+                                </script>
+                                <?php
+                                // echo Tracy\Dumper::toHtml($value, $dumpOption);
+                                ?>
                             </td>
                         </tr>
                     <?php endforeach ?>

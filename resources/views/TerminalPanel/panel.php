@@ -1,18 +1,18 @@
-<style>
-#tracy-debug .laravel-TerminalPanel .tracy-inner {
+<style class="tracy-debug">
+#Laravel-TerminalPanel .tracy-inner {
     width: 700px;
     height: 500px;
     background: #000;
-    overflow-x: hidden;
+    overflow-x: hidden !important;
 }
 
-#tracy-debug .laravel-TerminalPanel #panel-shell {
+#Laravel-TerminalPanel #panel-shell {
     margin: 10px 15px;
 }
 
-#tracy-debug .laravel-TerminalPanel .tracy-inner div,
-#tracy-debug .laravel-TerminalPanel .tracy-inner span,
-#tracy-debug .laravel-TerminalPanel .tracy-inner a {
+#Laravel-TerminalPanel .tracy-inner div,
+#Laravel-TerminalPanel .tracy-inner span,
+#Laravel-TerminalPanel .tracy-inner a {
     background: #000;
     color: rgb(170, 170, 170);
     font-family: monospace;
@@ -22,16 +22,16 @@
     font-weight: normal;
 }
 
-#tracy-debug .laravel-TerminalPanel .tracy-inner a {
+#Laravel-TerminalPanel .tracy-inner a {
     color: #0f60ff !important;
 }
 
-#tracy-debug .laravel-TerminalPanel .tracy-inner a:hover {
+#Laravel-TerminalPanel .tracy-inner a:hover {
     color: red !important;
     text-decoration: underline !important;
 }
 </style>
-<div class="laravel-TerminalPanel">
+<div id="Laravel-TerminalPanel">
     <h1>Terminal</h1>
     <div class="tracy-inner">
         <?php if (empty($html) === false): ?>

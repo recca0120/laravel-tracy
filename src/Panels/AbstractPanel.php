@@ -3,6 +3,7 @@
 namespace Recca0120\LaravelTracy\Panels;
 
 use Illuminate\Support\Fluent;
+use Recca0120\LaravelTracy\Minifier;
 use Tracy\Helpers;
 use Tracy\IBarPanel;
 
@@ -101,14 +102,30 @@ abstract class AbstractPanel extends Fluent implements IBarPanel
     protected function renderView($type)
     {
         $this->isBooted();
+        $viewPath = __DIR__.'/../../resources/views/'.substr(static::class, strrpos(static::class, '\\') + 1).'/';
+        $view = $view = $viewPath.$type.'.php';
+        $cache = $viewPath.$type.'.min.php';
+
+        if (is_file($cache) === false || filemtime($view) > filemtime($cache) === true) {
+            $content = file_get_contents($view);
+            $content = preg_replace_callback('/'.implode('|', [
+                '<(?<styleTag>style)(?<styleAttributes>[^>]*)>(?<style>.*)<\/style>',
+                '<(?<scriptTag>script)(?<scriptAttributes>[^>]*)>(?<script>.*)<\/script>',
+            ]).'/ism', function ($m) {
+                if ($m['styleTag'] === 'style') {
+                    return '<style'.$m['styleAttributes'].'>'.Minifier::css($m['style']).'</style>';
+                }
+
+                return '<script'.$m['scriptAttributes'].'>'.Minifier::js($m['script']).'</script>';
+            }, $content);
+
+            file_put_contents($cache, Minifier::html($content));
+        }
         ob_start();
-        $view = __DIR__.'/../../resources/views/'.
-            substr(static::class, strrpos(static::class, '\\') + 1).
-            '/'.$type.'.php';
         extract(array_merge($this->toArray(), [
             'dumpOption' => &$this->config,
         ]));
-        require $view;
+        require $cache;
         $content = ob_get_clean();
 
         return $content;

@@ -1,17 +1,17 @@
 <style class="tracy-debug">
-    #tracy-debug td.laravel-DatabasePanel-sql{
+    #tracy-debug .Laravel-DatabasePanel-sql{
         background:white!important
     }
-    #tracy-debug .laravel-DatabasePanel-source{
+    #tracy-debug .Laravel-DatabasePanel-source{
         color:#BBB!important
     }
-    #tracy-debug .laravel-DatabasePanel code {
+    #tracy-debug #Laravel-DatabasePanel code {
         color:#f00!important;
     }
 </style>
 
 <h1>Queries: <?php echo $count ?>, time: <?php echo $totalTime ?></h1>
-<div class="tracy-inner laravel-DatabasePanel">
+<div class="tracy-inner" id="Laravel-DatabasePanel">
     <table>
         <thead>
             <tr>
@@ -37,7 +37,7 @@
                             <br /><a class="tracy-toggle tracy-collapsed" data-ref="#<?php echo $explainId ?>" data-tracy-ref="#<?php echo $explainId ?>">explain</a>
                         <?php endif ?>
                     </td>
-                    <td class="laravel-DatabasePanel-sql">
+                    <td class="Laravel-DatabasePanel-sql">
                         <?php echo $formattedSql ?>
 
                         <?php if (count($hints) > 0): ?>
@@ -60,7 +60,7 @@
                         <?php endif ?>
                         <?php if (count($explains) > 0): ?>
                             <br />
-                            <table class="tracy-collapsed laravel-DatabasePanel-explain" id="<?php echo $explainId ?>">
+                            <table class="tracy-collapsed Laravel-DatabasePanel-explain" id="<?php echo $explainId ?>">
                                 <thead>
                                     <tr>
                                         <?php foreach ($explains[0] as $col => $foo): ?>

@@ -1,4 +1,4 @@
-<div class="laravel-RequestPanel">
+<div id="Laravel-RequestPanel">
     <h1>Request</h1>
     <div class="tracy-inner">
         <?php if (empty($request) === true): ?>
@@ -10,11 +10,17 @@
                         <tr>
                             <th><?php echo strtoupper($key) ?></th>
                             <td>
-                                <?php if (is_string($value) === true): ?>
-                                    <?php echo $value ?>
-                                <?php else: ?>
-                                    <?php echo Tracy\Dumper::toHtml($value, $dumpOption) ?>
-                                <?php endif ?>
+                                <div id="Laravel-RequestPanel-<?php echo $key; ?>">
+                                </div>
+                                <script>
+                                (function() {
+                                    var el = document.getElementById("Laravel-RequestPanel-<?php echo $key; ?>");
+                                    el.innerHTML = TracyDump(<?php echo json_encode($value) ?>);
+                                })();
+                                </script>
+                                <?php
+                                // echo Tracy\Dumper::toHtml($value, $dumpOption);
+                                ?>
                             </td>
                         </tr>
                     <?php endforeach ?>

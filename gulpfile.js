@@ -12,7 +12,11 @@ var elixir = require('laravel-elixir');
  */
 
 elixir(function(mix) {
-    mix.phpUnit([
-        'tests/**/*'
-    ]);
+    mix
+        .coffee([
+            '**/*.coffee'
+        ], config.get('public.js.outputFolder') + '/tracy.js')
+        .phpUnit([
+            'tests/**/*'
+        ]);
 });

@@ -7,7 +7,7 @@
                     window.req = req;
                     try {
                         if (req.responseType.toLowerCase() != "arraybuffer") {
-                            // var data = eval("("+req.responseText+")");
+                            var data = eval("("+req.responseText+")");
                         }
                     } catch (e) {
                     }
