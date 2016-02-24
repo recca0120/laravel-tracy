@@ -1,4 +1,4 @@
-do () ->
+do ->
     class Dumper
         typeOf: (obj) =>
             if obj is null

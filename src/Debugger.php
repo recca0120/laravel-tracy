@@ -92,23 +92,19 @@ class Debugger
     public function appendDebugbar($request, $response)
     {
         if ($response->isRedirection() === true ||
-            strpos(strtolower($response->headers->get('content-type')), 'text/html') === false ||
             $response instanceof BinaryFileResponse ||
-            $response instanceof StreamedResponse
+            $response instanceof StreamedResponse ||
+            (strpos(strtolower($response->headers->get('content-type')), 'text/html') === false && $request->ajax() === false)
         ) {
             return $response;
         }
 
-        $isJsonResponse = $response instanceof JsonResponse;
-
+        $isJsonResponse = ($response instanceof JsonResponse) || $request->wantsJson() === true;
         $content = $response->getContent();
         $barResponse = $this->getBarResponse();
+        $ajaxDebug = $this->config['ajax']['debug'];
 
-        if ($request->ajax() === true ||
-            $request->pjax() === true ||
-            $request->wantsJson() === true ||
-            $isJsonResponse === true
-        ) {
+        if ($request->ajax() === true || $isJsonResponse === true) {
             $startString = 'var debug =';
             $startPos = strpos($barResponse, $startString);
             $endString = "debug.style.display = 'block';";
@@ -116,16 +112,21 @@ class Debugger
             $barResponse = '(function(){ var n = document.getElementById("tracy-debug"); if (n) { document.body.removeChild(n);'.substr($barResponse, $startPos, $endPos).'};})();';
         }
 
-        if ($request->wantsJson() === true || $isJsonResponse === true) {
-            // $response->setCookie($barResponse);
-            // $content = json_decode($content, true);
-            // $content['TracyDebug'] = $barResponse;
-            // $content = json_encode($content);
-        } elseif ($request->pjax() === true || $request->ajax() === true) {
+        if ($request->pjax() === true && $isJsonResponse === false) {
             $content .= '<script>'.$barResponse.'</script>';
+        } elseif ($request->ajax() === true || $isJsonResponse === true) {
+            if ($ajaxDebug === true) {
+                $encode = base64_encode(@json_encode($barResponse));
+                if (headers_sent() === false && strlen($encode) <= $this->config['ajax']['max_size']) {
+                    foreach (str_split($encode, 4990) as $k => $v) {
+                        header('LT-'.$k.':'.$v);
+                    }
+                }
+            }
         } else {
             $barResponse =
-                $this->getJavascript('tracy.js').
+                $this->getJavascript('dump.js').
+                (($ajaxDebug === true) ? $this->getJavascript('ajax.js') : '').
                 $barResponse;
             $pos = strripos($content, '</body>');
             if ($pos !== false) {

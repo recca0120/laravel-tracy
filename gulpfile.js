@@ -14,8 +14,11 @@ var elixir = require('laravel-elixir');
 elixir(function(mix) {
     mix
         .coffee([
-            '**/*.coffee'
-        ], config.get('public.js.outputFolder') + '/tracy.js')
+            'dump.coffee'
+        ], config.get('public.js.outputFolder') + '/dump.js')
+        .coffee([
+            'ajax.coffee'
+        ], config.get('public.js.outputFolder') + '/ajax.js')
         .phpUnit([
             'tests/**/*'
         ]);
