@@ -57,6 +57,9 @@ class Handler implements ExceptionHandlerContract
      */
     public function render($request, Exception $e)
     {
+        if (method_exists($e, 'getResponse') === true) {
+            return $e->getResponse();
+        }
         $statusCode = 500;
         $headers = [];
         if (is_null($this->exceptionHandler) === false) {
