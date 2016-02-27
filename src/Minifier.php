@@ -130,4 +130,34 @@ class Minifier
             ],
         $input);
     }
+
+    public static function compress($unc)
+    {
+        $i;
+        $c;
+        $wc;
+        $w = '';
+        $dictionary = [];
+        $result = [];
+        $dictSize = 256;
+        for ($i = 0; $i < 256; $i += 1) {
+            $dictionary[chr($i)] = $i;
+        }
+        for ($i = 0; $i < strlen($unc); $i++) {
+            $c = $unc[$i];
+            $wc = $w.$c;
+            if (array_key_exists($w.$c, $dictionary)) {
+                $w = $w.$c;
+            } else {
+                array_push($result, $dictionary[$w]);
+                $dictionary[$wc] = $dictSize++;
+                $w = (string) $c;
+            }
+        }
+        if ($w !== '') {
+            array_push($result, $dictionary[$w]);
+        }
+
+        return implode(',', $result);
+    }
 }

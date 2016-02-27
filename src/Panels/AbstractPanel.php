@@ -102,6 +102,7 @@ abstract class AbstractPanel extends Fluent implements IBarPanel
     protected function renderView($type)
     {
         $this->isBooted();
+        $dumpMethod = (empty($this->config['panelDumpMethod']) === true || $this->config['panelDumpMethod'] === 'tracy') ? 'tracy' : 'js';
         $viewPath = __DIR__.'/../../resources/views/'.substr(static::class, strrpos(static::class, '\\') + 1).'/';
         $view = $view = $viewPath.$type.'.php';
         $cache = $viewPath.$type.'.min.php';
@@ -121,9 +122,11 @@ abstract class AbstractPanel extends Fluent implements IBarPanel
 
             file_put_contents($cache, Minifier::html($content));
         }
+
         ob_start();
         extract(array_merge($this->toArray(), [
-            'dumpOption' => &$this->config,
+            'dumpMethod' => $dumpMethod,
+            'config'     => &$this->config,
         ]));
         require $cache;
         $content = ob_get_clean();

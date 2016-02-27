@@ -32,15 +32,20 @@
                             ?>
                         </td>
                         <td>
-                            <div id="Laravel-ViewPanel-<?php echo $key; ?>">
-                            </div>
-                            <?php $data = $log['data']; ?>
-                            <script>
-                            (function() {
-                                var el = document.getElementById("Laravel-ViewPanel-<?php echo $key; ?>");
-                                el.innerHTML = TracyDump(<?php echo json_encode($data) ?>);
-                            })();
-                            </script>
+                            <?php $value = $log['data']; ?>
+                            <?php if ($dumpMethod === 'tracy'): ?>
+                                <?php
+                                    echo Tracy\Dumper::toHtml($value, $config)
+                                ?>
+                            <?php else: ?>
+                                <div id="Laravel-ViewPanel-<?php echo $key; ?>"></div>
+                                <script>
+                                (function() {
+                                    var el = document.getElementById("Laravel-ViewPanel-<?php echo $key; ?>");
+                                    el.innerHTML = TracyDump(<?php echo json_encode($value) ?>);
+                                })();
+                                </script>
+                            <?php endif ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

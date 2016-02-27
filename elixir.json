@@ -1,5 +1,5 @@
 {
-    "production": true,
+    "production": false,
     "sourcemaps": false,
     "publicPath": "public",
     "font": {

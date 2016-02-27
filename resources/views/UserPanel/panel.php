@@ -9,17 +9,19 @@
                     <tr>
                         <th><?php echo $key  ?></th>
                         <td>
-                            <div id="Laravel-UserPanel-<?php echo $key; ?>">
-                            </div>
-                            <script>
-                            (function() {
-                                var el = document.getElementById("Laravel-UserPanel-<?php echo $key; ?>");
-                                el.innerHTML = TracyDump(<?php echo json_encode($value) ?>);
-                            })();
-                            </script>
-                            <?php
-                                // echo Tracy\Dumper::toHtml($value, $dumpOption)
-                            ?>
+                            <?php if ($dumpMethod === 'tracy'): ?>
+                                <?php
+                                    echo Tracy\Dumper::toHtml($value, $config)
+                                ?>
+                            <?php else: ?>
+                                <div id="Laravel-UserPanel-<?php echo $key; ?>"></div>
+                                <script>
+                                (function() {
+                                    var el = document.getElementById("Laravel-UserPanel-<?php echo $key; ?>");
+                                    el.innerHTML = TracyDump(<?php echo json_encode($value) ?>);
+                                })();
+                                </script>
+                            <?php endif ?>
                         </td>
                     </tr>
                 <?php endforeach ?>

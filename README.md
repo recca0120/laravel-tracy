@@ -52,6 +52,41 @@ publish
 ```bash
 artisan vendor:publish --provider="Recca0120\LaravelTracy\ServiceProvider"
 ```
+## Config
+```php
+return [
+    'ajax'      => [
+        'debugbar'           => false, // enable render debugbar when http request is ajax
+        'gzCompressLevel'    => 5,    // gzcompress level
+        /*
+        * http://stackoverflow.com/questions/3326210/can-http-headers-be-too-big-for-browsers/3431476#3431476
+        * Lowest limit found in popular browsers:
+        *   - 10KB per header
+        *   - 256 KB for all headers in one response.
+        *   - Test results from MacBook running Mac OS X 10.6.4:
+        */
+        'maxHeaderSize'   => 102400, // 102400b its => 100 kb
+    ],
+    'basePath'     => null,
+    'strictMode'   => true,
+    'maxDepth'     => 4,
+    'maxLen'       => 1000,
+    'showLocation' => true,
+    'editor'       => 'subl://open?url=file://%file&line=%line',
+    'panels'       => [
+        'routing'  => true,
+        'database' => true,
+        'view'     => true,
+        'session'  => true,
+        'request'  => true,
+        'event'    => false,
+        'user'     => true,
+        'terminal' => true,
+    ],
+    // value: js or tracy
+    'panelDumpMethod' => 'js', // tracy dump need more memory
+];
+```
 
 ### Editor Link
 
@@ -93,3 +128,17 @@ web artisan is another package [recca0120/terminal](https://github.com/recca0120
 
 #### notice
 if you install terminal before, this panel will throw errors, please remove folder `app/resources/views/vendor/terminal`
+
+## ISSUE
+when ajax debugbar is enabled and debugbar is bigger than 256k, will throw 500 exception, or browser will be no response
+
+so I try to compress debugbar in php, and decompress debugbar in javascript.
+
+It looks like working at chrome 48.0.2564.116 64bit, windows 10
+
+but if you use Laravel-Tracy and it doesn't work correctly
+
+you can try
+- disable panel [view , request, event]
+- panelDumpMethod change to js
+- disable ajax debugbar

@@ -38,6 +38,7 @@ class Debugger
         }
 
         $this->config = $config;
+        $this->setBasePath(array_get($config, 'basePath'));
         TracyDebugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
         TracyDebugger::$maxDepth = array_get($this->config, 'maxDepth');
         TracyDebugger::$maxLen = array_get($this->config, 'maxLen');
@@ -53,7 +54,7 @@ class Debugger
                     $class = $key;
                 }
                 $this->panels[$key] = new $class($this->config, $app);
-                $bar->addPanel($this->panels[$key], $class);
+                $bar->addPanel($this->panels[$key], $key);
             }
         }
     }
@@ -73,11 +74,19 @@ class Debugger
      *
      * @return string
      */
-    public function getBarResponse()
+    public function getBarResponse($withoutScriptTag = false)
     {
         ob_start();
         TracyDebugger::getBar()->render();
         $content = ob_get_clean();
+
+        if ($withoutScriptTag === true) {
+            $startString = 'var debug =';
+            $startPos = strpos($content, $startString);
+            $endString = "debug.style.display = 'block';";
+            $endPos = strpos($content, $endString) - $startPos + strlen($endString);
+            $content = '(function(){ var n = document.getElementById("tracy-debug"); if (n) { document.body.removeChild(n);'.substr($content, $startPos, $endPos).'};})();';
+        }
 
         return $content;
     }
@@ -100,42 +109,64 @@ class Debugger
         }
 
         $isJsonResponse = ($response instanceof JsonResponse) || $request->wantsJson() === true;
-        $content = $response->getContent();
-        $barResponse = $this->getBarResponse();
-        $ajaxDebug = $this->config['ajax']['debug'];
+        $ajaxDebugbar = array_get($this->config, 'ajax.debugbar');
 
-        if ($request->ajax() === true || $isJsonResponse === true) {
-            $startString = 'var debug =';
-            $startPos = strpos($barResponse, $startString);
-            $endString = "debug.style.display = 'block';";
-            $endPos = strpos($barResponse, $endString) - $startPos + strlen($endString);
-            $barResponse = '(function(){ var n = document.getElementById("tracy-debug"); if (n) { document.body.removeChild(n);'.substr($barResponse, $startPos, $endPos).'};})();';
-        }
+        if ($request->ajax() === false) {
+            $content = $response->getContent();
 
-        if ($request->pjax() === true && $isJsonResponse === false) {
-            $content .= '<script>'.$barResponse.'</script>';
-        } elseif ($request->ajax() === true || $isJsonResponse === true) {
-            if ($ajaxDebug === true) {
-                $encode = base64_encode(@json_encode($barResponse));
-                if (headers_sent() === false && strlen($encode) <= $this->config['ajax']['max_size']) {
-                    foreach (str_split($encode, 4990) as $k => $v) {
-                        header('LT-'.$k.':'.$v);
-                    }
-                }
+            $barResponse = $this->getJavascript('dump.js');
+            if ($ajaxDebugbar === true) {
+                $barResponse .=
+                    $this->getJavascript('ajax.js');
             }
-        } else {
-            $barResponse =
-                $this->getJavascript('dump.js').
-                (($ajaxDebug === true) ? $this->getJavascript('ajax.js') : '').
-                $barResponse;
+            $barResponse .= $this->getBarResponse();
+
             $pos = strripos($content, '</body>');
             if ($pos !== false) {
                 $content = substr($content, 0, $pos).$barResponse.substr($content, $pos);
             } else {
                 $content .= $barResponse;
             }
+            $response->setContent($content);
+
+            return $response;
+        } elseif ($request->pjax() === true && $isJsonResponse === false) {
+            $content = $response->getContent()
+                .'<script>'.$this->getBarResponse(true).'</script>';
+            $response->setContent($content);
+
+            return $response;
+        } elseif ($request->ajax() === true) {
+            if ($ajaxDebugbar === true) {
+                $encode = base64_encode(gzcompress(
+                    $this->getBarResponse(true),
+                    array_get($this->config, 'ajax.gzCompressLevel', 1)
+                ));
+                /*
+                * http://stackoverflow.com/questions/3326210/can-http-headers-be-too-big-for-browsers/3431476#3431476
+                * Lowest limit found in popular browsers:
+                *   - 10KB per header
+                *   - 256 KB for all headers in one response.
+                *   - Test results from MacBook running Mac OS X 10.6.4:
+                *
+                * Biggest response successfully loaded, all data in one header:
+                *   - Opera 10: 150MB
+                *   - Safari 5: 20MB
+                *   - IE 6 via Wine: 10MB
+                *   - Chrome 5: 250KB
+                *   - Firefox 3.6: 10KB
+                */
+                $maxHeaderSize = (array_get($this->config, 'ajax.maxHeaderSize', 102400));
+
+                if (headers_sent() === false && strlen($encode) <= $maxHeaderSize) {
+                    foreach (str_split($encode, 4990) as $k => $v) {
+                        header('lt-'.$k.':'.$v);
+                    }
+                }
+            }
+
+            return $response;
         }
-        $response->setContent($content);
 
         return $response;
     }

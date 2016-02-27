@@ -46,7 +46,6 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->singleton('tracy.debugger', function ($app) {
             $config = $app['config']->get('tracy');
             $debugger = new Debugger($config, $app);
-            $debugger->setBasePath(array_get($config, 'base_path'));
 
             $this->app['events']->listen('kernel.handled', function ($request, $response) use ($debugger) {
                 return $debugger->appendDebugbar($request, $response);

@@ -16,9 +16,23 @@ elixir(function(mix) {
         .coffee([
             'dump.coffee'
         ], config.get('public.js.outputFolder') + '/dump.js')
+
+        .copy([
+            'resources/assets/vendor/base64/base64.min.js',
+            // 'resources/assets/vendor/zlib.js/bin/zlib.min.js',
+            'resources/assets/vendor/pako/dist/pako_inflate.min.js',
+        ], config.get('assets.js.folder'))
         .coffee([
             'ajax.coffee'
+        ], config.get('assets.js.folder') + '/ajax.js')
+        .combine([
+            config.get('assets.js.folder') + '/base64.min.js',
+            // config.get('assets.js.folder') + '/zlib.min.js',
+            config.get('assets.js.folder') + '/pako_inflate.min.js',
+            config.get('assets.js.folder') + '/ajax.js',
         ], config.get('public.js.outputFolder') + '/ajax.js')
+
+
         .phpUnit([
             'tests/**/*'
         ]);
