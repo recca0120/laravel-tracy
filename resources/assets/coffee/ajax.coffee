@@ -54,7 +54,9 @@ do ->
 
         onReadyStateChange: (e) =>
             request = e.currentTarget
-            if request.readyState is 4 && request.status is 200 && request.responseType.toLowerCase() isnt "arraybuffer"
+            if request.readyState is 4 && request.status is 200
+                unless window.Tracy
+                    return
                 try
                     headers = request.getAllResponseHeaders()
                     data = []

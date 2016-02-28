@@ -115,11 +115,11 @@ class Debugger
             $content = $response->getContent();
 
             $barResponse = $this->getJavascript('dump.js');
+            $barResponse .= $this->getBarResponse();
             if ($ajaxDebugbar === true) {
                 $barResponse .=
-                    $this->getJavascript('ajax.js');
+                $this->getJavascript('ajax.js');
             }
-            $barResponse .= $this->getBarResponse();
 
             $pos = strripos($content, '</body>');
             if ($pos !== false) {
