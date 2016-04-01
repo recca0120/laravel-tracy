@@ -118,7 +118,7 @@ class Debugger
             $barResponse .= $this->getBarResponse();
             if ($ajaxDebugbar === true) {
                 $barResponse .=
-                $this->getJavascript('ajax.js');
+                $this->getJavascript('ajax-monitor.js');
             }
 
             $pos = strripos($content, '</body>');
