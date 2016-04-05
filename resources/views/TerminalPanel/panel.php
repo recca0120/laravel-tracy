@@ -1,7 +1,7 @@
 <style class="tracy-debug">
 #Laravel-TerminalPanel .tracy-inner {
-    width: 700px;
-    height: 500px;
+    min-width: 700px;
+    min-height: 500px;
     background: #000;
     overflow-x: hidden !important;
 }
