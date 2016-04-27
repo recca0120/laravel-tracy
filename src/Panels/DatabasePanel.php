@@ -2,6 +2,7 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
+use Exception;
 use PDO;
 
 class DatabasePanel extends AbstractPanel
@@ -90,14 +91,17 @@ class DatabasePanel extends AbstractPanel
         $formattedSql = static::formatSql($sql);
 
         $explains = [];
+        $version = 0;
+
         if ($pdo instanceof PDO) {
-            $version = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
             $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
             if ($driver === 'mysql') {
                 $explains = $this->explains($pdo, $prepare, $bindings);
             }
-        } else {
-            $version = 0;
+            try {
+                $version = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+            } catch (Exception $e) {
+            }
         }
 
         $hints = static::performQueryAnalysis($sql, $version, $driver);
