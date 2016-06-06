@@ -2,6 +2,7 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
+use DateTime;
 use Exception;
 use PDO;
 
@@ -133,6 +134,10 @@ class DatabasePanel extends AbstractPanel
     public static function prepareBindings($prepare, $bindings = [])
     {
         array_walk($bindings, function (&$binding) {
+            if ($binding instanceof DateTime) {
+                $binding = $binding->format('Y-m-d H:i:s');
+            }
+
             if (is_string($binding) === true) {
                 $binding = "'".addslashes($binding)."'";
             }
