@@ -3,7 +3,7 @@
 namespace Recca0120\LaravelTracy;
 
 use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
-use Illuminate\Contracts\Routing\ResponseFactory as ResponseFactoryContract;
+use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\Terminal\ServiceProvider as TerminalServiceProvider;
@@ -22,15 +22,25 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(Tracy $tracy, DispatcherContract $events)
     {
-        $this->handlePublishes();
+        $this->publishes([
+            __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
+        ], 'config');
 
         if ($this->isEnabled() === false) {
             return;
         }
 
-        $this->app->instance('tracy.debugger', $this->app->make('tracy.debugger'));
+        $this->app->extend(ExceptionHandlerContract::class, function ($exceptionHandler, $app) {
+            return $app->make(Handler::class, [
+                'exceptionHandler' => $exceptionHandler,
+            ]);
+        });
+
+        $events->listen('kernel.handled', function ($request, $response) use ($tracy) {
+            $response = $tracy->renderResponse($response);
+        });
     }
 
     /**
@@ -41,31 +51,10 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
-        $this->registerTerminal();
-
-        $this->app->singleton('tracy.debugger', function ($app) {
-            $config = $app['config']->get('tracy');
-            $debugger = new Debugger($config, $app);
-
-            $this->app['events']->listen('kernel.handled', function ($request, $response) use ($debugger) {
-                return $debugger->appendDebugbar($request, $response);
-            });
-
-            return $debugger;
+        $this->app->singleton(Tracy::class, function ($app) {
+            return new Tracy($app['config']->get('tracy'), $app);
         });
 
-        $this->app->extend(ExceptionHandlerContract::class, function ($exceptionHandler, $app) {
-            return new Handler($app->make(ResponseFactoryContract::class), $exceptionHandler);
-        });
-    }
-
-    /**
-     * register terminal.
-     *
-     * @return void
-     */
-    protected function registerTerminal()
-    {
         $config = $this->app['config']->get('tracy');
         if (array_get($config, 'panels.terminal') === true) {
             $serviceProvider = TerminalServiceProvider::class;
@@ -74,19 +63,7 @@ class ServiceProvider extends BaseServiceProvider
     }
 
     /**
-     * handle publishes.
-     *
-     * @return void
-     */
-    protected function handlePublishes()
-    {
-        $this->publishes([
-            __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
-        ], 'config');
-    }
-
-    /**
-     * enable when php isn't cli and debug is true.
+     * Enable when php isn't cli and debug is true.
      *
      * @return bool
      */

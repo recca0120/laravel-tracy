@@ -2,38 +2,68 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
+use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Tracy\Debugger;
 
 class EventPanel extends AbstractPanel
 {
     /**
-     * All of the attributes set on the container.
+     * $counter.
+     *
+     * @var int
+     */
+    protected $counter = 0;
+
+    /**
+     * $totalTime.
+     *
+     * @var float
+     */
+    protected $totalTime = 0.0;
+
+    /**
+     * $events.
      *
      * @var array
      */
-    public $attributes = [
-        'count'     => 0,
-        'totalTime' => 0,
-        'logs'      => [],
-    ];
+    protected $events = [];
 
     /**
-     * if laravel will auto subscribe.
+     * setLaravel.
      *
-     * @return void
+     * @method setLaravel
+     *
+     * @param \Illuminate\Contracts\Foundation\Application $laravel
+     *
+     * @return self;
      */
-    public function subscribe()
+    public function setLaravel(ApplicationContract $laravel)
     {
+        parent::setLaravel($laravel);
         $key = get_class($this);
         $timer = Debugger::timer($key);
-        $event = $this->app['events'];
-        $event->listen('*', function ($params) use ($key, $event) {
+        $this->laravel->events->listen('*', function ($params) use ($key) {
             $execTime = Debugger::timer($key);
-            $firing = $event->firing();
-            $editorLink = static::getEditorLink(static::findSource());
-            $this->attributes['count']++;
-            $this->attributes['totalTime'] += $execTime;
-            $this->attributes['logs'][] = compact('execTime', 'firing', 'params', 'editorLink');
+            $firing = $this->laravel->events->firing();
+            $editorLink = self::editorLink(self::findSource());
+            $this->totalTime += $execTime;
+            $this->events[] = compact('execTime', 'firing', 'params', 'editorLink');
         });
+    }
+
+    /**
+     * getAttributes.
+     *
+     * @method getAttributes
+     *
+     * @return array
+     */
+    protected function getAttributes()
+    {
+        return [
+            'counter'   => $this->counter,
+            'totalTime' => $this->totalTime,
+            'events'    => $this->events,
+        ];
     }
 }

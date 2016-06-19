@@ -2,140 +2,110 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use Illuminate\Support\Fluent;
-use Recca0120\LaravelTracy\Minifier;
+use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Tracy\Helpers;
 use Tracy\IBarPanel;
 
-abstract class AbstractPanel extends Fluent implements IBarPanel
+abstract class AbstractPanel implements IBarPanel
 {
     /**
-     * All of the attributes set on the container.
-     *
-     * @var array
-     */
-    protected $attributes = [];
-
-    /**
-     * @var \Illuminate\Contracts\Foundation\Application
-     */
-    protected $app;
-
-    /**
-     * config.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * is booted.
+     * $supportAjax.
      *
      * @var bool
      */
-    protected $booted = false;
+    public $supportAjax = true;
 
     /**
-     * construct.
+     * $laravel description.
      *
-     * @param array $config
-     * @param \Illuminate\Contracts\Foundation\Application $app
+     * @var \Illuminate\Contracts\Foundation\Application
      */
-    public function __construct($config = [], $app = null)
-    {
-        $this->app = $app;
-        $this->config = $config;
-        if ($this->isLaravel() === true && method_exists($this, 'subscribe')) {
-            $this->subscribe();
-        }
-    }
+    protected $laravel;
 
     /**
-     * boot.
+     * $cached.
      *
-     * @return void
+     * @var mixed
      */
-    protected function isBooted()
-    {
-        if ($this->booted === true && method_exists($this, 'boot')) {
-            return;
-        }
-        $this->boot();
-        $this->booted = true;
-    }
+    protected $cached;
 
     /**
-     * is laravel.
-     * @return bool
-     */
-    protected function isLaravel()
-    {
-        return is_a($this->app, 'Illuminate\Foundation\Application');
-    }
-
-    /**
-     * render tab.
+     * Renders HTML code for custom tab.
      *
      * @return string
      */
     public function getTab()
     {
-        return $this->renderView('tab');
+        return $this->render('tab');
     }
 
     /**
-     * render panel.
+     * Renders HTML code for custom panel.
      *
      * @return string
      */
     public function getPanel()
     {
-        return $this->renderView('panel');
+        return $this->render('panel');
     }
 
     /**
-     * render view.
+     * render.
      *
-     * @param  string $type
+     * @method render
+     *
+     * @param string $view
+     *
      * @return string
      */
-    protected function renderView($type)
+    public function render($view)
     {
-        $this->isBooted();
-        $dumpMethod = (empty($this->config['panelDumpMethod']) === true || $this->config['panelDumpMethod'] === 'tracy') ? 'tracy' : 'js';
-        $viewPath = __DIR__.'/../../resources/views/'.substr(static::class, strrpos(static::class, '\\') + 1).'/';
-        $view = $view = $viewPath.$type.'.php';
-        $cache = $viewPath.$type.'.min.php';
-
-        if (is_file($cache) === false || filemtime($view) > filemtime($cache) === true) {
-            $content = file_get_contents($view);
-            $content = preg_replace_callback('/'.implode('|', [
-                '<(?<styleTag>style)(?<styleAttributes>[^>]*)>(?<style>.*)<\/style>',
-                '<(?<scriptTag>script)(?<scriptAttributes>[^>]*)>(?<script>.*)<\/script>',
-            ]).'/ism', function ($m) {
-                if ($m['styleTag'] === 'style') {
-                    return '<style'.$m['styleAttributes'].'>'.Minifier::css($m['style']).'</style>';
-                }
-
-                return '<script'.$m['scriptAttributes'].'>'.Minifier::js($m['script']).'</script>';
-            }, $content);
-
-            file_put_contents($cache, Minifier::html($content));
+        $viewPath = __DIR__.'/../../resources/views/';
+        $view = $viewPath.ucfirst(basename(static::class)).'/'.$view.'.php';
+        if (empty($this->cached) === true) {
+            $this->cached = $this->getAttributes();
         }
+        extract($this->cached);
 
         ob_start();
-        extract(array_merge($this->toArray(), [
-            'dumpMethod' => $dumpMethod,
-            'config'     => &$this->config,
-        ]));
-        require $cache;
+        require $view;
         $content = ob_get_clean();
 
         return $content;
     }
 
     /**
+     * setLaravel.
+     *
+     * @method setLaravel
+     *
+     * @param \Illuminate\Contracts\Foundation\Application $laravel
+     *
+     * @return self;
+     */
+    public function setLaravel(ApplicationContract $laravel)
+    {
+        $this->laravel = $laravel;
+
+        return $this;
+    }
+
+    /**
+     * is laravel.
+     *
+     * @return bool
+     */
+    protected function isLaravel()
+    {
+        return is_a($this->laravel, 'Illuminate\Foundation\Application');
+    }
+
+    /**
      * Use a backtrace to search for the origin of the query.
+     *
+     * @method findSource
+     *
+     * @return array|null;
      */
     public static function findSource()
     {
@@ -152,7 +122,9 @@ abstract class AbstractPanel extends Fluent implements IBarPanel
 
             if (isset($row['class']) === true &&
                 (
+                    ($row['class'] === 'Recca0120\LaravelTracy\Collectors\Collector') === true ||
                     is_subclass_of($row['class'], '\Tracy\IBarPanel') === true ||
+                    is_subclass_of($row['class'], '\Recca0120\LaravelTracy\Collectors\Collector') === true ||
                     strpos(str_replace('/', '\\', $row['file']), 'Illuminate\\') !== false
                 )
             ) {
@@ -167,10 +139,12 @@ abstract class AbstractPanel extends Fluent implements IBarPanel
 
     /**
      * editor link.
-     * @param  string $source
+     *
+     * @param string|array $source
+     *
      * @return string
      */
-    public static function getEditorLink($source)
+    public static function editorLink($source)
     {
         $link = null;
 
@@ -187,4 +161,13 @@ abstract class AbstractPanel extends Fluent implements IBarPanel
 
         return $link;
     }
+
+    /**
+     * getAttributes.
+     *
+     * @method getAttributes
+     *
+     * @return array
+     */
+    abstract protected function getAttributes();
 }
