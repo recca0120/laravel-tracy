@@ -5,15 +5,18 @@ namespace Recca0120\LaravelTracy\Panels;
 class SessionPanel extends AbstractPanel
 {
     /**
-     * initialize.
+     * getAttributes.
      *
-     * @return void
+     * @method getAttributes
+     *
+     * @return array
      */
-    public function boot()
+    protected function getAttributes()
     {
+        $data = [];
         if ($this->isLaravel() === true) {
-            $session = $this->app['session'];
-            $this->attributes = [
+            $session = $this->laravel['session'];
+            $data = [
                 'sessionId'      => $session->getId(),
                 'config'         => $session->getSessionConfig(),
                 'laravelSession' => $session->all(),
@@ -30,12 +33,12 @@ class SessionPanel extends AbstractPanel
             if (isset($_SESSION) === false) {
                 $_SESSION = [];
             }
-            $this->attributes = [
+            $data = [
                 'sessionId'      => session_id(),
-                'config'         => [],
-                'laravelSession' => [],
                 'nativeSession'  => $_SESSION,
             ];
         }
+
+        return $data;
     }
 }

@@ -5,11 +5,13 @@ namespace Recca0120\LaravelTracy\Exceptions;
 use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
 use Illuminate\Contracts\Routing\ResponseFactory as ResponseFactoryContract;
-use Recca0120\LaravelTracy\Debugger;
+use Recca0120\LaravelTracy\Tracy;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler implements ExceptionHandlerContract
 {
+    protected $tracy;
+
     /**
      * response factory.
      * @var \Illuminate\Contracts\Routing\ResponseFactory
@@ -22,15 +24,9 @@ class Handler implements ExceptionHandlerContract
      */
     protected $exceptionHandler;
 
-    /**
-     * __construct.
-     * @param \Illuminate\Contracts\Routing\ResponseFactory       $responseFactory
-     * @param \Illuminate\Contracts\Debug\ExceptionHandler        $exceptionHandler
-     */
-    public function __construct(
-        ResponseFactoryContract $responseFactory,
-        ExceptionHandlerContract $exceptionHandler = null
-    ) {
+    public function __construct(Tracy $tracy, ResponseFactoryContract $responseFactory, $exceptionHandler)
+    {
+        $this->tracy = $tracy;
         $this->responseFactory = $responseFactory;
         $this->exceptionHandler = $exceptionHandler;
     }
@@ -62,20 +58,23 @@ class Handler implements ExceptionHandlerContract
         }
         $statusCode = 500;
         $headers = [];
-        if (is_null($this->exceptionHandler) === false) {
-            if ($this->isHttpException($e) === true) {
-                $statusCode = $e->getStatusCode();
-                $headers = $e->getHeaders();
-                try {
-                    return $this->responseFactory->view("errors.{$statusCode}", [], $statusCode);
-                } catch (Exception $fileNotFoundException) {
-                }
-                // run in console
-                // $this->exceptionHandler->render($request, $e);
+        if (
+            is_null($this->exceptionHandler) === false &&
+            $this->isHttpException($e) === true
+        ) {
+            $statusCode = $e->getStatusCode();
+            $headers = $e->getHeaders();
+            try {
+                return $this->responseFactory->view("errors.{$statusCode}", [], $statusCode);
+            } catch (Exception $fileNotFoundException) {
             }
         }
 
-        return $this->responseFactory->make(Debugger::getBlueScreen($e), $statusCode, $headers);
+        return $this->responseFactory->make(
+            $this->tracy->renderException($e),
+            $statusCode,
+            $headers
+        );
     }
 
     /**

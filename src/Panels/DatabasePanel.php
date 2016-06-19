@@ -2,136 +2,140 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use DateTime;
 use Exception;
+use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use PDO;
 
 class DatabasePanel extends AbstractPanel
 {
-    protected $db;
-
     /**
-     * All of the attributes set on the container.
+     * $queries.
      *
      * @var array
      */
-    protected $attributes = [
-        'count'     => 0,
-        'totalTime' => 0,
-        'logs'      => [],
-    ];
+    protected $queries = [];
 
     /**
-     * find source.
+     * $totalTime.
      *
-     * @var bool
+     * @var float
      */
-    protected $source = true;
+    protected $totalTime = 0.0;
 
     /**
-     * find source.
+     * $counter.
      *
-     * @param  bool $source
-     * @return void
+     * @var int
      */
-    public function source($source = true)
+    protected $counter = 0;
+
+    /**
+     * setLaravel.
+     *
+     * @method setLaravel
+     *
+     * @param \Illuminate\Contracts\Foundation\Application $laravel
+     *
+     * @return self;
+     */
+    public function setLaravel(ApplicationContract $laravel)
     {
-        $this->source = $source;
-    }
-
-    /**
-     * if laravel will auto subscribe.
-     *
-     * @return void
-     */
-    protected function subscribe()
-    {
-        $this->db = $this->app['db'];
+        parent::setLaravel($laravel);
         $eventName = $this->getEventName();
-        $this->app['events']->listen($eventName, function ($event) use ($eventName) {
+        $this->laravel->events->listen($eventName, function ($event) use ($eventName) {
             if ($eventName === 'illuminate.query') {
                 list($sql, $bindings, $time, $name) = func_get_args();
-                $connection = $this->db->connection($name);
+                $connection = $this->laravel->db->connection($name);
             } else {
                 $sql = $event->sql;
                 $bindings = $event->bindings;
                 $time = $event->time;
-                $connection = $event->connection;
                 $name = $event->connectionName;
+                $pdo = $event->connection->getPdo();
             }
-            call_user_func_array([$this, 'logQuery'], [$sql, $bindings, $time, $name, $connection->getPdo()]);
+
+            $this->logQuery($sql, $bindings, $time, $name, $pdo);
         });
     }
 
     /**
-     * laravel 5.2 event name is Illuminate\Database\Events\QueryExecuted
-     * laravel 5.1 event is illuminate.query.
+     * getEventName.
+     *
+     * @method getEventName
      *
      * @return string
      */
-    protected function getEventName()
+    public function getEventName()
     {
-        return (version_compare($this->app->version(), 5.2, '>=') === true) ?
+        return (version_compare($this->laravel->version(), 5.2, '>=') === true) ?
             'Illuminate\Database\Events\QueryExecuted' : 'illuminate.query';
     }
 
     /**
-     * log query.
+     * logQuery.
      *
-     * @param  string $prepare
-     * @param  array $binding
-     * @param  int $time
-     * @param  string $name
-     * @param  \PDO $pdo
-     * @param  string $driver
-     * @return void
+     * @method logQuery
+     *
+     * @param string   $sql
+     * @param array    $bindings
+     * @param int      $time
+     * @param string   $name
+     * @param PDO      $pdo
+     * @param string   $driver
+     *
+     * @return self
      */
-    public function logQuery($prepare, $bindings = [], $time = 0, $name = null, PDO $pdo = null, $driver = 'mysql')
+    public function logQuery($sql, $bindings = [], $time = 0, $name = null, PDO $pdo, $driver = 'mysql')
     {
-        $sql = static::prepareBindings($prepare, $bindings);
-        $formattedSql = static::formatSql($sql);
+        $this->counter++;
+        $this->totalTime += $time;
+        $source = self::findSource();
+        $editorLink = self::editorLink($source);
+        $this->queries[] = [
+            'sql'          => $sql,
+            'bindings'     => $bindings,
+            'time'         => $time,
+            'name'         => $name,
+            'pdo'          => $pdo,
+            'driver'       => $driver,
+            'source'       => $source,
+            'editorLink'   => $editorLink,
+            'formattedSql' => null,
+            'fullSql'      => null,
+        ];
 
-        $explains = [];
+        return $this;
+    }
+
+    /**
+     * getHints.
+     *
+     * @method getHints
+     *
+     * @return array
+     */
+    public function getHints()
+    {
         $version = 0;
-
-        if ($pdo instanceof PDO) {
-            $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
-            if ($driver === 'mysql') {
-                $explains = $this->explains($pdo, $prepare, $bindings);
-            }
+        if ($this->driver === 'mysql') {
             try {
-                $version = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+                $version = $this->pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
             } catch (Exception $e) {
             }
         }
 
-        $hints = static::performQueryAnalysis($sql, $version, $driver);
-
-        $editorLink = ($this->source === true) ? static::getEditorLink(static::findSource()) : '';
-
-        $this->attributes['count']++;
-        $this->attributes['totalTime'] += $time;
-        $this->attributes['logs'][] = [
-            'sql'          => $sql,
-            'formattedSql' => $formattedSql,
-            'hints'        => $hints,
-            'explains'     => $explains,
-            'editorLink'   => $editorLink,
-            'prepare'      => $prepare,
-            'bindings'     => $bindings,
-            'time'         => $time,
-            'name'         => $name,
-        ];
+        return static::performQueryAnalysis($this->getFullSql(), $version, $this->driver);
     }
 
     /**
      * prepare sql.
      *
-     * @param  string $prepare
-     * @param  array $bindings
+     * @param string $sql
+     * @param array $bindings
+     *
      * @return string
      */
-    public static function prepareBindings($prepare, $bindings = [])
+    public static function prepareBindings($sql, $bindings = [])
     {
         array_walk($bindings, function (&$binding) {
             if ($binding instanceof DateTime) {
@@ -142,8 +146,8 @@ class DatabasePanel extends AbstractPanel
                 $binding = "'".addslashes($binding)."'";
             }
         });
-        $prepare = str_replace(['%', '?'], ['%%', '%s'], $prepare);
-        $sql = vsprintf($prepare, $bindings);
+        $sql = str_replace(['%', '?'], ['%%', '%s'], $sql);
+        $sql = vsprintf($sql, $bindings);
 
         return $sql;
     }
@@ -151,15 +155,16 @@ class DatabasePanel extends AbstractPanel
     /**
      * explain sql.
      *
-     * @param  string $prepare
-     * @param  [type] $bindings
      * @param  |PDO $pdo
+     * @param  string $sql
+     * @param  array $bindings
+     *
      * @return array
      */
-    public static function explains(PDO $pdo, $prepare, $bindings = [])
+    public static function explain(PDO $pdo, $sql, $bindings = [])
     {
-        if (stripos($prepare, 'select') === 0) {
-            $statement = $pdo->prepare('EXPLAIN '.$prepare);
+        if (preg_match('#\s*\(?\s*SELECT\s#iA', $sql) !== false) {
+            $statement = $pdo->prepare('EXPLAIN '.$sql);
             $statement->execute($bindings);
 
             return $statement->fetchAll(PDO::FETCH_CLASS);
@@ -174,6 +179,7 @@ class DatabasePanel extends AbstractPanel
      * @param string $sql
      * @param array $params
      * @param \PDO $connection
+     *
      * @return string
      */
     public static function formatSql($sql, array $params = null, PDO $connection = null)
@@ -194,13 +200,13 @@ class DatabasePanel extends AbstractPanel
         // syntax highlight
         $sql = htmlSpecialChars($sql, ENT_IGNORE, 'UTF-8');
         $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is", function ($matches) {
-            if (!empty($matches[1])) { // comment
+            if (! empty($matches[1])) { // comment
                 return '<em style="color:gray">'.$matches[1].'</em>';
-            } elseif (!empty($matches[2])) { // error
+            } elseif (! empty($matches[2])) { // error
                 return '<strong style="color:red">'.$matches[2].'</strong>';
-            } elseif (!empty($matches[3])) { // most important keywords
+            } elseif (! empty($matches[3])) { // most important keywords
                 return '<strong style="color:blue; text-transform: uppercase;">'.$matches[3].'</strong>';
-            } elseif (!empty($matches[4])) { // other keywords
+            } elseif (! empty($matches[4])) { // other keywords
                 return '<strong style="color:green">'.$matches[4].'</strong>';
             }
         }, $sql);
@@ -208,7 +214,7 @@ class DatabasePanel extends AbstractPanel
         // parameters
         $sql = preg_replace_callback('#\?#', function () use ($params, $connection) {
             static $i = 0;
-            if (!isset($params[$i])) {
+            if (! isset($params[$i])) {
                 return '?';
             }
             $param = $params[$i++];
@@ -240,6 +246,7 @@ class DatabasePanel extends AbstractPanel
      * @param string $sql
      * @param string $version
      * @param float $driver
+     * 
      * @return array
      */
     public static function performQueryAnalysis($sql, $version = null, $driver = null)
@@ -274,5 +281,47 @@ class DatabasePanel extends AbstractPanel
         }
 
         return $hints;
+    }
+
+    /**
+     * getAttributes.
+     *
+     * @method getAttributes
+     *
+     * @return array
+     */
+    protected function getAttributes()
+    {
+        $queries = [];
+        foreach ($this->queries as $query) {
+            $sql = $query['sql'];
+            $bindings = $query['bindings'];
+            $pdo = $query['pdo'];
+            $driver = $query['driver'];
+            $version = 0;
+
+            $fullSql = self::prepareBindings($sql, $bindings);
+            $formattedSql = self::formatSql($fullSql);
+            $explains = [];
+            if ($driver && $pdo instanceof PDO) {
+                $explains = static::explain($pdo, $sql, $bindings);
+            }
+
+            if ($driver === 'mysql') {
+                try {
+                    $version = $this->pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+                } catch (Exception $e) {
+                }
+            }
+            $hints = static::performQueryAnalysis($fullSql, $version, $driver);
+
+            $queries[] = array_merge($query, compact('fullSql', 'formattedSql', 'explains', 'hints', 'driver', 'version'));
+        }
+
+        return [
+            'counter'   => $this->counter,
+            'totalTime' => $this->totalTime,
+            'queries'   => $queries,
+        ];
     }
 }

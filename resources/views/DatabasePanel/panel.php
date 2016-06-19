@@ -1,89 +1,73 @@
 <style class="tracy-debug">
-    #tracy-debug .Laravel-DatabasePanel-sql{
-        background:white!important
-    }
-    #tracy-debug .Laravel-DatabasePanel-source{
-        color:#BBB!important
-    }
-    #tracy-debug #Laravel-DatabasePanel code {
-        color:#f00!important;
-    }
+	#tracy-debug td.Laravel-DbConnectionPanel-sql { background: white !important }
+	#tracy-debug .Laravel-DbConnectionPanel-source { color: #BBB !important }
+    #tracy-debug .Laravel-DbConnectionPanel-hint code { color:#f00!important }
+    #tracy-debug .Laravel-DbConnectionPanel-hint { margin-top: 15px }
+    #tracy-debug .Laravel-DbConnectionPanel-explain { margin-top: 15px }
 </style>
 
-<h1>Queries: <?php echo $count ?>, time: <?php echo $totalTime ?></h1>
-<div class="tracy-inner" id="Laravel-DatabasePanel">
-    <table>
-        <thead>
-            <tr>
-                <th>Database / Time&nbsp;ms</th>
-                <th>SQL Query</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($logs as $key => $log): ?>
-                <?php
-                    $name = array_get($log, 'name');
-                    $time = array_get($log, 'time');
-                    $formattedSql = array_get($log, 'formattedSql');
-                    $editorLink = array_get($log, 'editorLink');
-                    $hints = array_get($log, 'hints', []);
-                    $explains = array_get($log, 'explains', []);
-                    $explainId = 'tracy-connection-'.$key;
-                ?>
-                <tr>
-                    <td>
-                        <?php echo $name ?> / <?php echo $time ?> ms
-                        <?php if (count($explains) > 0): ?>
-                            <br /><a class="tracy-toggle tracy-collapsed" data-ref="#<?php echo $explainId ?>" data-tracy-ref="#<?php echo $explainId ?>">explain</a>
-                        <?php endif ?>
-                    </td>
-                    <td class="Laravel-DatabasePanel-sql">
-                        <?php echo $formattedSql ?>
+<h1>
+    Queries: <?php echo $counter, ($totalTime ? sprintf(', time: %0.3f ms', $totalTime) : '') ?>
+</h1>
 
-                        <?php if (count($hints) > 0): ?>
-                            <br />
-                            <?php $i = 0 ?>
-                            <table class="" id="">
-                                <thead>
-                                    <tr>
-                                        <th colspan="2">Hints</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                <?php foreach ($hints as $hint): ?>
-                                    <tr>
-                                        <td><?php echo ++$i; ?></td><td><?php echo $hint ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        <?php endif ?>
-                        <?php if (count($explains) > 0): ?>
-                            <br />
-                            <table class="tracy-collapsed Laravel-DatabasePanel-explain" id="<?php echo $explainId ?>">
-                                <thead>
-                                    <tr>
-                                        <?php foreach ($explains[0] as $col => $foo): ?>
-                                            <th><?php echo $col ?></th>
-                                        <?php endforeach ?>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($explains as $row): ?>
-                                        <tr>
-                                            <?php foreach ($row as $col): ?>
-                                                <td><?php echo $col ?></td>
-                                            <?php endforeach ?>
-                                        </tr>
+<div class="tracy-inner">
+    <table>
+        <tr>
+            <th>Time&nbsp;ms / Name</th>
+            <th>SQL Query</th>
+        </tr>
+        <?php foreach ($queries as $query): ?>
+            <tr>
+                <td>
+                    <?php echo sprintf('%0.3f', $query['time']) ?> / <?php echo $query['name'] ?>
+                    <?php if (count($query['hints']) > 0): ?>
+                        <br /><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .Laravel-DbConnectionPanel-hint">hint</a>
+                    <?php endif; ?>
+                    <?php if (count($query['explains']) > 0): ?>
+                        <br /><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .Laravel-DbConnectionPanel-explain">explain</a>
+                    <?php endif; ?>
+                </td>
+                <td class="Laravel-DbConnectionPanel-sql">
+                    <?php echo $query['formattedSql'] ?>
+                    <?php if (count($query['hints']) > 0): ?>
+                        <?php $i = 0 ?>
+                        <table class="tracy-collapsed Laravel-DbConnectionPanel-hint" id="">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Hints</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach ($query['hints'] as $hint): ?>
+                                <tr>
+                                    <td><?php echo ++$i; ?></td><td><?php echo $hint ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif ?>
+
+                    <?php if ($query['explains']): ?>
+                        <table class="tracy-collapsed Laravel-DbConnectionPanel-explain">
+                            <tr>
+                                <?php foreach ($query['explains'][0] as $col => $foo): ?>
+                                    <th><?php echo htmlSpecialChars($col, ENT_NOQUOTES, 'UTF-8') ?></th>
+                                 <?php endforeach ?>
+                            </tr>
+                            <?php foreach ($query['explains'] as $row): ?>
+                                <tr>
+                                    <?php foreach ($row as $col): ?>
+                                        <td><?php echo htmlSpecialChars($col, ENT_NOQUOTES, 'UTF-8') ?></td>
                                     <?php endforeach ?>
-                                </tbody>
-                            </table>
-                            <br />
-                        <?php endif ?>
-                        <?php echo (empty($editorLink)) ?: $editorLink ?>
-                    </td>
-                </tr>
-            <?php endforeach ?>
-        </tbody>
+                                </tr>
+                            <?php endforeach ?>
+                        </table>
+                    <?php endif ?>
+                    <?php if ($query['editorLink']): ?>
+                        <?php echo substr_replace($query['editorLink'], ' class="Laravel-DbConnectionPanel-source"', 2, 0) ?>
+                    <?php endif ?>
+                </td>
+            </tr>
+        <?php endforeach ?>
     </table>
 </div>

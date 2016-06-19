@@ -128,17 +128,3 @@ web artisan is another package [recca0120/terminal](https://github.com/recca0120
 
 #### notice
 if you install terminal before, this panel will throw errors, please remove folder `app/resources/views/vendor/terminal`
-
-## ISSUE
-when ajax debugbar is enabled and debugbar is bigger than 256k, will throw 500 exception, or browser will be no response
-
-so I try to compress debugbar in php, and decompress debugbar in javascript.
-
-It looks like working at chrome 48.0.2564.116 64bit, windows 10
-
-but if you use Laravel-Tracy and it doesn't work correctly
-
-you can try
-- disable panel [view , request, event]
-- panelDumpMethod change to js
-- disable ajax debugbar

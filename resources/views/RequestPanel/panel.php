@@ -1,33 +1,16 @@
-<div id="Laravel-RequestPanel">
-    <h1>Request</h1>
-    <div class="tracy-inner">
-        <?php if (empty($request) === true): ?>
-            <p><i>empty</i></p>
-        <?php else: ?>
-            <table>
-                <tbody>
-                    <?php foreach ($request as $key => $value): ?>
-                        <tr>
-                            <th><?php echo strtoupper($key) ?></th>
-                            <td>
-                                <?php if ($dumpMethod === 'tracy'): ?>
-                                    <?php
-                                        echo Tracy\Dumper::toHtml($value, $config)
-                                    ?>
-                                <?php else: ?>
-                                    <div id="Laravel-RequestPanel-<?php echo $key; ?>"></div>
-                                    <script>
-                                    (function() {
-                                        var el = document.getElementById("Laravel-RequestPanel-<?php echo $key; ?>");
-                                        el.innerHTML = TracyDump(<?php echo json_encode($value) ?>);
-                                    })();
-                                    </script>
-                                <?php endif ?>
-                            </td>
-                        </tr>
-                    <?php endforeach ?>
-                </tbody>
-            </table>
-        <?php endif ?>
-    </div>
+<h1>Request</h1>
+
+<div class="tracy-inner">
+    <table>
+        <?php foreach ($request as $key => $value): ?>
+            <tr>
+                <th>
+                    <?php echo ucfirst($key) ?>
+                </th>
+                <td>
+                    <?php echo Tracy\Dumper::toHtml($value, [Tracy\Dumper::LIVE => true]) ?>
+                </td>
+            </tr>
+        <?php endforeach ?>
+    </table>
 </div>

@@ -5,21 +5,23 @@ namespace Recca0120\LaravelTracy\Panels;
 class RoutingPanel extends AbstractPanel
 {
     /**
-     * initialize.
+     * getAttributes.
      *
-     * @return void
+     * @method getAttributes
+     *
+     * @return array
      */
-    public function boot()
+    protected function getAttributes()
     {
-        $this->attributes = [
+        $data = [
             'uri'    => 404,
             'action' => [],
         ];
         if ($this->isLaravel() === true) {
-            $router = $this->app['router'];
+            $router = $this->laravel['router'];
             $currentRoute = $router->getCurrentRoute();
             if ($currentRoute !== null) {
-                $this->attributes = [
+                $data = [
                     'uri'    => $currentRoute->uri(),
                     'action' => $currentRoute->getAction(),
                 ];
@@ -30,10 +32,12 @@ class RoutingPanel extends AbstractPanel
             }
             $http_host = array_get($_SERVER, 'HTTP_HOST');
             $request_uri = array_get($_SERVER, 'REQUEST_URI');
-            $this->attributes = [
+            $data = [
                 'uri'    => 'http://'.$http_host.$request_uri,
                 'action' => [],
             ];
         }
+
+        return $data;
     }
 }

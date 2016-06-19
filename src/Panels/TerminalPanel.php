@@ -2,20 +2,35 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
+use Recca0120\Terminal\Http\Controllers\TerminalController;
+
 class TerminalPanel extends AbstractPanel
 {
     /**
-     * initialize.
+     * $supportAjax.
      *
-     * @return void
+     * @var bool
      */
-    public function boot()
+    public $supportAjax = false;
+
+    /**
+     * getAttributes.
+     *
+     * @method getAttributes
+     *
+     * @return array
+     */
+    protected function getAttributes()
     {
+        $data = [
+            'html' => null,
+        ];
         if ($this->isLaravel() === true) {
-            $html = null;
-            $controller = $this->app->make(\Recca0120\Terminal\Http\Controllers\TerminalController::class);
-            $html = $this->app->call([$controller, 'index'], ['view' => 'panel'])->render();
-            $this->attributes['html'] = $html;
+            $controller = $this->laravel->make(TerminalController::class);
+            $html = $this->laravel->call([$controller, 'index'], ['view' => 'panel'])->render();
+            $data['html'] = $html;
         }
+
+        return $data;
     }
 }
