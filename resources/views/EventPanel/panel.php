@@ -9,11 +9,11 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($logs as $key => $value): ?>
+                <?php foreach ($logs as $key => $log): ?>
                     <tr>
                         <th>
-                            <span class="tracy-dump-object"><?php echo array_get($value, 'firing') ?></span><br />
-                            <?php echo array_get($value, 'editorLink') ?><br />
+                            <span class="tracy-dump-object"><?php echo array_get($log, 'firing') ?></span><br />
+                            <?php echo array_get($log, 'editorLink') ?><br />
                         </th>
                         <td>
                             <?php if ($dumpMethod === 'tracy'): ?>
@@ -28,7 +28,7 @@
                                 <script>
                                 (function() {
                                     var el = document.getElementById("Laravel-EventPanel-<?php echo $key; ?>");
-                                    el.innerHTML = TracyDump(<?php echo json_encode($value) ?>);
+                                    el.innerHTML = TracyDump(<?php echo json_encode($log) ?>);
                                 })();
                                 </script>
                             <?php endif ?>
