@@ -61,7 +61,7 @@ abstract class AbstractPanel implements IBarPanel
     public function render($view)
     {
         $viewPath = __DIR__.'/../../resources/views/';
-        $view = $viewPath.ucfirst(basename(static::class)).'/'.$view.'.php';
+        $view = $viewPath.ucfirst(class_basename(static::class)).'/'.$view.'.php';
         if (empty($this->cached) === true) {
             $this->cached = $this->getAttributes();
         }
