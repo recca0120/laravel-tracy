@@ -246,7 +246,7 @@ class DatabasePanel extends AbstractPanel
      * @param string $sql
      * @param string $version
      * @param float $driver
-     * 
+     *
      * @return array
      */
     public static function performQueryAnalysis($sql, $version = null, $driver = null)
@@ -302,8 +302,15 @@ class DatabasePanel extends AbstractPanel
 
             $fullSql = self::prepareBindings($sql, $bindings);
             $formattedSql = self::formatSql($fullSql);
+
+            try {
+                $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+            } catch (Exception $e) {
+                $driver = null;
+            }
+
             $explains = [];
-            if ($driver && $pdo instanceof PDO) {
+            if ($pdo instanceof PDO && $driver === 'mysql') {
                 $explains = static::explain($pdo, $sql, $bindings);
             }
 
