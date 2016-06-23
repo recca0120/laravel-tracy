@@ -85,7 +85,7 @@ class DatabasePanel extends AbstractPanel
      *
      * @return self
      */
-    public function logQuery($sql, $bindings = [], $time = 0, $name = null, PDO $pdo, $driver = 'mysql')
+    public function logQuery($sql, $bindings = [], $time = 0, $name = null, PDO $pdo = null, $driver = 'mysql')
     {
         $this->counter++;
         $this->totalTime += $time;
@@ -303,24 +303,23 @@ class DatabasePanel extends AbstractPanel
             $fullSql = self::prepareBindings($sql, $bindings);
             $formattedSql = self::formatSql($fullSql);
 
-            try {
-                $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
-            } catch (Exception $e) {
-                $driver = null;
-            }
-
             $explains = [];
-            if ($pdo instanceof PDO && $driver === 'mysql') {
-                $explains = static::explain($pdo, $sql, $bindings);
-            }
-
-            if ($driver === 'mysql') {
+            if ($pdo instanceof PDO) {
                 try {
-                    $version = $this->pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+                    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
                 } catch (Exception $e) {
+                    $driver = null;
+                }
+
+                if ($driver === 'mysql') {
+                    $explains = static::explain($pdo, $sql, $bindings);
+                    try {
+                        $version = $this->pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+                    } catch (Exception $e) {
+                    }
+                    $hints = static::performQueryAnalysis($fullSql, $version, $driver);
                 }
             }
-            $hints = static::performQueryAnalysis($fullSql, $version, $driver);
 
             $queries[] = array_merge($query, compact('fullSql', 'formattedSql', 'explains', 'hints', 'driver', 'version'));
         }
