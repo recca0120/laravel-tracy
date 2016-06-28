@@ -304,6 +304,7 @@ class DatabasePanel extends AbstractPanel
             $formattedSql = self::formatSql($fullSql);
 
             $explains = [];
+            $hints = [];
             if ($pdo instanceof PDO) {
                 try {
                     $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
