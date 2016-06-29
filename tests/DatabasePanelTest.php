@@ -16,8 +16,6 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
     public function test_database_panel_mysql_52()
     {
-        $listeners = [];
-
         $statement = m::mock(PDOStatement::class)
             ->shouldReceive('execute')
             ->shouldReceive('fetchAll')
@@ -35,8 +33,24 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
             ->mock();
 
         $events = m::mock(DispatcherContract::class)
-            ->shouldReceive('listen')->andReturnUsing(function ($eventName, $closure) use (&$listeners) {
-                $listeners[$eventName] = $closure;
+            ->shouldReceive('listen')->with(QueryExecuted::class, m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
+                $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/', ['1'], 1.1, $connection);
+                $closure($queryExecuted);
+
+                $queryExecuted = new QueryExecuted('SELECT * FROM `users` ORDER BY id', [], 1.1, $connection);
+                $closure($queryExecuted);
+
+                $queryExecuted = new QueryExecuted('SELECT * FROM `users` LIMIT 1', [], 1.1, $connection);
+                $closure($queryExecuted);
+
+                $queryExecuted = new QueryExecuted('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, $connection);
+                $closure($queryExecuted);
+
+                $queryExecuted = new QueryExecuted('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, $connection);
+                $closure($queryExecuted);
+
+                $queryExecuted = new QueryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection);
+                $closure($queryExecuted);
             })
             ->mock();
 
@@ -48,32 +62,12 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         $panel = new DatabasePanel();
         $panel->setLaravel($app);
 
-        $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/', ['1'], 1.1, $connection);
-        $listeners[QueryExecuted::class]($queryExecuted);
-
-        $queryExecuted = new QueryExecuted('SELECT * FROM `users` ORDER BY id', [], 1.1, $connection);
-        $listeners[QueryExecuted::class]($queryExecuted);
-
-        $queryExecuted = new QueryExecuted('SELECT * FROM `users` LIMIT 1', [], 1.1, $connection);
-        $listeners[QueryExecuted::class]($queryExecuted);
-
-        $queryExecuted = new QueryExecuted('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, $connection);
-        $listeners[QueryExecuted::class]($queryExecuted);
-
-        $queryExecuted = new QueryExecuted('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, $connection);
-        $listeners[QueryExecuted::class]($queryExecuted);
-
-        $queryExecuted = new QueryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection);
-        $listeners[QueryExecuted::class]($queryExecuted);
-
         $panel->getTab();
         $panel->getPanel();
     }
 
     public function test_database_panel_mysql_51()
     {
-        $listeners = [];
-
         $statement = m::mock(PDOStatement::class)
             ->shouldReceive('execute')
             ->shouldReceive('fetchAll')
@@ -92,8 +86,20 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
             ->mock();
 
         $events = m::mock(DispatcherContract::class)
-            ->shouldReceive('listen')->andReturnUsing(function ($eventName, $closure) use (&$listeners) {
-                $listeners[$eventName] = $closure;
+            ->shouldReceive('listen')->with('illuminate.query', m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
+                $closure('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, 'mysql');
+
+                $closure('SELECT * FROM `users` ORDER BY id', [], 1.1, 'mysql');
+
+                $closure('SELECT * FROM `users` LIMIT 1', [], 1.1, 'mysql');
+
+                $closure('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, 'mysql');
+
+                $closure('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, 'mysql');
+
+                $closure('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, 'mysql');
+
+                $closure('select * from users where id = ?', ['1'], 1.1, 'mysql');
             })
             ->mock();
 
@@ -106,28 +112,12 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         $panel = new DatabasePanel();
         $panel->setLaravel($app);
 
-        $listeners['illuminate.query']('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, 'mysql');
-
-        $listeners['illuminate.query']('SELECT * FROM `users` ORDER BY id', [], 1.1, 'mysql');
-
-        $listeners['illuminate.query']('SELECT * FROM `users` LIMIT 1', [], 1.1, 'mysql');
-
-        $listeners['illuminate.query']('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, 'mysql');
-
-        $listeners['illuminate.query']('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, 'mysql');
-
-        $listeners['illuminate.query']('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, 'mysql');
-
-        $listeners['illuminate.query']('select * from users where id = ?', ['1'], 1.1, 'mysql');
-
         $panel->getTab();
         $panel->getPanel();
     }
 
     public function test_database_panel_mssql_52()
     {
-        $listeners = [];
-
         $pdo = m::mock(PDO::class);
 
         $connection = m::mock(Connection::class)
@@ -136,8 +126,24 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
             ->mock();
 
         $events = m::mock(DispatcherContract::class)
-            ->shouldReceive('listen')->andReturnUsing(function ($eventName, $closure) use (&$listeners) {
-                $listeners[$eventName] = $closure;
+            ->shouldReceive('listen')->with(QueryExecuted::class, m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
+                $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, $connection);
+                $closure($queryExecuted);
+
+                $queryExecuted = new QueryExecuted('SELECT * FROM `users` ORDER BY id', [], 1.1, $connection);
+                $closure($queryExecuted);
+
+                $queryExecuted = new QueryExecuted('SELECT * FROM `users` LIMIT 1', [], 1.1, $connection);
+                $closure($queryExecuted);
+
+                $queryExecuted = new QueryExecuted('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, $connection);
+                $closure($queryExecuted);
+
+                $queryExecuted = new QueryExecuted('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, $connection);
+                $closure($queryExecuted);
+
+                $queryExecuted = new QueryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection);
+                $closure($queryExecuted);
             })
             ->mock();
 
@@ -148,24 +154,6 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
         $panel = new DatabasePanel();
         $panel->setLaravel($app);
-
-        $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, $connection);
-        $listeners[QueryExecuted::class]($queryExecuted);
-
-        $queryExecuted = new QueryExecuted('SELECT * FROM `users` ORDER BY id', [], 1.1, $connection);
-        $listeners[QueryExecuted::class]($queryExecuted);
-
-        $queryExecuted = new QueryExecuted('SELECT * FROM `users` LIMIT 1', [], 1.1, $connection);
-        $listeners[QueryExecuted::class]($queryExecuted);
-
-        $queryExecuted = new QueryExecuted('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, $connection);
-        $listeners[QueryExecuted::class]($queryExecuted);
-
-        $queryExecuted = new QueryExecuted('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, $connection);
-        $listeners[QueryExecuted::class]($queryExecuted);
-
-        $queryExecuted = new QueryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection);
-        $listeners[QueryExecuted::class]($queryExecuted);
 
         $panel->getTab();
         $panel->getPanel();

@@ -15,10 +15,15 @@ class ViewPanelTest extends PHPUnit_Framework_TestCase
 
     public function test_view_panel()
     {
-        $listeners = [];
         $events = m::mock(DispatcherContract::class)
-            ->shouldReceive('listen')->andReturnUsing(function ($eventName, $closure) use (&$listeners) {
-                $listeners[$eventName] = $closure;
+            ->shouldReceive('listen')->with('composing:*', m::any())->andReturnUsing(function ($eventName, $closure) {
+                $view = m::mock(ViewContract::class)
+                    ->shouldReceive('getName')->andReturn('name')
+                    ->shouldReceive('getData')->andReturn([])
+                    ->shouldReceive('getPath')->andReturn(__FILE__)
+                    ->mock();
+
+                $closure($view);
             })
             ->mock();
 
@@ -29,14 +34,6 @@ class ViewPanelTest extends PHPUnit_Framework_TestCase
 
         $panel = new ViewPanel();
         $panel->setLaravel($app);
-
-        $view = m::mock(ViewContract::class)
-            ->shouldReceive('getName')->andReturn('name')
-            ->shouldReceive('getData')->andReturn([])
-            ->shouldReceive('getPath')->andReturn(__FILE__)
-            ->mock();
-
-        $listeners['composing:*']($view);
 
         $panel->getTab();
         $panel->getPanel();
