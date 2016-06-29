@@ -22,11 +22,11 @@ class AuthPanel extends AbstractPanel
                 $userObject = $this->laravel['auth']->user();
                 $name = $userObject->getAuthIdentifier();
                 if (is_numeric($name)) {
-                    if ($userObject->username) {
+                    if (isset($userObject->username) === true) {
                         $name = $userObject->username;
-                    } elseif ($userObject->email) {
+                    } elseif (isset($userObject->email) === true) {
                         $name = $userObject->email;
-                    } elseif ($userObject->name) {
+                    } elseif (isset($userObject->name) === true) {
                         $name = $userObject->name;
                     }
                 }

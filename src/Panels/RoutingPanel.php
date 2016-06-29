@@ -28,7 +28,10 @@ class RoutingPanel extends AbstractPanel
             }
         } else {
             if (empty($_SERVER['HTTP_HOST'])) {
-                return;
+                return [
+                    'uri'    => '404',
+                    'action' => [],
+                ];
             }
             $http_host = array_get($_SERVER, 'HTTP_HOST');
             $request_uri = array_get($_SERVER, 'REQUEST_URI');

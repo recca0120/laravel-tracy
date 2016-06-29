@@ -29,6 +29,7 @@ class RequestPanel extends AbstractPanel
                 // 'headers' => $request->header(),
             ];
         } else {
+            $server = $_SERVER;
             $remoteAddr = array_get($server, 'REMOTE_ADDR');
             $query = array_get($server, 'QUERY_STRING');
             $data = [

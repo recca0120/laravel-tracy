@@ -42,9 +42,9 @@ class EventPanel extends AbstractPanel
         parent::setLaravel($laravel);
         $key = get_class($this);
         $timer = Debugger::timer($key);
-        $this->laravel->events->listen('*', function ($params) use ($key) {
+        $this->laravel['events']->listen('*', function ($params) use ($key) {
             $execTime = Debugger::timer($key);
-            $firing = $this->laravel->events->firing();
+            $firing = $this->laravel['events']->firing();
             $editorLink = self::editorLink(self::findSource());
             $this->totalTime += $execTime;
             $this->events[] = compact('execTime', 'firing', 'params', 'editorLink');
