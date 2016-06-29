@@ -7,7 +7,7 @@ use Illuminate\Database\Events\QueryExecuted;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\DatabasePanel;
 
-class PanelTest extends PHPUnit_Framework_TestCase
+class DatabasePanelTest extends PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
@@ -66,6 +66,7 @@ class PanelTest extends PHPUnit_Framework_TestCase
         $queryExecuted = new QueryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection);
         $listeners[QueryExecuted::class]($queryExecuted);
 
+        $panel->getTab();
         $panel->getPanel();
     }
 
@@ -119,6 +120,7 @@ class PanelTest extends PHPUnit_Framework_TestCase
 
         $listeners['illuminate.query']('select * from users where id = ?', ['1'], 1.1, 'mysql');
 
+        $panel->getTab();
         $panel->getPanel();
     }
 
@@ -165,6 +167,7 @@ class PanelTest extends PHPUnit_Framework_TestCase
         $queryExecuted = new QueryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection);
         $listeners[QueryExecuted::class]($queryExecuted);
 
+        $panel->getTab();
         $panel->getPanel();
     }
 }

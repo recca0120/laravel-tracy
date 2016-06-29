@@ -97,7 +97,7 @@ abstract class AbstractPanel implements IBarPanel
      */
     protected function isLaravel()
     {
-        return is_a($this->laravel, 'Illuminate\Foundation\Application');
+        return is_a($this->laravel, ApplicationContract::class);
     }
 
     /**
