@@ -30,11 +30,7 @@ class ViewPanel extends AbstractPanel
             $data = array_except($view->getData(), ['__env', 'app']);
             $path = self::editorLink($view->getPath());
             preg_match('/href=\"(.+)\"/', $path, $m);
-            if (count($m) > 1) {
-                $path = '(<a href="'.$m[1].'">source</a>)';
-            } else {
-                $path = '';
-            }
+            $path = (count($m) > 1) ? '(<a href="'.$m[1].'">source</a>)' : '';
             $this->views[] = compact('name', 'data', 'path');
         });
     }
