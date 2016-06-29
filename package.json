@@ -1,12 +1,12 @@
 {
   "private": true,
   "devDependencies": {
-    "gulp": "^3.8.8"
+    "gulp": "^3.9.1"
   },
   "dependencies": {
     "base-64": "^0.1.0",
-    "bootstrap-sass": "^3.0.0",
-    "laravel-elixir": "^5.0.0",
-    "pako": "^1.0.0"
+    "bootstrap-sass": "^3.3.6",
+    "laravel-elixir": "^6.0.0-5",
+    "pako": "^1.0.1"
   }
 }

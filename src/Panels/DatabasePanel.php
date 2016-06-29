@@ -2,6 +2,7 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
+use DateTime;
 use Exception;
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use PDO;
@@ -42,10 +43,11 @@ class DatabasePanel extends AbstractPanel
     {
         parent::setLaravel($laravel);
         $eventName = $this->getEventName();
-        $this->laravel->events->listen($eventName, function ($event) use ($eventName) {
+        $this->laravel['events']->listen($eventName, function ($event) use ($eventName) {
             if ($eventName === 'illuminate.query') {
                 list($sql, $bindings, $time, $name) = func_get_args();
-                $connection = $this->laravel->db->connection($name);
+                $connection = $this->laravel['db']->connection($name);
+                $pdo = $connection->getPdo();
             } else {
                 $sql = $event->sql;
                 $bindings = $event->bindings;
@@ -108,26 +110,6 @@ class DatabasePanel extends AbstractPanel
     }
 
     /**
-     * getHints.
-     *
-     * @method getHints
-     *
-     * @return array
-     */
-    public function getHints()
-    {
-        $version = 0;
-        if ($this->driver === 'mysql') {
-            try {
-                $version = $this->pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
-            } catch (Exception $e) {
-            }
-        }
-
-        return static::performQueryAnalysis($this->getFullSql(), $version, $this->driver);
-    }
-
-    /**
      * prepare sql.
      *
      * @param string $sql
@@ -163,7 +145,7 @@ class DatabasePanel extends AbstractPanel
      */
     public static function explain(PDO $pdo, $sql, $bindings = [])
     {
-        if (preg_match('#\s*\(?\s*SELECT\s#iA', $sql) !== false) {
+        if (preg_match('#\s*\(?\s*SELECT\s#iA', $sql) == true) {
             $statement = $pdo->prepare('EXPLAIN '.$sql);
             $statement->execute($bindings);
 

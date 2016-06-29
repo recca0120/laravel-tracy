@@ -1,4 +1,6 @@
 var elixir = require('laravel-elixir');
+var path = require('path');
+require('laravel-elixir-browserify-official');
 
 /*
  |--------------------------------------------------------------------------
@@ -13,13 +15,8 @@ var elixir = require('laravel-elixir');
 
 elixir(function(mix) {
     mix
-        .browserify([
-            'dump.js'
-        ], config.get('public.js.outputFolder') + '/dump.js')
-        .browserify([
-            'ajax-monitor.js'
-        ], config.get('public.js.outputFolder') + '/ajax-monitor.js')
         .phpUnit([
+            'src/**/*.php',
             'tests/**/*'
-        ]);
+        ], path.normalize('vendor/bin/phpunit') + ' --verbose');
 });

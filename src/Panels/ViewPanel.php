@@ -8,7 +8,7 @@ class ViewPanel extends AbstractPanel
 {
     /**
      * $views.
-     * 
+     *
      * @var array
      */
     protected $views = [];
@@ -25,7 +25,7 @@ class ViewPanel extends AbstractPanel
     public function setLaravel(ApplicationContract $laravel)
     {
         parent::setLaravel($laravel);
-        $this->laravel->events->listen('composing:*', function ($view) {
+        $this->laravel['events']->listen('composing:*', function ($view) {
             $name = $view->getName();
             $data = array_except($view->getData(), ['__env', 'app']);
             $path = self::editorLink($view->getPath());
