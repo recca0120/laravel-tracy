@@ -17,6 +17,7 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         $controller = m::mock(TerminalController::class)
             ->shouldReceive('render')
             ->mock();
+
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
             ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('make')->with(TerminalController::class)->andReturn($controller)
