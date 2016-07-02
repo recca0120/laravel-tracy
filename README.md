@@ -88,6 +88,10 @@ OSX
 ```
 https://github.com/dhoulb/subl
 ```
+Prefer PhpStorm, you can edit `config/tracy.php`'s key of `editor` like this:
+```php
+'editor' => 'phpstorm://open?file=%file&line=%line',
+```
 
 ## Debugger Bar
 
