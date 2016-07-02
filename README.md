@@ -13,7 +13,7 @@ Better Laravel Exception Handler
 
 ## Features
 - Visualization of errors and exceptions
-- Debugger Bar (ajax support @v1.5.0)
+- Debugger Bar (ajax support @v1.5.5)
 - Exception stack trace contains values of all method arguments.
 
 ## Online Demo
@@ -32,7 +32,7 @@ Instead, you may of course manually update your require block and run `composer 
 ```json
 {
     "require": {
-        "recca0120/laravel-tracy": "^1.5.0"
+        "recca0120/laravel-tracy": "^1.5.5"
     }
 }
 ```
