@@ -16,7 +16,7 @@
         "illuminate/session": "~5.1",
         "illuminate/support": "~5.1",
         "recca0120/terminal": "^1.5.0",
-        "tracy/tracy": "^2.4"
+        "tracy/tracy": "^2.4.1"
     },
     "require-dev": {
         "mockery/mockery": "~0.9.2",

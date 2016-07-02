@@ -31,7 +31,10 @@ class Tracy
      */
     public function __construct($config = [], ApplicationContract $app = null)
     {
-        $this->dispatch();
+        if (Debugger::getBar()->dispatchAssets() === true) {
+            exit;
+        }
+
         Debugger::$editor = array_get($config, 'editor', Debugger::$editor);
         Debugger::$maxDepth = array_get($config, 'maxDepth', Debugger::$maxDepth);
         Debugger::$maxLength = array_get($config, 'maxLength', Debugger::$maxLength);
@@ -122,27 +125,35 @@ class Tracy
     }
 
     /**
-     * dispatch.
+     * startSession.
      *
-     * @method dispatch
+     * @method startSession
      */
-    private function dispatch()
+    private function startSession()
     {
-        if (Debugger::getBar()->dispatchAssets() === true) {
-            exit;
-        }
-
         if (session_status() !== PHP_SESSION_ACTIVE) {
             ini_set('session.use_cookies', '1');
             ini_set('session.use_only_cookies', '1');
             ini_set('session.use_trans_sid', '0');
             ini_set('session.cookie_path', '/');
             ini_set('session.cookie_httponly', '1');
-            session_start();
+            @session_start();
         }
 
         if (session_status() === PHP_SESSION_ACTIVE) {
             Debugger::dispatch();
+        }
+    }
+
+    /**
+     * closeSession.
+     *
+     * @method closeSession
+     */
+    private function closeSession()
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
         }
     }
 
@@ -198,9 +209,11 @@ class Tracy
      */
     public function renderBarPanels()
     {
+        $this->startSession();
         ob_start();
         Debugger::getBar()->render();
         $content = ob_get_clean();
+        $this->closeSession();
 
         return $content;
     }
