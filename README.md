@@ -50,7 +50,7 @@ Include the service provider within `config/app.php`. The service povider is nee
 publish
 
 ```bash
-artisan vendor:publish --provider="Recca0120\LaravelTracy\ServiceProvider"
+php artisan vendor:publish --provider="Recca0120\LaravelTracy\ServiceProvider"
 ```
 
 ## Config
