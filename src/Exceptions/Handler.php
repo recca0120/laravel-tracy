@@ -24,8 +24,20 @@ class Handler implements ExceptionHandlerContract
      */
     protected $exceptionHandler;
 
-    public function __construct(Tracy $tracy, ResponseFactoryContract $responseFactory, $exceptionHandler)
-    {
+    /**
+     * __construct.
+     *
+     * @method __construct
+     *
+     * @param  Tracy                                         $tracy
+     * @param  \Illuminate\Contracts\Routing\ResponseFactory $responseFactory
+     * @param  \Illuminate\Contracts\Debug\ExceptionHandler  $exceptionHandler
+     */
+    public function __construct(
+        Tracy $tracy,
+        ResponseFactoryContract $responseFactory,
+        $exceptionHandler
+    ) {
         $this->tracy = $tracy;
         $this->responseFactory = $responseFactory;
         $this->exceptionHandler = $exceptionHandler;
