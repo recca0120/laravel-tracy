@@ -218,14 +218,32 @@ class Tracy
         return $content;
     }
 
+    /**
+     * obStart.
+     *
+     * @method obStart
+     *
+     * @return $this
+     */
     public function obStart()
     {
         ob_start();
+
+        return $this;
     }
 
+    /**
+     * obEnd.
+     *
+     * @method obEnd
+     *
+     * @return $this
+     */
     public function obEnd()
     {
         ob_end_flush();
+
+        return $this;
     }
 
     /**
@@ -261,6 +279,13 @@ class Tracy
         return $this;
     }
 
+    /**
+     * isAjax.
+     *
+     * @method isAjax
+     *
+     * @return bool
+     */
     public function isAjax()
     {
         $request = (is_null($this->app) === false && is_null($this->app['request']) === false) ?
