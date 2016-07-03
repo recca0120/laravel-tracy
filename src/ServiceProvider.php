@@ -32,6 +32,9 @@ class ServiceProvider extends BaseServiceProvider
             return;
         }
 
+        $tracy->init($this->app['config']->get('tracy'), $this->app);
+        $tracy->obStart();
+
         $this->app->extend(ExceptionHandlerContract::class, function ($exceptionHandler, $app) {
             return $app->make(Handler::class, [
                 'exceptionHandler' => $exceptionHandler,
@@ -40,6 +43,7 @@ class ServiceProvider extends BaseServiceProvider
 
         $events->listen('kernel.handled', function ($request, $response) use ($tracy) {
             $response = $tracy->renderResponse($response);
+            $tracy->obEnd();
         });
     }
 
@@ -52,7 +56,7 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
         $this->app->singleton(Tracy::class, function ($app) {
-            return new Tracy($app['config']->get('tracy'), $app);
+            return new Tracy();
         });
 
         $config = $this->app['config']->get('tracy');
@@ -69,7 +73,7 @@ class ServiceProvider extends BaseServiceProvider
      */
     protected function isEnabled()
     {
-        return $this->app['config']['app.debug'] == true && $this->app->runningInConsole() === false;
+        return $this->app['config']->get('app.debug') == true && $this->app->runningInConsole() === false;
     }
 
     /**
