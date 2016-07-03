@@ -22,6 +22,7 @@ class RoutingPanelTest extends PHPUnit_Framework_TestCase
         $router = m::mock(RegistrarContract::class)
             ->shouldReceive('getCurrentRoute')->andReturn($route)
             ->mock();
+
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
             ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('offsetGet')->with('router')->andReturn($router)

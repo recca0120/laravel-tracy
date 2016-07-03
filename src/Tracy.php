@@ -22,14 +22,14 @@ class Tracy
     public $panels = [];
 
     /**
-     * __construct.
+     * init.
      *
-     * @method __construct
+     * @method init
      *
      * @param  array                                         $config
      * @param  \Illuminate\Contracts\Foundation\Application  $app
      */
-    public function __construct($config = [], ApplicationContract $app = null)
+    public function init($config = [], ApplicationContract $app = null)
     {
         if (Debugger::getBar()->dispatchAssets() === true) {
             exit;
@@ -104,9 +104,10 @@ class Tracy
      */
     public function renderResponse(Response $response)
     {
-        if ($response->isRedirection() === true ||
+        if (
             $response instanceof BinaryFileResponse ||
-            $response instanceof StreamedResponse
+            $response instanceof StreamedResponse ||
+            $response->isRedirection() === true
         ) {
             return $response;
         }
@@ -122,39 +123,6 @@ class Tracy
         $response->setContent($content);
 
         return $response;
-    }
-
-    /**
-     * startSession.
-     *
-     * @method startSession
-     */
-    private function startSession()
-    {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            ini_set('session.use_cookies', '1');
-            ini_set('session.use_only_cookies', '1');
-            ini_set('session.use_trans_sid', '0');
-            ini_set('session.cookie_path', '/');
-            ini_set('session.cookie_httponly', '1');
-            @session_start();
-        }
-
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            Debugger::dispatch();
-        }
-    }
-
-    /**
-     * closeSession.
-     *
-     * @method closeSession
-     */
-    private function closeSession()
-    {
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            session_write_close();
-        }
     }
 
     /**
@@ -216,5 +184,44 @@ class Tracy
         $this->closeSession();
 
         return $content;
+    }
+
+    public function obStart()
+    {
+        ob_start();
+    }
+
+    public function obEnd()
+    {
+        ob_end_flush();
+    }
+
+    /**
+     * startSession.
+     *
+     * @method startSession
+     */
+    private function startSession()
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            ini_set('session.use_cookies', '1');
+            ini_set('session.use_only_cookies', '1');
+            ini_set('session.use_trans_sid', '0');
+            ini_set('session.cookie_path', '/');
+            ini_set('session.cookie_httponly', '1');
+            @session_start();
+        }
+    }
+
+    /**
+     * closeSession.
+     *
+     * @method closeSession
+     */
+    private function closeSession()
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
     }
 }
