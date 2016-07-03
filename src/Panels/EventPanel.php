@@ -2,7 +2,6 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Tracy\Debugger;
 
 class EventPanel extends AbstractPanel
@@ -29,17 +28,12 @@ class EventPanel extends AbstractPanel
     protected $events = [];
 
     /**
-     * setLaravel.
+     * subscribe.
      *
-     * @method setLaravel
-     *
-     * @param \Illuminate\Contracts\Foundation\Application $laravel
-     *
-     * @return self;
+     * @method subscribe
      */
-    public function setLaravel(ApplicationContract $laravel)
+    public function subscribe()
     {
-        parent::setLaravel($laravel);
         $key = get_class($this);
         $timer = Debugger::timer($key);
         $this->laravel['events']->listen('*', function ($params) use ($key) {

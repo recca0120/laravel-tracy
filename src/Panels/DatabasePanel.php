@@ -4,7 +4,6 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use DateTime;
 use Exception;
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use PDO;
 
 class DatabasePanel extends AbstractPanel
@@ -31,17 +30,12 @@ class DatabasePanel extends AbstractPanel
     protected $counter = 0;
 
     /**
-     * setLaravel.
+     * subscribe.
      *
-     * @method setLaravel
-     *
-     * @param \Illuminate\Contracts\Foundation\Application $laravel
-     *
-     * @return self;
+     * @method subscribe
      */
-    public function setLaravel(ApplicationContract $laravel)
+    public function subscribe()
     {
-        parent::setLaravel($laravel);
         $eventName = $this->getEventName();
         $this->laravel['events']->listen($eventName, function ($event) use ($eventName) {
             if ($eventName === 'illuminate.query') {

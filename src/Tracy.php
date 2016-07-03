@@ -5,6 +5,7 @@ namespace Recca0120\LaravelTracy;
 use ErrorException;
 use Exception;
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -15,6 +16,13 @@ use Tracy\IBarPanel;
 class Tracy
 {
     /**
+     * $app.
+     *
+     * @var \Illuminate\Contracts\Foundation\Application
+     */
+    protected $app;
+
+    /**
      * $panels.
      *
      * @var array
@@ -22,19 +30,28 @@ class Tracy
     public $panels = [];
 
     /**
+     * __construct.
+     * @method __construct
+     *
+     * @param \Illuminate\Contracts\Foundation\Application $app
+     */
+    public function __construct(ApplicationContract $app = null)
+    {
+        $this->app = $app;
+    }
+
+    /**
      * init.
      *
      * @method init
      *
-     * @param  array                                         $config
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
+     * @param  array $config
      */
-    public function init($config = [], ApplicationContract $app = null)
+    public function init($config = [])
     {
         if (Debugger::getBar()->dispatchAssets() === true) {
             exit;
         }
-
         Debugger::$editor = array_get($config, 'editor', Debugger::$editor);
         Debugger::$maxDepth = array_get($config, 'maxDepth', Debugger::$maxDepth);
         Debugger::$maxLength = array_get($config, 'maxLength', Debugger::$maxLength);
@@ -42,11 +59,6 @@ class Tracy
         Debugger::$showLocation = array_get($config, 'showLocation', true);
         Debugger::$strictMode = array_get($config, 'strictMode', true);
         Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
-
-        $isAjax = false;
-        if (is_null($app) === false) {
-            $isAjax = $app['request']->ajax();
-        }
 
         $panels = array_get($config, 'panels', []);
         foreach ($panels as $panel => $enabled) {
@@ -60,13 +72,10 @@ class Tracy
             $className = '\\'.__NAMESPACE__.'\Panels\\'.ucfirst($panel).'Panel';
             $class = new $className();
 
-            if ($isAjax === true && $class->supportAjax === false) {
-                continue;
-            }
-
-            $class->setLaravel($app);
             $this->addPanel($class, $panel);
         }
+
+        return $this;
     }
 
     /**
@@ -88,8 +97,7 @@ class Tracy
         ob_start();
         Helpers::improveException($exception);
         Debugger::getBlueScreen()->render($exception);
-        $content = ob_get_clean();
-        $content .= $this->renderBarPanels();
+        $content = $this->appendDebugbar(ob_get_clean());
 
         return $content;
     }
@@ -112,17 +120,31 @@ class Tracy
             return $response;
         }
 
-        $content = $response->getContent();
-        $barPanels = $this->renderBarPanels();
+        $response->setContent($this->appendDebugbar($response->getContent()));
+
+        return $response;
+    }
+
+    /**
+     * appendDebugbar.
+     *
+     * @method appendDebugbar
+     *
+     * @param string $content
+     *
+     * @return string
+     */
+    public function appendDebugbar($content)
+    {
+        $barPanels = $this->renderPanel();
         $pos = strripos($content, '</body>');
         if ($pos !== false) {
             $content = substr($content, 0, $pos).$barPanels.substr($content, $pos);
         } else {
             $content .= $barPanels;
         }
-        $response->setContent($content);
 
-        return $response;
+        return $content;
     }
 
     /**
@@ -132,11 +154,12 @@ class Tracy
      *
      * @param \Tracy\IBarPanel  $panel
      * @param string            $id
+     *
+     * @return $this
      */
     public function addPanel(IBarPanel $panel, $id)
     {
-        $bar = Debugger::getBar();
-        $bar->addPanel($panel);
+        $panel->setLaravel($this->app);
         $this->panels[$id] = $panel;
 
         return $this;
@@ -169,19 +192,28 @@ class Tracy
     }
 
     /**
-     * renderBarPanels.
+     * renderPanel.
      *
-     * @method renderBarPanels
+     * @method renderPanel
      *
      * @return string
      */
-    public function renderBarPanels()
+    public function renderPanel()
     {
-        $this->startSession();
+        $this->sessionStart();
+        $isAjax = $this->isAjax();
+        Debugger::dispatch();
         ob_start();
-        Debugger::getBar()->render();
+        $bar = Debugger::getBar();
+        foreach ($this->getPanels() as $panel) {
+            if ($isAjax === true && $panel->supportAjax === false) {
+                continue;
+            }
+            $bar->addPanel($panel);
+        }
+        $bar->render();
         $content = ob_get_clean();
-        $this->closeSession();
+        $this->sessionClose();
 
         return $content;
     }
@@ -197,11 +229,11 @@ class Tracy
     }
 
     /**
-     * startSession.
+     * sessionStart.
      *
-     * @method startSession
+     * @method sessionStart
      */
-    private function startSession()
+    public function sessionStart()
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
             ini_set('session.use_cookies', '1');
@@ -211,17 +243,66 @@ class Tracy
             ini_set('session.cookie_httponly', '1');
             @session_start();
         }
+
+        return $this;
     }
 
     /**
-     * closeSession.
+     * sessionClose.
      *
-     * @method closeSession
+     * @method sessionClose
      */
-    private function closeSession()
+    private function sessionClose()
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_write_close();
         }
+
+        return $this;
+    }
+
+    public function isAjax()
+    {
+        $request = (is_null($this->app) === false && is_null($this->app['request']) === false) ?
+            $this->app['request'] : Request::capture();
+
+        return $request->ajax();
+    }
+
+    /**
+     * enable.
+     *
+     * @method enable
+     *
+     * @param  array$config
+     * @return static
+     */
+    public static function enable($config = [], $sessionStart = true)
+    {
+        $config = array_merge([
+            'editor'       => 'subl://open?url=file://%file&line=%line',
+            'maxDepth'     => 4,
+            'maxLength'    => 1000,
+            'scream'       => true,
+            'showLocation' => true,
+            'strictMode'   => true,
+            'panels'       => [
+                'routing'  => false,
+                'database' => true,
+                'view'     => false,
+                'event'    => false,
+                'session'  => true,
+                'request'  => true,
+                'auth'     => true,
+                'terminal' => false,
+            ],
+        ], $config);
+
+        $tracy = (new static())->init($config);
+        if ($sessionStart === true) {
+            $tracy->sessionStart();
+        }
+
+        return $tracy;
     }
 }
