@@ -50,7 +50,7 @@ Include the service provider within `config/app.php`. The service povider is nee
 publish
 
 ```bash
-artisan vendor:publish --provider="Recca0120\LaravelTracy\ServiceProvider"
+php artisan vendor:publish --provider="Recca0120\LaravelTracy\ServiceProvider"
 ```
 
 ## Config
@@ -88,6 +88,10 @@ OSX
 ```
 https://github.com/dhoulb/subl
 ```
+Prefer PhpStorm, you can edit `config/tracy.php`'s key of `editor` like this:
+```php
+'editor' => 'phpstorm://open?file=%file&line=%line',
+```
 
 ## Debugger Bar
 
@@ -119,9 +123,9 @@ web artisan is another package [recca0120/terminal](https://github.com/recca0120
 #### notice
 if you install terminal before, this panel will throw errors, please remove folder `app/resources/views/vendor/terminal`
 
-
 ## STANDALONE
-```
+
+```php
 require __DIR__.'/../vendor/autoload.php';
 
 use Recca0120\LaravelTracy\Tracy;
