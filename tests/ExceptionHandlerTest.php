@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Mockery as m;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\LaravelTracy\Tracy;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
@@ -43,10 +44,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         $statusCode = 404;
         $headers = [];
 
-        $exception = m::mock(HttpException::class)
-            ->shouldReceive('getStatusCode')->once()->andReturn($statusCode)
-            ->shouldReceive('getHeaders')->once()->andReturn($headers)
-            ->mock();
+        $exception = new HttpException($statusCode, null, null, $headers);
 
         $tracy = m::mock(Tracy::class)
             ->shouldReceive('renderException')->once()
@@ -65,9 +63,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
 
     public function test_http_response_exception()
     {
-        $exception = m::mock(HttpResponseException::class)
-            ->shouldReceive('getResponse')->once()
-            ->mock();
+        $exception = new HttpResponseException(m::mock(Response::class));
 
         $tracy = m::mock(Tracy::class);
         $request = m::mock(Request::class);
