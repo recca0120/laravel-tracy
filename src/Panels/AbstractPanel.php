@@ -83,9 +83,15 @@ abstract class AbstractPanel implements IBarPanel
      *
      * @return self;
      */
-    public function setLaravel(ApplicationContract $laravel)
+    public function setLaravel(ApplicationContract $laravel = null)
     {
-        $this->laravel = $laravel;
+        if (is_null($laravel) === false) {
+            $this->laravel = $laravel;
+
+            if (method_exists($this, 'subscribe') === true) {
+                $this->subscribe();
+            }
+        }
 
         return $this;
     }

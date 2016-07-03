@@ -33,8 +33,6 @@ class TracyTest extends PHPUnit_Framework_TestCase
                 'events'   => false,
             ],
         ], $app);
-        $tracy->getPanel('user');
-        $tracy->getPanels();
     }
 
     public function test_stramed_reponse()
@@ -94,5 +92,15 @@ class TracyTest extends PHPUnit_Framework_TestCase
     {
         $tracy = new Tracy();
         $tracy->renderException(new Exception());
+    }
+
+    public function test_static_enable()
+    {
+        $tracy = Tracy::enable();
+        $tracy->getPanel('request');
+        $tracy->getPanel('routing');
+        $tracy->getPanel('database');
+        $tracy->getPanel('session');
+        $tracy->getPanel('request');
     }
 }

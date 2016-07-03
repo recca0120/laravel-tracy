@@ -67,6 +67,8 @@ class Tracy
             $class->setLaravel($app);
             $this->addPanel($class, $panel);
         }
+
+        return $this;
     }
 
     /**
@@ -112,7 +114,22 @@ class Tracy
             return $response;
         }
 
-        $content = $response->getContent();
+        $response->setContent($this->appendDebugbar($response->getContent()));
+
+        return $response;
+    }
+
+    /**
+     * appendDebugbar.
+     *
+     * @method appendDebugbar
+     *
+     * @param string $content
+     *
+     * @return string
+     */
+    public function appendDebugbar($content)
+    {
         $barPanels = $this->renderBarPanels();
         $pos = strripos($content, '</body>');
         if ($pos !== false) {
@@ -120,9 +137,8 @@ class Tracy
         } else {
             $content .= $barPanels;
         }
-        $response->setContent($content);
 
-        return $response;
+        return $content;
     }
 
     /**
@@ -223,5 +239,37 @@ class Tracy
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_write_close();
         }
+    }
+
+    /**
+     * enable.
+     *
+     * @method enable
+     *
+     * @param  array$config
+     * @return static
+     */
+    public static function enable($config = [])
+    {
+        $config = array_merge([
+            'editor'       => 'subl://open?url=file://%file&line=%line',
+            'maxDepth'     => 4,
+            'maxLength'    => 1000,
+            'scream'       => true,
+            'showLocation' => true,
+            'strictMode'   => true,
+            'panels'       => [
+                'routing'  => true,
+                'database' => true,
+                'view'     => false,
+                'event'    => false,
+                'session'  => true,
+                'request'  => true,
+                'auth'     => true,
+                'terminal' => false,
+            ],
+        ], $config);
+
+        return (new static())->init($config);
     }
 }

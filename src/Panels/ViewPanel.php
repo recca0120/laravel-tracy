@@ -2,8 +2,6 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
-
 class ViewPanel extends AbstractPanel
 {
     /**
@@ -14,17 +12,12 @@ class ViewPanel extends AbstractPanel
     protected $views = [];
 
     /**
-     * setLaravel.
+     * subscribe.
      *
-     * @method setLaravel
-     *
-     * @param \Illuminate\Contracts\Foundation\Application $laravel
-     *
-     * @return self;
+     * @method subscribe
      */
-    public function setLaravel(ApplicationContract $laravel)
+    public function subscribe()
     {
-        parent::setLaravel($laravel);
         $this->laravel['events']->listen('composing:*', function ($view) {
             $name = $view->getName();
             $data = array_except($view->getData(), ['__env', 'app']);

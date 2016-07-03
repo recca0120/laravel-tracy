@@ -1,4 +1,4 @@
-require('gulp-util').env.production = true;
+require('gulp-util').env.production = false;
 var elixir = require('laravel-elixir');
 
 /*
