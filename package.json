@@ -6,7 +6,9 @@
   "dependencies": {
     "base-64": "^0.1.0",
     "bootstrap-sass": "^3.3.6",
-    "laravel-elixir": "^6.0.0-5",
+    "laravel-elixir": "^6.0.0-8",
+    "laravel-elixir-browserify-official": "^0.1.2",
+    "laravel-elixir-rollup-official": "^1.0.4",
     "pako": "^1.0.1"
   }
 }
