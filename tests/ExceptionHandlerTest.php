@@ -22,7 +22,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         $exception = new Exception();
 
         $tracy = m::mock(Tracy::class)
-            ->shouldReceive('renderException')->once()
+            ->shouldReceive('renderBlueScreen')->once()
             ->mock();
 
         $request = m::mock(Request::class);
@@ -47,7 +47,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         $exception = new HttpException($statusCode, null, null, $headers);
 
         $tracy = m::mock(Tracy::class)
-            ->shouldReceive('renderException')->once()
+            ->shouldReceive('renderBlueScreen')->once()
             ->mock();
 
         $request = m::mock(Request::class);

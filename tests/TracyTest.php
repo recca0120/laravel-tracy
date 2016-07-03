@@ -88,10 +88,10 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($result, $response);
     }
 
-    public function test_render_exception()
+    public function test_render_bluescreen()
     {
         $tracy = new Tracy();
-        $tracy->renderException(new Exception());
+        $tracy->renderBlueScreen(new Exception());
     }
 
     public function test_static_enable()
