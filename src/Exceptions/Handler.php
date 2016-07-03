@@ -83,7 +83,7 @@ class Handler implements ExceptionHandlerContract
         }
 
         return $this->responseFactory->make(
-            $this->tracy->renderException($e),
+            $this->tracy->renderBlueScreen($e),
             $statusCode,
             $headers
         );

@@ -79,15 +79,15 @@ class Tracy
     }
 
     /**
-     * renderException.
+     * renderBlueScreen.
      *
-     * @method renderException
+     * @method renderBlueScreen
      *
      * @param  \Exception $exception
      *
      * @return string
      */
-    public function renderException(Exception $exception)
+    public function renderBlueScreen(Exception $exception)
     {
         $error = error_get_last();
         if (in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE, E_RECOVERABLE_ERROR, E_USER_ERROR], true)) {
@@ -97,7 +97,7 @@ class Tracy
         ob_start();
         Helpers::improveException($exception);
         Debugger::getBlueScreen()->render($exception);
-        $content = $this->appendDebugbar(ob_get_clean());
+        $content = ob_get_clean();
 
         return $content;
     }
