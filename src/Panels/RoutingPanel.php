@@ -34,9 +34,9 @@ class RoutingPanel extends AbstractPanel
                 ];
             }
             $http_host = array_get($_SERVER, 'HTTP_HOST');
-            $request_uri = array_get($_SERVER, 'REQUEST_URI');
+            $requestUri = array_get($_SERVER, 'REQUEST_URI');
             $data = [
-                'uri'    => 'http://'.$http_host.$request_uri,
+                'uri'    => $requestUri,
                 'action' => [],
             ];
         }

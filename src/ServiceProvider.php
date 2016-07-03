@@ -32,7 +32,7 @@ class ServiceProvider extends BaseServiceProvider
             return;
         }
 
-        $tracy->init($this->app['config']->get('tracy'), $this->app);
+        $tracy->init($this->app['config']->get('tracy'));
         $tracy->obStart();
 
         $this->app->extend(ExceptionHandlerContract::class, function ($exceptionHandler, $app) {
@@ -56,7 +56,7 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
         $this->app->singleton(Tracy::class, function ($app) {
-            return new Tracy();
+            return new Tracy($app);
         });
 
         $config = $this->app['config']->get('tracy');

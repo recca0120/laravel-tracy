@@ -13,7 +13,7 @@ Better Laravel Exception Handler
 
 ## Features
 - Visualization of errors and exceptions
-- Debugger Bar (ajax support @v1.5.5)
+- Debugger Bar (ajax support @v1.5.6)
 - Exception stack trace contains values of all method arguments.
 
 ## Online Demo
@@ -32,7 +32,7 @@ Instead, you may of course manually update your require block and run `composer 
 ```json
 {
     "require": {
-        "recca0120/laravel-tracy": "^1.5.5"
+        "recca0120/laravel-tracy": "^1.5.6"
     }
 }
 ```
@@ -118,3 +118,19 @@ web artisan is another package [recca0120/terminal](https://github.com/recca0120
 
 #### notice
 if you install terminal before, this panel will throw errors, please remove folder `app/resources/views/vendor/terminal`
+
+
+## STANDALONE
+```
+require __DIR__.'/../vendor/autoload.php';
+
+use Recca0120\LaravelTracy\Tracy;
+
+$tracy = Tracy::enable();
+$databasePanel = $tracy->getPanel('database');
+$databasePanel->logQuery('select * from users');
+$databasePanel->logQuery('select * from products');
+echo $barpanel = $tracy->renderPanel();
+```
+
+![Standalone](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/standalone.png)
