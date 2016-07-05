@@ -140,8 +140,6 @@ class Tracy
         $pos = strripos($content, '</body>');
         if ($pos !== false) {
             $content = substr($content, 0, $pos).$barPanels.substr($content, $pos);
-        } else {
-            $content .= $barPanels;
         }
 
         return $content;
