@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'enabled'      => true,
+    'showBar'      => true,
     'editor'       => 'subl://open?url=file://%file&line=%line',
     'maxDepth'     => 4,
     'maxLength'    => 1000,

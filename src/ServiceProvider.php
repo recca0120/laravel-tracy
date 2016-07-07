@@ -11,16 +11,7 @@ use Recca0120\Terminal\ServiceProvider as TerminalServiceProvider;
 class ServiceProvider extends BaseServiceProvider
 {
     /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = false;
-
-    /**
      * boot.
-     *
-     * @return void
      */
     public function boot(Tracy $tracy, DispatcherContract $events)
     {
@@ -28,23 +19,19 @@ class ServiceProvider extends BaseServiceProvider
             __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
         ], 'config');
 
-        if ($this->isEnabled() === false) {
-            return;
+        if ($tracy->initialize() === true) {
+            $this->app->extend(ExceptionHandlerContract::class, function ($exceptionHandler, $app) {
+                return $app->make(Handler::class, [
+                    'exceptionHandler' => $exceptionHandler,
+                ]);
+            });
+
+            $tracy->obStart();
+            $events->listen('kernel.handled', function ($request, $response) use ($tracy) {
+                $response = $tracy->renderResponse($response);
+                $tracy->obEnd();
+            });
         }
-
-        $tracy->init($this->app['config']->get('tracy'));
-        $tracy->obStart();
-
-        $this->app->extend(ExceptionHandlerContract::class, function ($exceptionHandler, $app) {
-            return $app->make(Handler::class, [
-                'exceptionHandler' => $exceptionHandler,
-            ]);
-        });
-
-        $events->listen('kernel.handled', function ($request, $response) use ($tracy) {
-            $response = $tracy->renderResponse($response);
-            $tracy->obEnd();
-        });
     }
 
     /**
@@ -56,24 +43,13 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
         $this->app->singleton(Tracy::class, function ($app) {
-            return new Tracy($app);
+            return new Tracy($this->app['config']->get('tracy'), $app);
         });
 
-        $config = $this->app['config']->get('tracy');
-        if (array_get($config, 'panels.terminal') === true) {
+        if ($this->app['config']->get('tracy.panels.terminal') === true) {
             $serviceProvider = TerminalServiceProvider::class;
             $this->app->register($serviceProvider);
         }
-    }
-
-    /**
-     * Enable when php isn't cli and debug is true.
-     *
-     * @return bool
-     */
-    protected function isEnabled()
-    {
-        return $this->app['config']->get('app.debug') == true && $this->app->runningInConsole() === false;
     }
 
     /**

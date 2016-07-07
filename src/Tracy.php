@@ -16,6 +16,12 @@ use Tracy\IBarPanel;
 class Tracy
 {
     /**
+     * @config
+     *
+     * @var array
+     */
+
+    /**
      * $app.
      *
      * @var \Illuminate\Contracts\Foundation\Application
@@ -31,36 +37,44 @@ class Tracy
 
     /**
      * __construct.
+     *
      * @method __construct
      *
+     * @param array $config
      * @param \Illuminate\Contracts\Foundation\Application $app
      */
-    public function __construct(ApplicationContract $app = null)
+    public function __construct($config = [], ApplicationContract $app = null)
     {
+        $this->config = $config;
         $this->app = $app;
     }
 
     /**
-     * init.
+     * initialize.
      *
-     * @method init
+     * @method initialize
      *
-     * @param  array $config
+     * @return bool
      */
-    public function init($config = [])
+    public function initialize()
     {
         if (Debugger::getBar()->dispatchAssets() === true) {
             exit;
         }
-        Debugger::$editor = array_get($config, 'editor', Debugger::$editor);
-        Debugger::$maxDepth = array_get($config, 'maxDepth', Debugger::$maxDepth);
-        Debugger::$maxLength = array_get($config, 'maxLength', Debugger::$maxLength);
-        Debugger::$scream = array_get($config, 'scream', true);
-        Debugger::$showLocation = array_get($config, 'showLocation', true);
-        Debugger::$strictMode = array_get($config, 'strictMode', true);
+
+        if ($this->isRunningInConsole() === true || array_get($this->config, 'enabled') === false) {
+            return false;
+        }
+
+        Debugger::$editor = array_get($this->config, 'editor', Debugger::$editor);
+        Debugger::$maxDepth = array_get($this->config, 'maxDepth', Debugger::$maxDepth);
+        Debugger::$maxLength = array_get($this->config, 'maxLength', Debugger::$maxLength);
+        Debugger::$scream = array_get($this->config, 'scream', true);
+        Debugger::$showLocation = array_get($this->config, 'showLocation', true);
+        Debugger::$strictMode = array_get($this->config, 'strictMode', true);
         Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
 
-        $panels = array_get($config, 'panels', []);
+        $panels = array_get($this->config, 'panels', []);
         foreach ($panels as $panel => $enabled) {
             if ($panel === 'user') {
                 $panel = 'auth';
@@ -75,7 +89,19 @@ class Tracy
             $this->addPanel($class, $panel);
         }
 
-        return $this;
+        return true;
+    }
+
+    /**
+     * isRunningInConsole.
+     *
+     * @method isRunningInConsole
+     *
+     * @return bool
+     */
+    protected function isRunningInConsole()
+    {
+        return is_null($this->app) === false && $this->app->runningInConsole() === true;
     }
 
     /**
@@ -136,6 +162,10 @@ class Tracy
      */
     public function appendDebugbar($content)
     {
+        if (array_get($this->config, 'showBar') === false) {
+            return $content;
+        }
+
         $barPanels = $this->renderPanel();
         $pos = strripos($content, '</body>');
         if ($pos !== false) {
@@ -303,6 +333,8 @@ class Tracy
     public static function enable($config = [], $sessionStart = true)
     {
         $config = array_merge([
+            'enabled'      => true,
+            'showBar'      => true,
             'editor'       => 'subl://open?url=file://%file&line=%line',
             'maxDepth'     => 4,
             'maxLength'    => 1000,
@@ -321,7 +353,9 @@ class Tracy
             ],
         ], $config);
 
-        $tracy = (new static())->init($config);
+        $tracy = new static($config);
+        $tracy->initialize();
+
         if ($sessionStart === true) {
             $tracy->sessionStart();
         }

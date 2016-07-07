@@ -10,29 +10,64 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TracyTest extends PHPUnit_Framework_TestCase
 {
+    protected function getConfig()
+    {
+        return [
+            'enabled'      => true,
+            'showBar'      => true,
+            'editor'       => 'subl://open?url=file://%file&line=%line',
+            'maxDepth'     => 4,
+            'maxLength'    => 1000,
+            'scream'       => true,
+            'showLocation' => true,
+            'strictMode'   => true,
+            'panels'       => [
+                'routing'  => false,
+                'database' => false,
+                'view'     => false,
+                'event'    => false,
+                'session'  => false,
+                'request'  => false,
+                'user'     => true,
+                'terminal' => false,
+            ],
+        ];
+    }
+
     public function tearDown()
     {
         m::close();
     }
 
-    public function test_init()
+    public function test_is_enabled()
     {
-        $request = m::mock(Request::class)
-            ->shouldReceive('ajax')->andReturn(true)
-            ->mock();
-
+        $config = $this->getConfig();
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
-            ->shouldReceive('offsetGet')->with('request')->andReturn($request)
+            ->shouldReceive('runningInConsole')->andReturn(false)
             ->mock();
 
+        $tracy = new Tracy($config, $app);
+        $tracy->sessionStart();
+        $tracy->initialize();
+
+        $panel = $tracy->getPanel('auth');
+    }
+
+    public function test_is_enabled_false()
+    {
+        $config = $this->getConfig();
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+            ->shouldReceive('runningInConsole')->andReturn(true)
+            ->mock();
+
+        $tracy = new Tracy($config, $app);
+        $tracy->initialize();
+    }
+
+    public function test_render_blue_screen()
+    {
         $tracy = new Tracy();
-        $tracy->init([
-            'panels' => [
-                'user'     => true,
-                'terminal' => true,
-                'events'   => false,
-            ],
-        ], $app);
+        $tracy->renderBlueScreen(new Exception());
     }
 
     public function test_stramed_reponse()
@@ -88,10 +123,39 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($result, $response);
     }
 
-    public function test_render_bluescreen()
+    public function test_ob_start_end()
     {
         $tracy = new Tracy();
-        $tracy->renderBlueScreen(new Exception());
+        $tracy
+            ->obStart()
+            ->obEnd();
+    }
+
+    public function test_show_bar_false()
+    {
+        $content = 'test';
+        $tracy = new Tracy(['showBar' => false]);
+        $this->assertSame($tracy->appendDebugbar($content), $content);
+    }
+
+    public function test_ajax_render_panel()
+    {
+        $config = [
+            'showBar' => true,
+            'panels'  => [
+                'auth'     => true,
+                'terminal' => true,
+            ],
+        ];
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+            ->shouldReceive('runningInConsole')->andReturn(false)
+            ->shouldReceive('offsetGet')->with('request')->andReturnSelf()
+            ->shouldReceive('ajax')->andReturn(true)
+            ->mock();
+
+        $tracy = new Tracy($config, $app);
+        $tracy->initialize();
+        $tracy->renderPanel();
     }
 
     public function test_static_enable()
