@@ -19,87 +19,81 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_enabled()
+    public function test_register()
     {
-        $request = m::mock(Request::class)
-            ->shouldReceive('ajax')->andReturn(false)
-            ->mock();
-
-        $response = m::mock(Response::class)
-            ->shouldReceive('isRedirection')->andReturn(false)
-            ->shouldReceive('getContent')->andReturn('<body></body>')
-            ->shouldReceive('setContent')
-            ->mock();
+        $config = [
+            'enabled'      => true,
+            'showBar'      => true,
+            'editor'       => 'subl://open?url=file://%file&line=%line',
+            'maxDepth'     => 4,
+            'maxLength'    => 1000,
+            'scream'       => true,
+            'showLocation' => true,
+            'strictMode'   => true,
+            'panels'       => [
+                'routing'  => true,
+                'database' => true,
+                'view'     => true,
+                'event'    => false,
+                'session'  => true,
+                'request'  => true,
+                'auth'     => true,
+                'terminal' => true,
+            ],
+        ];
 
         $config = m::mock(ConfigContract::class)
-            ->shouldReceive('get')->with('tracy', m::any())->andReturn([])
-            ->shouldReceive('get')->with('tracy')->andReturn([
-                'panels' => [
-                    'terminal' => true,
-                ],
-            ])
-            ->shouldReceive('get')->with('app.debug')->andReturn(true)
-            ->shouldReceive('set')
+            ->shouldReceive('get')->with('tracy', [])->once()->andReturn($config)
+            ->shouldReceive('set')->with('tracy', $config)->once()
+            ->shouldReceive('get')->with('tracy')->once()->andReturn($config)
+            ->shouldReceive('get')->with('tracy.panels.terminal')->once()->andReturn(true)
+
             ->mock();
 
-        $event = m::mock(DispatcherContract::class)
-            ->shouldReceive('listen')->with('kernel.handled', m::type(Closure::class))->andReturnUsing(function ($className, $closure) use ($request, $response) {
-                $closure($request, $response);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+            ->shouldReceive('offsetGet')->with('config')->times(4)->andReturn($config)
+            ->shouldReceive('singleton')->with(Tracy::class, m::type(Closure::class))->once()->andReturnUsing(function ($className, $closure) {
+                return $closure(m::self());
             })
+            ->shouldReceive('register')->with(TerminalServiceProvider::class)->once()
+            ->mock();
+        $provider = new ServiceProvider($app);
+        $provider->register();
+        $provider->provides();
+    }
+
+    public function test_boot()
+    {
+        $request = m::mock(Request::class);
+
+        $response = m::mock(Response::class);
+
+        $tracy = m::mock(Tracy::class)
+            ->shouldReceive('initialize')->once()->andReturn(true)
+            ->shouldReceive('obStart')->once()
+            ->shouldReceive('renderResponse')->once()
+            ->shouldReceive('obEnd')->once()
             ->mock();
 
         $exceptionHandler = m::mock(ExceptionHandlerContract::class);
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
-            ->shouldReceive('offsetGet')->with('config')->andReturn($config)
-            ->shouldReceive('offsetGet')->with('request')->andReturn($request)
-            ->shouldReceive('singleton')->with(Tracy::class, m::type(Closure::class))->andReturnUsing(function ($className, $closure) {
-                $closure(m::self());
+        $events = m::mock(DispatcherContract::class)
+            ->shouldReceive('listen')->with('kernel.handled', m::type(Closure::class))->once()->andReturnUsing(function ($eventName, $closure) use ($request, $response) {
+                return $closure($request, $response);
             })
-            ->shouldReceive('register')->with(TerminalServiceProvider::class)
-            ->shouldReceive('runningInConsole')->andReturn(false)
-            ->shouldReceive('extend')->andReturnUsing(function ($className, $closure) use ($exceptionHandler) {
-                $closure($exceptionHandler, m::self());
+            ->mock();
+
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+            ->shouldReceive('extend')->with(ExceptionHandlerContract::class, m::type(Closure::class))->once()->andReturnUsing(function ($className, $closure) use ($exceptionHandler) {
+                return $closure($exceptionHandler, m::self());
             })
             ->shouldReceive('make')->with(Handler::class, [
                 'exceptionHandler' => $exceptionHandler,
-            ])
+            ])->once()
             ->mock();
 
         $provider = new ServiceProvider($app);
-        $provider->register();
-        $provider->boot(new Tracy(), $event);
-        $provider->provides();
-    }
-
-    public function test_disabled()
-    {
-        $config = m::mock(ConfigContract::class)
-            ->shouldReceive('get')->with('tracy', m::any())->andReturn([])
-            ->shouldReceive('get')->with('tracy')->andReturn([
-                'panels' => [
-                    'terminal' => true,
-                ],
-            ])
-            ->shouldReceive('get')->with('app.debug')->andReturn(false)
-            ->shouldReceive('set')
-            ->mock();
-
-        $event = m::mock(DispatcherContract::class);
-
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
-            ->shouldReceive('offsetGet')->with('config')->andReturn($config)
-            ->shouldReceive('singleton')->with(Tracy::class, m::type(Closure::class))->andReturnUsing(function ($className, $closure) {
-                $closure(m::self());
-            })
-            ->shouldReceive('register')->with(TerminalServiceProvider::class)
-            ->shouldReceive('runningInConsole')->andReturn(false)
-            ->mock();
-
-        $provider = new ServiceProvider($app);
-        $provider->register();
-        $provider->boot(new Tracy(), $event);
-        $provider->provides();
+        $provider->boot($tracy, $events);
     }
 }
 
