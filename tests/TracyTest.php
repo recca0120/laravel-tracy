@@ -15,6 +15,9 @@ class TracyTest extends PHPUnit_Framework_TestCase
         return [
             'enabled'      => true,
             'showBar'      => true,
+            'accepts'      => [
+                'text/html',
+            ],
             'editor'       => 'subl://open?url=file://%file&line=%line',
             'maxDepth'     => 4,
             'maxLength'    => 1000,
@@ -70,59 +73,6 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $tracy->renderBlueScreen(new Exception());
     }
 
-    public function test_stramed_reponse()
-    {
-        $response = m::mock(StreamedResponse::class);
-        $tracy = new Tracy();
-        $result = $tracy->renderResponse($response);
-        $this->assertSame($result, $response);
-    }
-
-    public function test_binary_file_reponse()
-    {
-        $response = m::mock(BinaryFileResponse::class);
-        $tracy = new Tracy();
-        $result = $tracy->renderResponse($response);
-        $this->assertSame($result, $response);
-    }
-
-    public function test_redirect_reponse()
-    {
-        $response = m::mock(Response::class)
-            ->shouldReceive('isRedirection')->andReturn(true)
-            ->mock();
-
-        $tracy = new Tracy();
-        $result = $tracy->renderResponse($response);
-        $this->assertSame($result, $response);
-    }
-
-    public function test_response_with_body()
-    {
-        $response = m::mock(Response::class)
-            ->shouldReceive('isRedirection')->andReturn(false)
-            ->shouldReceive('getContent')->andReturn('<body></body>')
-            ->shouldReceive('setContent')
-            ->mock();
-
-        $tracy = new Tracy();
-        $result = $tracy->renderResponse($response);
-        $this->assertSame($result, $response);
-    }
-
-    public function test_response_without_body()
-    {
-        $response = m::mock(Response::class)
-            ->shouldReceive('isRedirection')->andReturn(false)
-            ->shouldReceive('getContent')->andReturn('')
-            ->shouldReceive('setContent')
-            ->mock();
-
-        $tracy = new Tracy();
-        $result = $tracy->renderResponse($response);
-        $this->assertSame($result, $response);
-    }
-
     public function test_ob_start_end()
     {
         $tracy = new Tracy();
@@ -138,6 +88,118 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($tracy->appendDebugbar($content), $content);
     }
 
+    public function test_static_enable()
+    {
+        $tracy = Tracy::enable();
+        $tracy->getPanel('request');
+        $tracy->getPanel('routing');
+        $tracy->getPanel('database');
+        $tracy->getPanel('session');
+        $tracy->getPanel('request');
+    }
+
+    protected function sendResponse($response, $contentType = 'text/html', $config = [], $ajax = false)
+    {
+        $response->headers = m::mock(stdClass::class)
+            ->shouldReceive('get')->with('Content-type')->andReturn($contentType)
+            ->mock();
+
+        $request = m::mock(Request::class)
+            ->shouldReceive('ajax')->andReturn($ajax)
+            ->mock();
+
+        $app = m::mock(ApplicationContract::class);
+
+        $tracy = new Tracy($config, $app, $request);
+
+        $result = $tracy->renderResponse($response);
+        $this->assertSame($result, $response);
+    }
+
+    public function test_binaryfile_response()
+    {
+        $response = m::mock(BinaryFileResponse::class);
+        $this->sendResponse($response);
+    }
+
+    public function test_streamed_response()
+    {
+        $response = m::mock(StreamedResponse::class);
+        $this->sendResponse($response);
+    }
+
+    public function test_redirect_response()
+    {
+        $response = m::mock(Response::class)
+            ->shouldReceive('isRedirection')->andReturn(true)
+            ->mock();
+        $this->sendResponse($response);
+    }
+
+    public function test_accept_content_type()
+    {
+        $response = m::mock(Response::class)
+            ->shouldReceive('isRedirection')->andReturn(false)
+            ->shouldReceive('getContent')->once()->andReturn('test')
+            ->shouldReceive('setContent')->once()
+            ->mock();
+
+        $this->sendResponse($response, 'text/html', ['accepts' => ['text/html']]);
+    }
+
+    public function test_reject_content_type()
+    {
+        $response = m::mock(Response::class)
+            ->shouldReceive('isRedirection')->andReturn(false)
+            ->mock();
+
+        $this->sendResponse($response, 'application/json', ['accepts' => ['text/html']]);
+    }
+
+    public function test_accept_content_type_ajax()
+    {
+        $response = m::mock(Response::class)
+            ->shouldReceive('isRedirection')->andReturn(false)
+            ->shouldReceive('getContent')->once()->andReturn('test')
+            ->shouldReceive('setContent')->once()
+            ->mock();
+
+        $this->sendResponse($response, 'text/html', ['accepts' => ['text/html']], true);
+    }
+
+    public function test_reject_content_type_ajax()
+    {
+        $response = m::mock(Response::class)
+            ->shouldReceive('isRedirection')->andReturn(false)
+            ->shouldReceive('getContent')->once()->andReturn('test')
+            ->shouldReceive('setContent')->once()
+            ->mock();
+
+        $this->sendResponse($response, 'application/json', [
+            'accepts' => ['text/html'],
+        ], true);
+    }
+
+    public function test_without_accepts()
+    {
+        $response = m::mock(Response::class)
+            ->shouldReceive('isRedirection')->andReturn(false)
+            ->mock();
+
+        $this->sendResponse($response, 'application/json', []);
+    }
+
+    public function test_response_with_body()
+    {
+        $response = m::mock(Response::class)
+            ->shouldReceive('isRedirection')->andReturn(false)
+            ->shouldReceive('getContent')->andReturn('<body></body>')
+            ->shouldReceive('setContent')
+            ->mock();
+
+        $this->sendResponse($response, 'text/html', ['accepts' => ['text/html']]);
+    }
+
     public function test_ajax_render_panel()
     {
         $config = [
@@ -147,24 +209,19 @@ class TracyTest extends PHPUnit_Framework_TestCase
                 'terminal' => true,
             ],
         ];
+
+        $request = m::mock(Request::class)
+            ->shouldReceive('ajax')->andReturn(true)
+            ->mock();
+
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
             ->shouldReceive('runningInConsole')->andReturn(false)
             ->shouldReceive('offsetGet')->with('request')->andReturnSelf()
             ->shouldReceive('ajax')->andReturn(true)
             ->mock();
 
-        $tracy = new Tracy($config, $app);
+        $tracy = new Tracy($config, $app, $request);
         $tracy->initialize();
         $tracy->renderPanel();
-    }
-
-    public function test_static_enable()
-    {
-        $tracy = Tracy::enable();
-        $tracy->getPanel('request');
-        $tracy->getPanel('routing');
-        $tracy->getPanel('database');
-        $tracy->getPanel('session');
-        $tracy->getPanel('request');
     }
 }

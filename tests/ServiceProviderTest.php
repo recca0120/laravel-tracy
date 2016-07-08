@@ -24,6 +24,9 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $config = [
             'enabled'      => true,
             'showBar'      => true,
+            'accepts'      => [
+                'text/html',
+            ],
             'editor'       => 'subl://open?url=file://%file&line=%line',
             'maxDepth'     => 4,
             'maxLength'    => 1000,

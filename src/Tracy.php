@@ -16,10 +16,11 @@ use Tracy\IBarPanel;
 class Tracy
 {
     /**
-     * @config
+     * $config.
      *
      * @var array
      */
+    protected $config;
 
     /**
      * $app.
@@ -27,6 +28,13 @@ class Tracy
      * @var \Illuminate\Contracts\Foundation\Application
      */
     protected $app;
+
+    /**
+     * $request.
+     *
+     * @var \Illuminate\Http\Request
+     */
+    protected $request;
 
     /**
      * $panels.
@@ -42,11 +50,13 @@ class Tracy
      *
      * @param array $config
      * @param \Illuminate\Contracts\Foundation\Application $app
+     * @param \Illuminate\Http\Request                     $request
      */
-    public function __construct($config = [], ApplicationContract $app = null)
+    public function __construct($config = [], ApplicationContract $app = null, Request $request = null)
     {
         $this->config = $config;
         $this->app = $app;
+        $this->request = is_null($request) === true ? Request::capture() : $request;
     }
 
     /**
@@ -62,7 +72,7 @@ class Tracy
             exit;
         }
 
-        if ($this->isRunningInConsole() === true || array_get($this->config, 'enabled') === false) {
+        if ($this->isRunningInConsole() === true || array_get($this->config, 'enabled', true) === false) {
             return false;
         }
 
@@ -132,7 +142,8 @@ class Tracy
      * renderResponse.
      *
      * @method renderResponse
-     * @param  \Symfony\Component\HttpFoundation\Response $response
+     *
+     * @param \Symfony\Component\HttpFoundation\Response $response
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -141,7 +152,8 @@ class Tracy
         if (
             $response instanceof BinaryFileResponse ||
             $response instanceof StreamedResponse ||
-            $response->isRedirection() === true
+            $response->isRedirection() === true ||
+            $this->acceptRenderResponse($response) === false
         ) {
             return $response;
         }
@@ -149,6 +161,38 @@ class Tracy
         $response->setContent($this->appendDebugbar($response->getContent()));
 
         return $response;
+    }
+
+    /**
+     * acceptRenderResponse.
+     *
+     * @method acceptRenderResponse
+     *
+     * @param \Symfony\Component\HttpFoundation\Response $response $response
+     *
+     * @return bool
+     */
+    protected function acceptRenderResponse($response)
+    {
+        if ($this->request->ajax() === true) {
+            return true;
+        }
+
+        $accepts = array_get($this->config, 'accepts', []);
+
+        if (count($accepts) === 0) {
+            return false;
+        }
+
+        $contentType = strtolower($response->headers->get('Content-type'));
+
+        foreach ($accepts as $accept) {
+            if (strpos($contentType, $accept) !== false) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -162,7 +206,7 @@ class Tracy
      */
     public function appendDebugbar($content)
     {
-        if (array_get($this->config, 'showBar') === false) {
+        if (array_get($this->config, 'showBar', true) === false) {
             return $content;
         }
 
@@ -229,21 +273,37 @@ class Tracy
     public function renderPanel()
     {
         $this->sessionStart();
-        $isAjax = $this->isAjax();
         Debugger::dispatch();
-        ob_start();
         $bar = Debugger::getBar();
+        $this->setupPanels($bar);
+        ob_start();
+        $bar->render();
+        $content = ob_get_clean();
+        $this->sessionClose();
+
+        return $content;
+    }
+
+    /**
+     * setupPanels.
+     *
+     * @method setupPanels
+     *
+     * @param \Tracy\Bar $bar
+     *
+     * @return static
+     */
+    protected function setupPanels($bar)
+    {
+        $isAjax = $this->request->ajax();
         foreach ($this->getPanels() as $panel) {
             if ($isAjax === true && $panel->supportAjax === false) {
                 continue;
             }
             $bar->addPanel($panel);
         }
-        $bar->render();
-        $content = ob_get_clean();
-        $this->sessionClose();
 
-        return $content;
+        return $this;
     }
 
     /**
@@ -305,21 +365,6 @@ class Tracy
         }
 
         return $this;
-    }
-
-    /**
-     * isAjax.
-     *
-     * @method isAjax
-     *
-     * @return bool
-     */
-    public function isAjax()
-    {
-        $request = (is_null($this->app) === false && is_null($this->app['request']) === false) ?
-            $this->app['request'] : Request::capture();
-
-        return $request->ajax();
     }
 
     /**
