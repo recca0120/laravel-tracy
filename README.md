@@ -57,6 +57,11 @@ php artisan vendor:publish --provider="Recca0120\LaravelTracy\ServiceProvider"
 ```php
 return [
     'editor'       => 'subl://open?url=file://%file&line=%line',
+    'enabled'      => true,
+    'showBar'      => true,
+    'accepts'      => [
+        'text/html',
+    ],
     'maxDepth'     => 4,
     'maxLength'    => 1000,
     'scream'       => true,
