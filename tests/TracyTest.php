@@ -144,10 +144,10 @@ class TracyTest extends PHPUnit_Framework_TestCase
         */
 
         $excepted = 'foo';
-        $tracy->obStart();
+        ob_start();
         echo $excepted;
         $content = ob_get_contents();
-        $tracy->obEnd();
+        ob_end_clean();
 
         /*
         |------------------------------------------------------------
@@ -214,7 +214,10 @@ class TracyTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('runningInConsole')->andReturn(false)
             ->shouldReceive('offsetGet')->with('request')->andReturnSelf()
             ->shouldReceive('ajax')->andReturn(true);
-        $request->shouldReceive('ajax')->andReturn(true);
+        $request
+            ->shouldReceive('ajax')->andReturn(true)
+            ->shouldReceive('has')->andReturn(false);
+
         $tracy->initialize();
         $tracy->renderPanel();
 
@@ -561,15 +564,5 @@ class TracyTest extends PHPUnit_Framework_TestCase
         */
 
         $this->assertSame($excepted, $response);
-    }
-
-    public function testStandalone()
-    {
-        $tracy = Tracy::enable();
-        $tracy->getPanel('request');
-        $tracy->getPanel('routing');
-        $tracy->getPanel('database');
-        $tracy->getPanel('session');
-        $tracy->getPanel('request');
     }
 }

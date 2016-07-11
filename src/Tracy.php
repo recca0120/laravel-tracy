@@ -68,12 +68,20 @@ class Tracy
      */
     public function initialize()
     {
-        if (Debugger::getBar()->dispatchAssets() === true) {
-            exit;
-        }
-
         if ($this->isRunningInConsole() === true || array_get($this->config, 'enabled', true) === false) {
             return false;
+        }
+
+        if ($this->request->has('_tracy_bar') === true) {
+            if (Debugger::getBar()->dispatchAssets() === true) {
+                exit;
+            }
+
+            if (Debugger::dispatch() === true) {
+                exit;
+            }
+
+            $this->sessionClose();
         }
 
         Debugger::$editor = array_get($this->config, 'editor', Debugger::$editor);
@@ -273,9 +281,9 @@ class Tracy
     public function renderPanel()
     {
         $this->sessionStart();
-        Debugger::dispatch();
         $bar = Debugger::getBar();
         $this->setupPanels($bar);
+
         ob_start();
         $bar->render();
         $content = ob_get_clean();
@@ -342,12 +350,13 @@ class Tracy
     public function sessionStart()
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
-            ini_set('session.use_cookies', '1');
-            ini_set('session.use_only_cookies', '1');
-            ini_set('session.use_trans_sid', '0');
-            ini_set('session.cookie_path', '/');
-            ini_set('session.cookie_httponly', '1');
-            @session_start();
+            @Debugger::dispatch();
+            // ini_set('session.use_cookies', '1');
+            // ini_set('session.use_only_cookies', '1');
+            // ini_set('session.use_trans_sid', '0');
+            // ini_set('session.cookie_path', '/');
+            // ini_set('session.cookie_httponly', '1');
+            // session_start();
         }
 
         return $this;
