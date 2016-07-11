@@ -14,25 +14,41 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_database_panel_mysql_52()
+    public function testLaravel52()
     {
-        $statement = m::mock(PDOStatement::class)
-            ->shouldReceive('execute')
-            ->shouldReceive('fetchAll')
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
-        $pdo = m::mock(PDO::class)
+        $statement = m::mock(PDOStatement::class);
+        $pdo = m::mock(PDO::class);
+        $connection = m::mock(Connection::class);
+        $events = m::mock(DispatcherContract::class);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $panel = new DatabasePanel();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $statement
+            ->shouldReceive('execute')
+            ->shouldReceive('fetchAll');
+
+        $pdo
             ->shouldReceive('getAttribute')->with(PDO::ATTR_DRIVER_NAME)->andReturn('mysql')
             ->shouldReceive('getAttribute')->with(PDO::ATTR_SERVER_VERSION)->andReturn(5.4)
-            ->shouldReceive('prepare')->andReturn($statement)
-            ->mock();
+            ->shouldReceive('prepare')->andReturn($statement);
 
-        $connection = m::mock(Connection::class)
+        $connection
             ->shouldReceive('getName')->andReturn('mysql')
-            ->shouldReceive('getPdo')->andReturn($pdo)
-            ->mock();
+            ->shouldReceive('getPdo')->andReturn($pdo);
 
-        $events = m::mock(DispatcherContract::class)
+        $events
             ->shouldReceive('listen')->with(QueryExecuted::class, m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
                 $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/', ['1'], 1.1, $connection);
                 $closure($queryExecuted);
@@ -51,41 +67,60 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
                 $queryExecuted = new QueryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection);
                 $closure($queryExecuted);
-            })
-            ->mock();
+            });
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+        $app
             ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events)
-            ->mock();
+            ->shouldReceive('offsetGet')->with('events')->andReturn($events);
 
-        $panel = new DatabasePanel();
         $panel->setLaravel($app);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
 
         $panel->getTab();
         $panel->getPanel();
     }
 
-    public function test_database_panel_mysql_51()
+    public function testLaravel51()
     {
-        $statement = m::mock(PDOStatement::class)
-            ->shouldReceive('execute')
-            ->shouldReceive('fetchAll')
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
-        $pdo = m::mock(PDO::class)
+        $statement = m::mock(PDOStatement::class);
+        $pdo = m::mock(PDO::class);
+        $connection = m::mock(Connection::class);
+        $events = m::mock(DispatcherContract::class);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $panel = new DatabasePanel();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $statement
+            ->shouldReceive('execute')
+            ->shouldReceive('fetchAll');
+
+        $pdo
             ->shouldReceive('getAttribute')->with(PDO::ATTR_DRIVER_NAME)->andReturn('mysql')
             ->shouldReceive('getAttribute')->with(PDO::ATTR_SERVER_VERSION)->andReturn(5.6)
-            ->shouldReceive('prepare')->andReturn($statement)
-            ->mock();
+            ->shouldReceive('prepare')->andReturn($statement);
 
-        $connection = m::mock(Connection::class)
+        $connection
             ->shouldReceive('getName')->andReturn('mysql')
             ->shouldReceive('getPdo')->andReturn($pdo)
-            ->shouldReceive('connection')->andReturnSelf()
-            ->mock();
+            ->shouldReceive('connection')->andReturnSelf();
 
-        $events = m::mock(DispatcherContract::class)
+        $events
             ->shouldReceive('listen')->with('illuminate.query', m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
                 $closure('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, 'mysql');
 
@@ -100,32 +135,50 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
                 $closure('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, 'mysql');
 
                 $closure('select * from users where id = ?', ['1'], 1.1, 'mysql');
-            })
-            ->mock();
+            });
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+        $app
             ->shouldReceive('version')->andReturn(5.1)
             ->shouldReceive('offsetGet')->with('events')->andReturn($events)
-            ->shouldReceive('offsetGet')->with('db')->andReturn($connection)
-            ->mock();
+            ->shouldReceive('offsetGet')->with('db')->andReturn($connection);
 
-        $panel = new DatabasePanel();
         $panel->setLaravel($app);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
 
         $panel->getTab();
         $panel->getPanel();
     }
 
-    public function test_database_panel_mssql_52()
+    public function testMysql52()
     {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
         $pdo = m::mock(PDO::class);
+        $connection = m::mock(Connection::class);
+        $events = m::mock(DispatcherContract::class);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $panel = new DatabasePanel();
 
-        $connection = m::mock(Connection::class)
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $pdo = m::mock(PDO::class);
+        $connection
             ->shouldReceive('getName')->andReturn('sqlsrv')
-            ->shouldReceive('getPdo')->andReturn($pdo)
-            ->mock();
-
-        $events = m::mock(DispatcherContract::class)
+            ->shouldReceive('getPdo')->andReturn($pdo);
+        $events
             ->shouldReceive('listen')->with(QueryExecuted::class, m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
                 $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, $connection);
                 $closure($queryExecuted);
@@ -144,16 +197,17 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
                 $queryExecuted = new QueryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection);
                 $closure($queryExecuted);
-            })
-            ->mock();
-
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+            });
+        $app
             ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events)
-            ->mock();
-
-        $panel = new DatabasePanel();
+            ->shouldReceive('offsetGet')->with('events')->andReturn($events);
         $panel->setLaravel($app);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
 
         $panel->getTab();
         $panel->getPanel();

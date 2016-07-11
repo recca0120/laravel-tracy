@@ -19,9 +19,15 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_register()
+    public function testRegister()
     {
-        $config = [
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $configData = [
             'enabled'      => true,
             'showBar'      => true,
             'accepts'      => [
@@ -45,61 +51,86 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ],
         ];
 
-        $config = m::mock(ConfigContract::class)
-            ->shouldReceive('get')->with('tracy', [])->once()->andReturn($config)
-            ->shouldReceive('set')->with('tracy', $config)->once()
-            ->shouldReceive('get')->with('tracy')->once()->andReturn($config)
-            ->shouldReceive('get')->with('tracy.panels.terminal')->once()->andReturn(true)
+        $config = m::mock(ConfigContract::class);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $provider = new ServiceProvider($app);
 
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+        $config
+            ->shouldReceive('get')->with('tracy', [])->once()->andReturn($configData)
+            ->shouldReceive('set')->with('tracy', $configData)->once()
+            ->shouldReceive('get')->with('tracy')->once()->andReturn($configData)
+            ->shouldReceive('get')->with('tracy.panels.terminal')->once()->andReturn(true);
+
+        $app
             ->shouldReceive('offsetGet')->with('config')->times(4)->andReturn($config)
             ->shouldReceive('singleton')->with(Tracy::class, m::type(Closure::class))->once()->andReturnUsing(function ($className, $closure) {
                 return $closure(m::self());
             })
-            ->shouldReceive('register')->with(TerminalServiceProvider::class)->once()
-            ->mock();
-        $provider = new ServiceProvider($app);
+            ->shouldReceive('register')->with(TerminalServiceProvider::class)->once();
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
         $provider->register();
         $provider->provides();
     }
 
-    public function test_boot()
+    public function testBoot()
     {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
         $request = m::mock(Request::class);
-
         $response = m::mock(Response::class);
+        $tracy = m::mock(Tracy::class);
+        $exceptionHandler = m::mock(ExceptionHandlerContract::class);
+        $events = m::mock(DispatcherContract::class);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $provider = new ServiceProvider($app);
 
-        $tracy = m::mock(Tracy::class)
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $tracy
             ->shouldReceive('initialize')->once()->andReturn(true)
             ->shouldReceive('obStart')->once()
             ->shouldReceive('renderResponse')->once()
-            ->shouldReceive('obEnd')->once()
-            ->mock();
+            ->shouldReceive('obEnd')->once();
 
-        $exceptionHandler = m::mock(ExceptionHandlerContract::class);
-
-        $events = m::mock(DispatcherContract::class)
+        $events
             ->shouldReceive('listen')->with('kernel.handled', m::type(Closure::class))->once()->andReturnUsing(function ($eventName, $closure) use ($request, $response) {
                 return $closure($request, $response);
-            })
-            ->mock();
+            });
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+        $app
             ->shouldReceive('extend')->with(ExceptionHandlerContract::class, m::type(Closure::class))->once()->andReturnUsing(function ($className, $closure) use ($exceptionHandler) {
                 return $closure($exceptionHandler, m::self());
             })
             ->shouldReceive('make')->with(Handler::class, [
                 'exceptionHandler' => $exceptionHandler,
-            ])->once()
-            ->mock();
+            ])->once();
 
-        $provider = new ServiceProvider($app);
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
         $provider->boot($tracy, $events);
     }
-}
-
-function config_path()
-{
 }

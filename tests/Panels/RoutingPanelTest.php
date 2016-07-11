@@ -12,40 +12,95 @@ class RoutingPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_routing_panel_with_laravel()
+    public function testWithLaravel()
     {
-        $route = m::mock(stdClass::class)
-            ->shouldReceive('uri')
-            ->shouldReceive('getAction')->andReturn([])
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
-        $router = m::mock(RegistrarContract::class)
-            ->shouldReceive('getCurrentRoute')->andReturn($route)
-            ->mock();
-
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
-            ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('router')->andReturn($router)
-            ->mock();
-
+        $route = m::mock(stdClass::class);
+        $router = m::mock(RegistrarContract::class);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
         $panel = new RoutingPanel();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $route
+            ->shouldReceive('uri')
+            ->shouldReceive('getAction')->andReturn([]);
+        $router
+            ->shouldReceive('getCurrentRoute')->andReturn($route);
+        $app
+            ->shouldReceive('version')->andReturn(5.2)
+            ->shouldReceive('offsetGet')->with('router')->andReturn($router);
         $panel->setLaravel($app);
 
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
         $panel->getTab();
         $panel->getPanel();
     }
 
-    public function test_routing_panel_without_laravel()
+    public function testWithoutLaravel()
     {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
         $panel = new RoutingPanel();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
         $panel->getTab();
         $panel->getPanel();
     }
 
-    public function test_routing_panel_without_laravel_with_host()
+    public function testWithoutLaravelButWithHost()
     {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
         $panel = new RoutingPanel();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
         $_SERVER['HTTP_HOST'] = 'http://localhost';
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
         $panel->getTab();
         $panel->getPanel();
     }

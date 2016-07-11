@@ -12,79 +12,132 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_auth_panel_username()
+    public function testUsername()
     {
-        $user = m::mock(stdClass::class)
-            ->shouldReceive('getAuthIdentifier')->andReturn(0)
-            ->shouldReceive('toArray')->andReturn([])
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
+        $user = m::mock(stdClass::class);
         $user->username = 'username';
-
-        $auth = m::mock(Guard::class)
-            ->shouldReceive('check')->andReturn(true)
-            ->shouldReceive('user')->andReturn($user)
-            ->mock();
-
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
-            ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth)
-            ->mock();
-
+        $auth = m::mock(Guard::class);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
         $panel = new AuthPanel();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+        $user
+            ->shouldReceive('getAuthIdentifier')->andReturn(0)
+            ->shouldReceive('toArray')->andReturn([]);
+
+        $auth
+            ->shouldReceive('check')->andReturn(true)
+            ->shouldReceive('user')->andReturn($user);
+
+        $app
+            ->shouldReceive('version')->andReturn(5.2)
+            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
+
         $panel->setLaravel($app);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
 
         $panel->getTab();
         $panel->getPanel();
     }
 
-    public function test_auth_panel_email()
+    public function testEmail()
     {
-        $user = m::mock(stdClass::class)
-            ->shouldReceive('getAuthIdentifier')->andReturn(0)
-            ->shouldReceive('toArray')->andReturn([])
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
+        $user = m::mock(stdClass::class);
         $user->email = 'email';
-
-        $auth = m::mock(Guard::class)
-            ->shouldReceive('check')->andReturn(true)
-            ->shouldReceive('user')->andReturn($user)
-            ->mock();
-
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
-            ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth)
-            ->mock();
-
+        $auth = m::mock(Guard::class);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
         $panel = new AuthPanel();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $user
+            ->shouldReceive('getAuthIdentifier')->andReturn(0)
+            ->shouldReceive('toArray')->andReturn([]);
+
+        $auth
+            ->shouldReceive('check')->andReturn(true)
+            ->shouldReceive('user')->andReturn($user);
+
+        $app
+            ->shouldReceive('version')->andReturn(5.2)
+            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
+
         $panel->setLaravel($app);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
 
         $panel->getTab();
         $panel->getPanel();
     }
 
-    public function test_auth_panel_name()
+    public function testName()
     {
-        $user = m::mock(stdClass::class)
-            ->shouldReceive('getAuthIdentifier')->andReturn(0)
-            ->shouldReceive('toArray')->andReturn([])
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
+        $user = m::mock(stdClass::class);
         $user->name = 'name';
-
-        $auth = m::mock(Guard::class)
-            ->shouldReceive('check')->andReturn(true)
-            ->shouldReceive('user')->andReturn($user)
-            ->mock();
-
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
-            ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth)
-            ->mock();
-
+        $auth = m::mock(Guard::class);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
         $panel = new AuthPanel();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $user
+            ->shouldReceive('getAuthIdentifier')->andReturn(0)
+            ->shouldReceive('toArray')->andReturn([]);
+
+        $auth
+            ->shouldReceive('check')->andReturn(true)
+            ->shouldReceive('user')->andReturn($user);
+
+        $app
+            ->shouldReceive('version')->andReturn(5.2)
+            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
+
         $panel->setLaravel($app);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
 
         $panel->getTab();
         $panel->getPanel();

@@ -12,23 +12,60 @@ class RequestPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_request_panel_with_laravel()
+    public function testRenderWithLaravel()
     {
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
-            ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('request')->andReturn(Request::capture())
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
         $panel = new RequestPanel();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $app
+            ->shouldReceive('version')->andReturn(5.2)
+            ->shouldReceive('offsetGet')->with('request')->andReturn(Request::capture());
+
         $panel->setLaravel($app);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
 
         $panel->getTab();
         $panel->getPanel();
     }
 
-    public function test_request_panel_without_laravel()
+    public function testRenderWithoutLaravel()
     {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
         $panel = new RequestPanel();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
 
         $panel->getTab();
         $panel->getPanel();

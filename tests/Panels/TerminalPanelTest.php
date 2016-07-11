@@ -12,20 +12,36 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_terminal_panel()
+    public function testRender()
     {
-        $controller = m::mock(TerminalController::class)
-            ->shouldReceive('render')
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+        $controller = m::mock(TerminalController::class);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $panel = new TerminalPanel();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $controller->shouldReceive('render');
+        $app
             ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('make')->with(TerminalController::class)->andReturn($controller)
-            ->shouldReceive('call')->with([$controller, 'index'], ['view' => 'panel'])->andReturn($controller)
-            ->mock();
-
-        $panel = new TerminalPanel();
+            ->shouldReceive('call')->with([$controller, 'index'], ['view' => 'panel'])->andReturn($controller);
         $panel->setLaravel($app);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
 
         $panel->getTab();
         $panel->getPanel();

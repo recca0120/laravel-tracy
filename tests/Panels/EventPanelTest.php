@@ -12,22 +12,41 @@ class EventPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_event_panel()
+    public function testRender()
     {
-        $events = m::mock(DispatcherContract::class)
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $events = m::mock(DispatcherContract::class);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $events
             ->shouldReceive('listen')->with('*', m::any())->andReturnUsing(function ($eventName, $closure) {
                 $closure(['a' => '']);
             })
-            ->shouldReceive('firing')->andReturn('event')
-            ->mock();
+            ->shouldReceive('firing')->andReturn('event');
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+        $app
             ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events)
-            ->mock();
+            ->shouldReceive('offsetGet')->with('events')->andReturn($events);
 
         $panel = new EventPanel();
         $panel->setLaravel($app);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
 
         $panel->getTab();
         $panel->getPanel();

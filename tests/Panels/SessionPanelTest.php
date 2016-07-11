@@ -12,38 +12,91 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_session_panel_with_laravel()
+    public function testWithLaravel()
     {
-        $session = m::mock(SessionInterface::class)
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $session = m::mock(SessionInterface::class);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $panel = new SessionPanel();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $session
             ->shouldReceive('getId')
             ->shouldReceive('getSessionConfig')->andReturn([])
-            ->shouldReceive('all')->andReturn([])
-            ->mock();
-
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+            ->shouldReceive('all')->andReturn([]);
+        $app
             ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('session')->andReturn($session)
-            ->mock();
-
-        $panel = new SessionPanel();
+            ->shouldReceive('offsetGet')->with('session')->andReturn($session);
         $panel->setLaravel($app);
 
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
         $panel->getTab();
         $panel->getPanel();
     }
 
-    public function test_session_panel_without_laravel()
+    public function testWithoutLaravel()
     {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
         $panel = new SessionPanel();
 
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
         $panel->getTab();
         $panel->getPanel();
     }
 
-    public function test_session_panel_without_laravel_session_start()
+    public function testWithoutLaravelAndessionStart()
     {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
         @session_start();
         $panel = new SessionPanel();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
 
         $panel->getTab();
         $panel->getPanel();

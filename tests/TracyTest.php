@@ -42,166 +42,157 @@ class TracyTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_is_enabled()
+    public function testNotRunningInConsole()
     {
-        $config = $this->getConfig();
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
-            ->shouldReceive('runningInConsole')->andReturn(false)
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
+        $config = $this->getConfig();
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
         $tracy = new Tracy($config, $app);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $app->shouldReceive('runningInConsole')->andReturn(false);
         $tracy->sessionStart();
-        $tracy->initialize();
 
-        $panel = $tracy->getPanel('auth');
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertTrue($tracy->initialize());
     }
 
-    public function test_is_enabled_false()
+    public function testRunningInConsole()
     {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
         $config = $this->getConfig();
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
-            ->shouldReceive('runningInConsole')->andReturn(true)
-            ->mock();
-
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
         $tracy = new Tracy($config, $app);
-        $tracy->initialize();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $app->shouldReceive('runningInConsole')->andReturn(true);
+        $tracy->sessionStart();
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+       $this->assertFalse($tracy->initialize());
     }
 
-    public function test_render_blue_screen()
+    public function testBlueScreen()
     {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
         $tracy = new Tracy();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
         $tracy->renderBlueScreen(new Exception());
     }
 
-    public function test_ob_start_end()
+    public function testObEnd()
     {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
         $tracy = new Tracy();
-        $tracy
-            ->obStart()
-            ->obEnd();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $excepted = 'foo';
+        $tracy->obStart();
+        echo $excepted;
+        $content = ob_get_contents();
+        $tracy->obEnd();
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($excepted, $content);
     }
 
-    public function test_show_bar_false()
+    public function testHiddenBar()
     {
-        $content = 'test';
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
         $tracy = new Tracy(['showBar' => false]);
-        $this->assertSame($tracy->appendDebugbar($content), $content);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $excepted = 'foo';
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($excepted, $tracy->appendDebugbar($excepted));
     }
 
-    public function test_static_enable()
+    public function testAjaxPanel()
     {
-        $tracy = Tracy::enable();
-        $tracy->getPanel('request');
-        $tracy->getPanel('routing');
-        $tracy->getPanel('database');
-        $tracy->getPanel('session');
-        $tracy->getPanel('request');
-    }
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
-    protected function sendResponse($response, $contentType = 'text/html', $config = [], $ajax = false)
-    {
-        $response->headers = m::mock(stdClass::class)
-            ->shouldReceive('get')->with('Content-type')->andReturn($contentType)
-            ->mock();
-
-        $request = m::mock(Request::class)
-            ->shouldReceive('ajax')->andReturn($ajax)
-            ->mock();
-
-        $app = m::mock(ApplicationContract::class);
-
-        $tracy = new Tracy($config, $app, $request);
-
-        $result = $tracy->renderResponse($response);
-        $this->assertSame($result, $response);
-    }
-
-    public function test_binaryfile_response()
-    {
-        $response = m::mock(BinaryFileResponse::class);
-        $this->sendResponse($response);
-    }
-
-    public function test_streamed_response()
-    {
-        $response = m::mock(StreamedResponse::class);
-        $this->sendResponse($response);
-    }
-
-    public function test_redirect_response()
-    {
-        $response = m::mock(Response::class)
-            ->shouldReceive('isRedirection')->andReturn(true)
-            ->mock();
-        $this->sendResponse($response);
-    }
-
-    public function test_accept_content_type()
-    {
-        $response = m::mock(Response::class)
-            ->shouldReceive('isRedirection')->andReturn(false)
-            ->shouldReceive('getContent')->once()->andReturn('test')
-            ->shouldReceive('setContent')->once()
-            ->mock();
-
-        $this->sendResponse($response, 'text/html', ['accepts' => ['text/html']]);
-    }
-
-    public function test_reject_content_type()
-    {
-        $response = m::mock(Response::class)
-            ->shouldReceive('isRedirection')->andReturn(false)
-            ->mock();
-
-        $this->sendResponse($response, 'application/json', ['accepts' => ['text/html']]);
-    }
-
-    public function test_accept_content_type_ajax()
-    {
-        $response = m::mock(Response::class)
-            ->shouldReceive('isRedirection')->andReturn(false)
-            ->shouldReceive('getContent')->once()->andReturn('test')
-            ->shouldReceive('setContent')->once()
-            ->mock();
-
-        $this->sendResponse($response, 'text/html', ['accepts' => ['text/html']], true);
-    }
-
-    public function test_reject_content_type_ajax()
-    {
-        $response = m::mock(Response::class)
-            ->shouldReceive('isRedirection')->andReturn(false)
-            ->shouldReceive('getContent')->once()->andReturn('test')
-            ->shouldReceive('setContent')->once()
-            ->mock();
-
-        $this->sendResponse($response, 'application/json', [
-            'accepts' => ['text/html'],
-        ], true);
-    }
-
-    public function test_without_accepts()
-    {
-        $response = m::mock(Response::class)
-            ->shouldReceive('isRedirection')->andReturn(false)
-            ->mock();
-
-        $this->sendResponse($response, 'application/json', []);
-    }
-
-    public function test_response_with_body()
-    {
-        $response = m::mock(Response::class)
-            ->shouldReceive('isRedirection')->andReturn(false)
-            ->shouldReceive('getContent')->andReturn('<body></body>')
-            ->shouldReceive('setContent')
-            ->mock();
-
-        $this->sendResponse($response, 'text/html', ['accepts' => ['text/html']]);
-    }
-
-    public function test_ajax_render_panel()
-    {
         $config = [
             'showBar' => true,
             'panels'  => [
@@ -209,19 +200,376 @@ class TracyTest extends PHPUnit_Framework_TestCase
                 'terminal' => true,
             ],
         ];
+        $request = m::mock(Request::class);
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $tracy = new Tracy($config, $app, $request);
 
-        $request = m::mock(Request::class)
-            ->shouldReceive('ajax')->andReturn(true)
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+        $app
             ->shouldReceive('runningInConsole')->andReturn(false)
             ->shouldReceive('offsetGet')->with('request')->andReturnSelf()
-            ->shouldReceive('ajax')->andReturn(true)
-            ->mock();
-
-        $tracy = new Tracy($config, $app, $request);
+            ->shouldReceive('ajax')->andReturn(true);
+        $request->shouldReceive('ajax')->andReturn(true);
         $tracy->initialize();
         $tracy->renderPanel();
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+    }
+
+    public function testBinaryfileResponse()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = [];
+        $response = m::mock(BinaryFileResponse::class);
+        $headers = m::mock(stdClass::class);
+        $response->headers = $headers;
+        $request = m::mock(Request::class);
+        $app = m::mock(ApplicationContract::class);
+        $tracy = new Tracy($config, $app, $request);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $headers->shouldReceive('get')->with('Content-type')->andReturn('text/html');
+        $request->shouldReceive('ajax')->andReturn(false);
+        $excepted = $tracy->renderResponse($response);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($excepted, $response);
+    }
+
+    public function testStreamedResponse()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = [];
+        $response = m::mock(StreamedResponse::class);
+        $headers = m::mock(stdClass::class);
+        $response->headers = $headers;
+        $request = m::mock(Request::class);
+        $app = m::mock(ApplicationContract::class);
+        $tracy = new Tracy($config, $app, $request);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $headers->shouldReceive('get')->with('Content-type')->andReturn('text/html');
+        $request->shouldReceive('ajax')->andReturn(false);
+        $excepted = $tracy->renderResponse($response);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($excepted, $response);
+    }
+
+    public function testRedirectResponse()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = [];
+        $response = m::mock(Response::class);
+        $headers = m::mock(stdClass::class);
+        $response->headers = $headers;
+        $request = m::mock(Request::class);
+        $app = m::mock(ApplicationContract::class);
+        $tracy = new Tracy($config, $app, $request);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $response->shouldReceive('isRedirection')->andReturn(true);
+        $excepted = $tracy->renderResponse($response);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($excepted, $response);
+    }
+
+    public function testAcceptContentType()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = ['accepts' => ['text/html']];
+        $response = m::mock(Response::class);
+        $headers = m::mock(stdClass::class);
+        $response->headers = $headers;
+        $request = m::mock(Request::class);
+        $app = m::mock(ApplicationContract::class);
+        $tracy = new Tracy($config, $app, $request);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $response
+            ->shouldReceive('isRedirection')->andReturn(false)
+            ->shouldReceive('getContent')
+            ->shouldReceive('setContent');
+        $headers->shouldReceive('get')->with('Content-type')->andReturn('text/html');
+        $request->shouldReceive('ajax')->andReturn(false);
+        $excepted = $tracy->renderResponse($response);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($excepted, $response);
+    }
+
+    public function testNotAcceptContentType()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = ['accepts' => ['text/html']];
+        $response = m::mock(Response::class);
+        $headers = m::mock(stdClass::class);
+        $response->headers = $headers;
+        $request = m::mock(Request::class);
+        $app = m::mock(ApplicationContract::class);
+        $tracy = new Tracy($config, $app, $request);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $response
+            ->shouldReceive('isRedirection')->andReturn(false)
+            ->shouldReceive('getContent')
+            ->shouldReceive('setContent');
+        $headers->shouldReceive('get')->with('Content-type')->andReturn('application/json');
+        $request->shouldReceive('ajax')->andReturn(false);
+        $excepted = $tracy->renderResponse($response);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($excepted, $response);
+    }
+
+    public function testAcceptContentTypeAndAjax()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = ['accepts' => ['text/html']];
+        $response = m::mock(Response::class);
+        $headers = m::mock(stdClass::class);
+        $response->headers = $headers;
+        $request = m::mock(Request::class);
+        $app = m::mock(ApplicationContract::class);
+        $tracy = new Tracy($config, $app, $request);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $response
+            ->shouldReceive('isRedirection')->andReturn(false)
+            ->shouldReceive('getContent')
+            ->shouldReceive('setContent');
+        $headers->shouldReceive('get')->with('Content-type')->andReturn('text/html');
+        $request->shouldReceive('ajax')->andReturn(true);
+        $excepted = $tracy->renderResponse($response);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($excepted, $response);
+    }
+
+    public function testNotAcceptContentTypeWithAjax()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = ['accepts' => ['text/html']];
+        $response = m::mock(Response::class);
+        $headers = m::mock(stdClass::class);
+        $response->headers = $headers;
+        $request = m::mock(Request::class);
+        $app = m::mock(ApplicationContract::class);
+        $tracy = new Tracy($config, $app, $request);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $response
+            ->shouldReceive('isRedirection')->andReturn(false)
+            ->shouldReceive('getContent')
+            ->shouldReceive('setContent');
+        $headers->shouldReceive('get')->with('Content-type')->andReturn('application/json');
+        $request->shouldReceive('ajax')->andReturn(true);
+        $excepted = $tracy->renderResponse($response);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($excepted, $response);
+    }
+
+    public function testWithoutAccepts()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = [];
+        $response = m::mock(Response::class);
+        $headers = m::mock(stdClass::class);
+        $response->headers = $headers;
+        $request = m::mock(Request::class);
+        $app = m::mock(ApplicationContract::class);
+        $tracy = new Tracy($config, $app, $request);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $response
+            ->shouldReceive('isRedirection')->andReturn(false)
+            ->shouldReceive('getContent')
+            ->shouldReceive('setContent');
+        $headers->shouldReceive('get')->with('Content-type')->andReturn('application/json');
+        $request->shouldReceive('ajax')->andReturn(false);
+        $excepted = $tracy->renderResponse($response);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($excepted, $response);
+    }
+
+    public function testAcceptContentTypeWithBody()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = ['accepts' => ['text/html']];
+        $response = m::mock(Response::class);
+        $headers = m::mock(stdClass::class);
+        $response->headers = $headers;
+        $request = m::mock(Request::class);
+        $app = m::mock(ApplicationContract::class);
+        $tracy = new Tracy($config, $app, $request);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $response
+            ->shouldReceive('isRedirection')->andReturn(false)
+            ->shouldReceive('getContent')->andReturn('<body></body>')
+            ->shouldReceive('setContent');
+        $headers->shouldReceive('get')->with('Content-type')->andReturn('text/html');
+        $request->shouldReceive('ajax')->andReturn(false);
+        $excepted = $tracy->renderResponse($response);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($excepted, $response);
+    }
+
+    public function testStandalone()
+    {
+        $tracy = Tracy::enable();
+        $tracy->getPanel('request');
+        $tracy->getPanel('routing');
+        $tracy->getPanel('database');
+        $tracy->getPanel('session');
+        $tracy->getPanel('request');
     }
 }

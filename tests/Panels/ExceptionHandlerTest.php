@@ -17,48 +17,81 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_handler()
+    public function testHandler()
     {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
         $exception = new Exception();
 
-        $tracy = m::mock(Tracy::class)
-            ->shouldReceive('renderBlueScreen')->once()
-            ->mock();
+        $tracy = m::mock(Tracy::class);
 
         $request = m::mock(Request::class);
-        $responseFactory = m::mock(ResponseFactory::class)
-            ->shouldReceive('make')
-            ->mock();
+        $responseFactory = m::mock(ResponseFactory::class);
 
-        $exeptionHandler = m::mock(ExceptionHandlerContract::class)
-            ->shouldReceive('report')->with($exception)
-            ->mock();
+        $exceptionHandler = m::mock(ExceptionHandlerContract::class);
+        $handler = new Handler($tracy, $responseFactory, $exceptionHandler);
 
-        $handler = new Handler($tracy, $responseFactory, $exeptionHandler);
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $tracy->shouldReceive('renderBlueScreen')->once();
+        $responseFactory->shouldReceive('make');
+        $exceptionHandler->shouldReceive('report')->with($exception);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
         $handler->render($request, $exception);
         $handler->report($exception);
     }
 
-    public function test_http_exception()
+    public function testHttpException()
     {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
         $statusCode = 404;
         $headers = [];
-
         $exception = new HttpException($statusCode, null, null, $headers);
-
-        $tracy = m::mock(Tracy::class)
-            ->shouldReceive('renderBlueScreen')->once()
-            ->mock();
-
+        $tracy = m::mock(Tracy::class);
         $request = m::mock(Request::class);
-        $responseFactory = m::mock(ResponseFactory::class)
-            ->shouldReceive('make')->with(m::any(), $statusCode, $headers)->once()
-            ->mock();
-
+        $responseFactory = m::mock(ResponseFactory::class);
         $exeptionHandler = m::mock(ExceptionHandlerContract::class);
-
         $handler = new Handler($tracy, $responseFactory, $exeptionHandler);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $tracy->shouldReceive('renderBlueScreen')->once();
+        $responseFactory->shouldReceive('make')->with(m::any(), $statusCode, $headers)->once();
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
         $handler->render($request, $exception);
+    }
+
+    public function test_http_exception()
+    {
     }
 
     public function test_http_response_exception()
