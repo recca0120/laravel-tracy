@@ -37,6 +37,13 @@ class Tracy
     protected $request;
 
     /**
+     * $ajax.
+     *
+     * @var bool
+     */
+    protected $ajax = false;
+
+    /**
      * $panels.
      *
      * @var array
@@ -57,6 +64,7 @@ class Tracy
         $this->config = $config;
         $this->app = $app;
         $this->request = is_null($request) === true ? Request::capture() : $request;
+        $this->ajax = $this->request->ajax();
     }
 
     /**
@@ -90,20 +98,23 @@ class Tracy
         Debugger::$showLocation = array_get($this->config, 'showLocation', true);
         Debugger::$strictMode = array_get($this->config, 'strictMode', true);
         Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
-
         $panels = array_get($this->config, 'panels', []);
-        foreach ($panels as $panel => $enabled) {
-            if ($panel === 'user') {
-                $panel = 'auth';
+        foreach ($panels as $name => $enabled) {
+            if ($name === 'user') {
+                $name = 'auth';
             }
             if ($enabled === false) {
                 continue;
             }
 
-            $className = '\\'.__NAMESPACE__.'\Panels\\'.ucfirst($panel).'Panel';
-            $class = new $className();
+            $panelName = '\\'.__NAMESPACE__.'\Panels\\'.ucfirst($name).'Panel';
+            $panel = new $panelName();
 
-            $this->addPanel($class, $panel);
+            if ($this->ajax === true && $panel->supportAjax === false) {
+                continue;
+            }
+
+            $this->addPanel($panel, $name);
         }
 
         return true;
@@ -176,6 +187,10 @@ class Tracy
      */
     protected function denyRenderResponse($response)
     {
+        if ($this->ajax === true) {
+            return true;
+        }
+
         if ($response instanceof BinaryFileResponse) {
             return true;
         }
@@ -188,13 +203,9 @@ class Tracy
             return true;
         }
 
-        if ($this->request->ajax() === true) {
-            return true;
-        }
-
         $contentType = $response->headers->get('Content-type');
 
-        if (is_null($contentType) === true && $response->getStatusCode() >= 400) {
+        if (empty($contentType) === true && $response->getStatusCode() >= 400) {
             return false;
         }
 
@@ -206,11 +217,11 @@ class Tracy
         $contentType = strtolower($contentType);
         foreach ($accepts as $accept) {
             if (strpos($contentType, $accept) !== false) {
-                return true;
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -232,6 +243,8 @@ class Tracy
         $pos = strripos($content, '</body>');
         if ($pos !== false) {
             $content = substr($content, 0, $pos).$barPanels.substr($content, $pos);
+        } else {
+            $content .= $barPanels;
         }
 
         return $content;
@@ -313,11 +326,7 @@ class Tracy
      */
     protected function setupPanels($bar)
     {
-        $isAjax = $this->request->ajax();
         foreach ($this->getPanels() as $panel) {
-            if ($isAjax === true && $panel->supportAjax === false) {
-                continue;
-            }
             $bar->addPanel($panel);
         }
 

@@ -5,6 +5,6 @@
             <?php echo $html; ?>
         </div>
     <?php else: ?>
-        composer require recca0120/terminal
+        Terminal is Disabled
     <?php endif ?>
 </div>
