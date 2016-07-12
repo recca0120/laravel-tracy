@@ -80,7 +80,6 @@ class Tracy
             if (Debugger::dispatch() === true) {
                 exit;
             }
-
             $this->sessionClose();
         }
 
@@ -157,12 +156,7 @@ class Tracy
      */
     public function renderResponse(Response $response)
     {
-        if (
-            $response instanceof BinaryFileResponse ||
-            $response instanceof StreamedResponse ||
-            $response->isRedirection() === true ||
-            $this->acceptRenderResponse($response) === false
-        ) {
+        if ($this->denyRenderResponse($response) === true) {
             return $response;
         }
 
@@ -180,20 +174,36 @@ class Tracy
      *
      * @return bool
      */
-    protected function acceptRenderResponse($response)
+    protected function denyRenderResponse($response)
     {
+        if ($response instanceof BinaryFileResponse) {
+            return true;
+        }
+
+        if ($response instanceof StreamedResponse) {
+            return true;
+        }
+
+        if ($response->isRedirection() === true) {
+            return true;
+        }
+
         if ($this->request->ajax() === true) {
             return true;
         }
 
-        $accepts = array_get($this->config, 'accepts', []);
+        $contentType = $response->headers->get('Content-type');
 
+        if (is_null($contentType) === true && $response->getStatusCode() >= 400) {
+            return false;
+        }
+
+        $accepts = array_get($this->config, 'accepts', []);
         if (count($accepts) === 0) {
             return false;
         }
 
-        $contentType = strtolower($response->headers->get('Content-type'));
-
+        $contentType = strtolower($contentType);
         foreach ($accepts as $accept) {
             if (strpos($contentType, $accept) !== false) {
                 return true;
