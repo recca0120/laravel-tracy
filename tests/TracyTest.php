@@ -348,6 +348,9 @@ class TracyTest extends PHPUnit_Framework_TestCase
         */
 
         $request->shouldReceive('ajax')->once()->andReturn(true);
+        $response
+            ->shouldReceive('getContent')->once()
+            ->shouldReceive('setContent')->once();
         $tracy = new Tracy($config, $app, $request);
         $excepted = $tracy->renderResponse($response);
 
