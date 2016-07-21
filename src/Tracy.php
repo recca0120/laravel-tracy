@@ -88,6 +88,7 @@ class Tracy
             if (Debugger::dispatch() === true) {
                 exit;
             }
+
             $this->sessionClose();
         }
 
@@ -188,7 +189,7 @@ class Tracy
     protected function denyRenderResponse($response)
     {
         if ($this->ajax === true) {
-            return true;
+            return false;
         }
 
         if ($response instanceof BinaryFileResponse) {
