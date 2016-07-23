@@ -397,15 +397,21 @@ class Tracy
     }
 
     /**
-     * enable.
+     * instance.
      *
-     * @method enable
+     * @method instance
      *
      * @param  array$config
      * @return static
      */
-    public static function enable($config = [], $sessionStart = true)
+    public static function instance($config = [], $sessionStart = true)
     {
+        static $instance;
+
+        if (is_null($instance) === false) {
+            return $instance;
+        }
+
         $config = array_merge([
             'enabled'      => true,
             'showBar'      => true,
@@ -434,6 +440,6 @@ class Tracy
             $tracy->sessionStart();
         }
 
-        return $tracy;
+        return $instance = $tracy;
     }
 }
