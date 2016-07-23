@@ -12,6 +12,11 @@ class ServiceProvider extends BaseServiceProvider
 {
     /**
      * boot.
+     *
+     * @method boot
+     *
+     * @param  \Recca0120\LaravelTracy\Tracy            $tracy
+     * @param  \Illuminate\Contracts\Events\Dispatcher  $events
      */
     public function boot(Tracy $tracy, DispatcherContract $events)
     {
