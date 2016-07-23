@@ -12,7 +12,7 @@ class StandaloneTest extends PHPUnit_Framework_TestCase
 
     public function testStandalone()
     {
-        $tracy = Tracy::enable();
+        $tracy = Tracy::instance();
         $tracy->getPanel('request');
         $tracy->getPanel('routing');
         $tracy->getPanel('database');
