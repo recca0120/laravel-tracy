@@ -148,9 +148,6 @@ function sql($sql)
 sql('select * from users');
 sql('select * from news');
 sql('select * from products');
-
-echo $barpanel = $tracy->renderPanel();
-
 ```
 
 ![Standalone](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/standalone.png)
