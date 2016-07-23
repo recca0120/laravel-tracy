@@ -404,7 +404,7 @@ class Tracy
      * @param  array$config
      * @return static
      */
-    public static function instance($config = [], $sessionStart = true)
+    public static function instance($config = [])
     {
         static $instance;
 
@@ -432,13 +432,11 @@ class Tracy
                 'terminal' => false,
             ],
         ], $config);
-
+        Debugger::enable();
+        $bar = Debugger::getBar();
         $tracy = new static($config);
         $tracy->initialize();
-
-        if ($sessionStart === true) {
-            $tracy->sessionStart();
-        }
+        $tracy->setupPanels($bar);
 
         return $instance = $tracy;
     }

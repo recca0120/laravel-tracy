@@ -17,5 +17,3 @@ function sql($sql)
 sql('select * from users');
 sql('select * from news');
 sql('select * from products');
-
-echo $barpanel = $tracy->renderPanel();
