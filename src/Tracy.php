@@ -6,12 +6,14 @@ use ErrorException;
 use Exception;
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Illuminate\Http\Request;
+use LogicException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tracy\Debugger;
 use Tracy\Helpers;
 use Tracy\IBarPanel;
+use Tracy\OutputDebugger;
 
 class Tracy
 {
@@ -369,14 +371,10 @@ class Tracy
      */
     public function sessionStart()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            @Debugger::dispatch();
-            // ini_set('session.use_cookies', '1');
-            // ini_set('session.use_only_cookies', '1');
-            // ini_set('session.use_trans_sid', '0');
-            // ini_set('session.cookie_path', '/');
-            // ini_set('session.cookie_httponly', '1');
-            // session_start();
+        try {
+            Debugger::dispatch();
+        } catch (LogicException $e) {
+            OutputDebugger::enable();
         }
 
         return $this;
