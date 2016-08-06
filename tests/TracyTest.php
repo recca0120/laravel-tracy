@@ -7,6 +7,7 @@ use Mockery as m;
 use Recca0120\LaravelTracy\Tracy;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Tracy\IBarPanel;
 
 class TracyTest extends PHPUnit_Framework_TestCase
 {
@@ -61,15 +62,13 @@ class TracyTest extends PHPUnit_Framework_TestCase
 
         $app->shouldReceive('runningInConsole')->once()->andReturn(false);
 
-        $tracy = new Tracy($config, $app);
-        $tracy->sessionStart();
-
         /*
         |------------------------------------------------------------
         | Assertion
         |------------------------------------------------------------
         */
 
+        $tracy = new Tracy($config, $app);
         $this->assertTrue($tracy->initialize());
     }
 
@@ -146,8 +145,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $tracy->obStart();
-        $tracy->obEnd();
+        $tracy->startBuffering();
+        $tracy->stopBuffering();
 
         /*
         |------------------------------------------------------------
@@ -213,14 +212,14 @@ class TracyTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('has')->once()->andReturn(false);
 
         $tracy = new Tracy($config, $app, $request);
-        $tracy->initialize();
-        $tracy->renderPanel();
 
         /*
         |------------------------------------------------------------
         | Assertion
         |------------------------------------------------------------
         */
+        $tracy->initialize();
+        $tracy->renderPanel();
     }
 
     public function testBinaryfileResponse()
@@ -351,7 +350,9 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $response
             ->shouldReceive('getContent')->once()
             ->shouldReceive('setContent')->once();
+
         $tracy = new Tracy($config, $app, $request);
+
         $excepted = $tracy->renderResponse($response);
 
         /*
@@ -583,8 +584,10 @@ class TracyTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('isRedirection')->once()->andReturn(false)
             ->shouldReceive('getContent')->once()->andReturn('')
             ->shouldReceive('setContent')->once();
+
         $headers->shouldReceive('get')->with('Content-type')->once()->andReturn('text/html');
         $request->shouldReceive('ajax')->once()->andReturn(false);
+
         $tracy = new Tracy($config, $app, $request);
         $excepted = $tracy->renderResponse($response);
 
@@ -595,5 +598,43 @@ class TracyTest extends PHPUnit_Framework_TestCase
         */
 
         $this->assertSame($excepted, $response);
+    }
+
+    public function testHtmlValidatorPanel()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = ['accepts' => ['text/html']];
+        $request = m::mock(Request::class);
+        $app = m::mock(ApplicationContract::class);
+        $htmlValidatorPanel = m::mock(IBarPanel::class);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $excepted = 'foo';
+
+        $request->shouldReceive('ajax')->once()->andReturn(false);
+
+        $htmlValidatorPanel
+            ->shouldReceive('setLaravel')->with($app)->once()->andReturnSelf()
+            ->shouldReceive('setHtml')->with($excepted)->once()->andReturnSelf();
+
+        $tracy = new Tracy($config, $app, $request);
+        $tracy->addPanel($htmlValidatorPanel, 'html-validator');
+        $tracy->appendDebugbar($excepted);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
     }
 }

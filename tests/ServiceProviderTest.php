@@ -108,9 +108,9 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $tracy
             ->shouldReceive('initialize')->once()->andReturn(true)
-            ->shouldReceive('obStart')->once()
+            ->shouldReceive('startBuffering')->once()
             ->shouldReceive('renderResponse')->once()
-            ->shouldReceive('obEnd')->once();
+            ->shouldReceive('stopBuffering')->once();
 
         $events
             ->shouldReceive('listen')->with('kernel.handled', m::type(Closure::class))->once()->andReturnUsing(function ($eventName, $closure) use ($request, $response) {

@@ -1,9 +1,9 @@
 <style class="tracy-debug">
-	#tracy-debug td.Laravel-DbConnectionPanel-sql { background: white !important }
-	#tracy-debug .Laravel-DbConnectionPanel-source { color: #BBB !important }
-    #tracy-debug .Laravel-DbConnectionPanel-hint code { color:#f00!important }
-    #tracy-debug .Laravel-DbConnectionPanel-hint { margin-top: 15px }
-    #tracy-debug .Laravel-DbConnectionPanel-explain { margin-top: 15px }
+	#tracy-debug td.Laravel-DatabasePanel-sql { background: white !important }
+	#tracy-debug .Laravel-DatabasePanel-source { color: #BBB !important }
+    #tracy-debug .Laravel-DatabasePanel-hint code { color:#f00!important }
+    #tracy-debug .Laravel-DatabasePanel-hint { margin-top: 15px }
+    #tracy-debug .Laravel-DatabasePanel-explain { margin-top: 15px }
 </style>
 
 <h1>
@@ -21,17 +21,17 @@
                 <td>
                     <?php echo sprintf('%0.3f', $query['time']) ?> / <?php echo $query['name'] ?>
                     <?php if (count($query['hints']) > 0): ?>
-                        <br /><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .Laravel-DbConnectionPanel-hint">hint</a>
+                        <br /><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .Laravel-DatabasePanel-hint">hint</a>
                     <?php endif; ?>
                     <?php if (count($query['explains']) > 0): ?>
-                        <br /><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .Laravel-DbConnectionPanel-explain">explain</a>
+                        <br /><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .Laravel-DatabasePanel-explain">explain</a>
                     <?php endif; ?>
                 </td>
-                <td class="Laravel-DbConnectionPanel-sql">
+                <td class="Laravel-DatabasePanel-sql">
                     <?php echo $query['formattedSql'] ?>
                     <?php if (count($query['hints']) > 0): ?>
                         <?php $i = 0 ?>
-                        <table class="tracy-collapsed Laravel-DbConnectionPanel-hint" id="">
+                        <table class="tracy-collapsed Laravel-DatabasePanel-hint" id="">
                             <thead>
                                 <tr>
                                     <th colspan="2">Hints</th>
@@ -48,7 +48,7 @@
                     <?php endif ?>
 
                     <?php if ($query['explains']): ?>
-                        <table class="tracy-collapsed Laravel-DbConnectionPanel-explain">
+                        <table class="tracy-collapsed Laravel-DatabasePanel-explain">
                             <tr>
                                 <?php foreach ($query['explains'][0] as $col => $foo): ?>
                                     <th><?php echo htmlSpecialChars($col, ENT_NOQUOTES, 'UTF-8') ?></th>
@@ -64,7 +64,7 @@
                         </table>
                     <?php endif ?>
                     <?php if ($query['editorLink']): ?>
-                        <?php echo substr_replace($query['editorLink'], ' class="Laravel-DbConnectionPanel-source"', 2, 0) ?>
+                        <?php echo substr_replace($query['editorLink'], ' class="Laravel-DatabasePanel-source"', 2, 0) ?>
                     <?php endif ?>
                 </td>
             </tr>

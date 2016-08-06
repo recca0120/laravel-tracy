@@ -121,6 +121,9 @@ Prefer PhpStorm, you can edit `config/tracy.php`'s key of `editor` like this:
 ### Login
 ![Login](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/login.png)
 
+### Html Validator
+![Html Validator](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/html-validator.png)
+
 ### Web Artisan
 web artisan is another package [recca0120/terminal](https://github.com/recca0120/laravel-terminal)
 ![Terminal](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/terminal.png)
