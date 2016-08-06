@@ -6,6 +6,8 @@ use ErrorException;
 use Exception;
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use LogicException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -89,7 +91,7 @@ class Tracy
                 exit;
             }
 
-            $this->sessionClose();
+            $this->closeSession();
         }
 
         Debugger::$editor = array_get($this->config, 'editor', Debugger::$editor);
@@ -100,16 +102,17 @@ class Tracy
         Debugger::$strictMode = array_get($this->config, 'strictMode', true);
         Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
         $panels = array_get($this->config, 'panels', []);
+        if (isset($panels['user']) === true) {
+            $panels['auth'] = $panels['user'];
+            unset($panels['user']);
+        }
         foreach ($panels as $name => $enabled) {
-            if ($name === 'user') {
-                $name = 'auth';
-            }
             if ($enabled === false) {
                 continue;
             }
 
-            $panelName = '\\'.__NAMESPACE__.'\Panels\\'.ucfirst($name).'Panel';
-            $panel = new $panelName();
+            $class = '\\'.__NAMESPACE__.'\Panels\\'.Str::studly($name).'Panel';
+            $panel = new $class();
 
             if ($this->ajax === true && $panel->supportAjax === false) {
                 continue;
@@ -240,6 +243,11 @@ class Tracy
             return $content;
         }
 
+        $htmlValidatorPanel = $this->getPanel('html-validator');
+        if (is_null($htmlValidatorPanel) === false) {
+            $htmlValidatorPanel->setHtml($content);
+        }
+
         $barPanels = $this->renderPanel();
         $pos = strripos($content, '</body>');
         if ($pos !== false) {
@@ -304,14 +312,14 @@ class Tracy
      */
     public function renderPanel()
     {
-        $this->sessionStart();
+        $this->startSession();
         $bar = Debugger::getBar();
         $this->setupPanels($bar);
 
         ob_start();
         $bar->render();
         $content = ob_get_clean();
-        $this->sessionClose();
+        $this->closeSession();
 
         return $content;
     }
@@ -335,13 +343,13 @@ class Tracy
     }
 
     /**
-     * obStart.
+     * startBuffering.
      *
-     * @method obStart
+     * @method startBuffering
      *
      * @return $this
      */
-    public function obStart()
+    public function startBuffering()
     {
         ob_start();
 
@@ -349,45 +357,42 @@ class Tracy
     }
 
     /**
-     * obEnd.
+     * stopBuffering.
      *
-     * @method obEnd
+     * @method stopBuffering
      *
      * @return $this
      */
-    public function obEnd()
+    public function stopBuffering()
     {
-        ob_end_flush();
-
-        return $this;
-    }
-
-    /**
-     * sessionStart.
-     *
-     * @method sessionStart
-     */
-    public function sessionStart()
-    {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            @Debugger::dispatch();
-            // ini_set('session.use_cookies', '1');
-            // ini_set('session.use_only_cookies', '1');
-            // ini_set('session.use_trans_sid', '0');
-            // ini_set('session.cookie_path', '/');
-            // ini_set('session.cookie_httponly', '1');
-            // session_start();
+        if (ob_get_level()) {
+            ob_end_flush();
         }
 
         return $this;
     }
 
     /**
-     * sessionClose.
+     * startSession.
      *
-     * @method sessionClose
+     * @method startSession
      */
-    private function sessionClose()
+    public function startSession()
+    {
+        try {
+            @Debugger::dispatch();
+        } catch (LogicException $e) {
+        }
+
+        return $this;
+    }
+
+    /**
+     * closeSession.
+     *
+     * @method closeSession
+     */
+    private function closeSession()
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_write_close();

@@ -31,10 +31,10 @@ class ServiceProvider extends BaseServiceProvider
                 ]);
             });
 
-            $tracy->obStart();
+            $tracy->startBuffering();
             $events->listen('kernel.handled', function ($request, $response) use ($tracy) {
                 $response = $tracy->renderResponse($response);
-                $tracy->obEnd();
+                $tracy->stopBuffering();
             });
         }
     }
