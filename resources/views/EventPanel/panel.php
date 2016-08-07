@@ -1,5 +1,5 @@
 <h1>Events: <?php echo round($totalTime * 100, 2) ?> ms</h1>
-<div class="tracy-inner">
+<div class="tracy-inner Laravel-EventPanel">
     <table>
         <tr>
             <th>Event</th>
@@ -10,6 +10,7 @@
                 <th>
                     <span class="tracy-dump-object"><?php echo array_get($value, 'firing') ?></span><br />
                     <?php echo array_get($value, 'editorLink') ?><br />
+                    <?php echo round(array_get($value, 'execTime', 0) * 100, 2) ?> ms
                 </th>
                 <td>
                     <?php
