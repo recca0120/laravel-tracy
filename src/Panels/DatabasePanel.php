@@ -3,8 +3,62 @@
 namespace Recca0120\LaravelTracy\Panels;
 
 use DateTime;
+use Doctrine\DBAL\Logging\SQLLogger;
+use Doctrine\ORM\EntityManager;
 use Exception;
 use PDO;
+
+
+use Doctrine\ORM\Event\LifecycleEventArgs;
+
+class DoctrineLogger implements SQLLogger{
+
+    /** @var DatabasePanel */
+    private $panel;
+
+    /** @var string */
+    private $currentQuery;
+
+    /** @var string */
+    private $currentParams;
+
+    private $timeStarted;
+
+    /**
+     * DoctrineLogger constructor.
+     * @param DatabasePanel $panel
+     */
+    public function __construct(DatabasePanel $panel)
+    {
+        $this->panel = $panel;
+    }
+
+    /**
+     * Logs a SQL statement somewhere.
+     *
+     * @param string $sql The SQL to be executed.
+     * @param array|null $params The SQL parameters.
+     * @param array|null $types The SQL parameter types.
+     *
+     * @return void
+     */
+    public function startQuery($sql, array $params = null, array $types = null)
+    {
+        $this->currentQuery = $sql;
+        $this->currentParams = $params;
+        $this->timeStarted = microtime(true);
+    }
+
+    /**
+     * Marks the last started query as stopped. This can be used for timing of queries.
+     *
+     * @return void
+     */
+    public function stopQuery()
+    {
+        $this->panel->logQuery($this->currentQuery, $this->currentParams, (microtime(true) - $this->timeStarted) * 1000);
+    }
+}
 
 class DatabasePanel extends AbstractPanel
 {
@@ -52,6 +106,12 @@ class DatabasePanel extends AbstractPanel
 
             $this->logQuery($sql, $bindings, $time, $name, $pdo);
         });
+
+        /** @var EntityManager $em */
+        $em = $this->laravel->make(EntityManager::class);
+        $em->getConnection()
+            ->getConfiguration()
+            ->setSQLLogger(new DoctrineLogger($this));
     }
 
     /**
