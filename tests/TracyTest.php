@@ -349,7 +349,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $request->shouldReceive('ajax')->once()->andReturn(true);
         $response
             ->shouldReceive('getContent')->once()
-            ->shouldReceive('setContent')->once();
+            ->shouldReceive('setContent')->once()
+            ->shouldReceive('getStatusCode')->once()->andReturn(200);
 
         $tracy = new Tracy($config, $app, $request);
 
@@ -388,7 +389,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $response
             ->shouldReceive('isRedirection')->once()->andReturn(false)
             ->shouldReceive('getContent')->once()
-            ->shouldReceive('setContent')->once();
+            ->shouldReceive('setContent')->once()
+            ->shouldReceive('getStatusCode')->once()->andReturn(200);
         $headers->shouldReceive('get')->with('Content-type')->once()->andReturn('text/html');
         $request->shouldReceive('ajax')->once()->andReturn(false);
         $tracy = new Tracy($config, $app, $request);
@@ -464,7 +466,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $response
             ->shouldReceive('isRedirection')->andReturn(false)
             ->shouldReceive('getContent')
-            ->shouldReceive('setContent');
+            ->shouldReceive('setContent')
+            ->shouldReceive('getStatusCode')->once()->andReturn(200);
         $headers->shouldReceive('get')->with('Content-type')->andReturn('application/json');
         $request->shouldReceive('ajax')->once()->andReturn(false);
 
@@ -544,7 +547,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $response
             ->shouldReceive('isRedirection')->once()->andReturn(false)
             ->shouldReceive('getContent')->once()->andReturn('<body></body>')
-            ->shouldReceive('setContent')->once();
+            ->shouldReceive('setContent')->once()
+            ->shouldReceive('getStatusCode')->once()->andReturn(200);
         $headers->shouldReceive('get')->with('Content-type')->once()->andReturn('text/html');
         $request->shouldReceive('ajax')->once()->andReturn(false);
         $tracy = new Tracy($config, $app, $request);
@@ -583,7 +587,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $response
             ->shouldReceive('isRedirection')->once()->andReturn(false)
             ->shouldReceive('getContent')->once()->andReturn('')
-            ->shouldReceive('setContent')->once();
+            ->shouldReceive('setContent')->once()
+            ->shouldReceive('getStatusCode')->once()->andReturn(200);
 
         $headers->shouldReceive('get')->with('Content-type')->once()->andReturn('text/html');
         $request->shouldReceive('ajax')->once()->andReturn(false);

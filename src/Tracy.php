@@ -175,7 +175,7 @@ class Tracy
             return $response;
         }
 
-        $response->setContent($this->appendDebugbar($response->getContent()));
+        $response->setContent($this->appendDebugbar($response->getContent(), $response->getStatusCode()));
 
         return $response;
     }
@@ -234,17 +234,18 @@ class Tracy
      * @method appendDebugbar
      *
      * @param string $content
+     * @param int    $statusCode
      *
      * @return string
      */
-    public function appendDebugbar($content)
+    public function appendDebugbar($content, $statusCode = 200)
     {
         if (array_get($this->config, 'showBar', true) === false) {
             return $content;
         }
 
         $htmlValidatorPanel = $this->getPanel('html-validator');
-        if (is_null($htmlValidatorPanel) === false) {
+        if (is_null($htmlValidatorPanel) === false && $statusCode === 200) {
             $htmlValidatorPanel->setHtml($content);
         }
 
