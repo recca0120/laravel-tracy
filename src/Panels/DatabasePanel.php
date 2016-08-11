@@ -111,21 +111,29 @@ class DatabasePanel extends AbstractPanel
      *
      * @return string
      */
-    public static function prepareBindings($sql, $bindings = [])
+    public static function prepareBindings($sql, $params = [])
     {
-        array_walk($bindings, function (&$binding) {
-            if ($binding instanceof DateTime) {
-                $binding = $binding->format('Y-m-d H:i:s');
+        return preg_replace_callback('#\?#', function () use ($params) {
+            static $i = 0;
+            if (! isset($params[$i])) {
+                return '?';
             }
 
-            if (is_string($binding) === true) {
-                $binding = "'".addslashes($binding)."'";
-            }
-        });
-        $sql = str_replace(['%', '?'], ['%%', '%s'], $sql);
-        $sql = vsprintf($sql, $bindings);
+            $param = $params[$i++];
+            if (is_string($param) && (preg_match('#[^\x09\x0A\x0D\x20-\x7E\xA0-\x{10FFFF}]#u', $param) || preg_last_error())) {
+                return '&lt;binary&gt;';
+            } elseif (is_string($param) === true) {
+                return htmlspecialchars('\''.$param.'\'', ENT_NOQUOTES, 'UTF-8');
+            } elseif (is_resource($param) === true) {
+                $type = get_resource_type($param);
 
-        return $sql;
+                return '&lt;'.htmlspecialchars($type, ENT_NOQUOTES, 'UTF-8').' resource&gt;';
+            } else {
+                $result = htmlspecialchars($param, ENT_NOQUOTES, 'UTF-8');
+
+                return ($param instanceof DateTime) ? '\''.$result.'\'' : $result;
+            }
+        }, $sql);
     }
 
     /**
@@ -174,7 +182,7 @@ class DatabasePanel extends AbstractPanel
         $sql = preg_replace('#([ \t]*\r?\n){2,}#', "\n", $sql);
 
         // syntax highlight
-        $sql = htmlSpecialChars($sql, ENT_IGNORE, 'UTF-8');
+        $sql = htmlspecialchars($sql, ENT_IGNORE, 'UTF-8');
         $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is", function ($matches) {
             if (! empty($matches[1])) { // comment
                 return '<em style="color:gray">'.$matches[1].'</em>';
@@ -207,9 +215,11 @@ class DatabasePanel extends AbstractPanel
                 }
 
                 return '<i'.(isset($info['uri']) ? ' title="'.htmlspecialchars($info['uri'], ENT_NOQUOTES, 'UTF-8').'"' : null)
-                    .'>&lt;'.htmlSpecialChars($type, ENT_NOQUOTES, 'UTF-8').' resource&gt;</i> ';
+                    .'>&lt;'.htmlspecialchars($type, ENT_NOQUOTES, 'UTF-8').' resource&gt;</i> ';
             } else {
-                return htmlspecialchars($param, ENT_NOQUOTES, 'UTF-8');
+                $result = htmlspecialchars($param, ENT_NOQUOTES, 'UTF-8');
+
+                return ($param instanceof DateTime) ? '\''.$result.'\'' : $result;
             }
         }, $sql);
 
