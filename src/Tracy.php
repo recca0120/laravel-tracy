@@ -67,7 +67,6 @@ class Tracy
         $this->app = $app;
         $this->request = is_null($request) === true ? Request::capture() : $request;
         $this->ajax = $this->request->ajax();
-        $this->request->user();
     }
 
     /**

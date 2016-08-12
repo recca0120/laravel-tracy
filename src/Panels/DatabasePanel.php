@@ -129,9 +129,11 @@ class DatabasePanel extends AbstractPanel
 
                 return '&lt;'.htmlspecialchars($type, ENT_NOQUOTES, 'UTF-8').' resource&gt;';
             } else {
-                $result = htmlspecialchars($param, ENT_NOQUOTES, 'UTF-8');
+                if ($param instanceof DateTime) {
+                    $param = '\''.$param->format('Y-m-d H:i:s').'\'';
+                }
 
-                return ($param instanceof DateTime) ? '\''.$result.'\'' : $result;
+                return htmlspecialchars($param, ENT_NOQUOTES, 'UTF-8');
             }
         }, $sql);
     }
