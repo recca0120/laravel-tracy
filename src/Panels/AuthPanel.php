@@ -17,9 +17,8 @@ class AuthPanel extends AbstractPanel
         $name = 'Guest';
         $user = [];
         if ($this->isLaravel() === true) {
-            $logged = $this->laravel['auth']->check();
-            if ($logged === true) {
-                $userObject = $this->laravel['auth']->user();
+            $userObject = $this->laravel['auth']->user();
+            if (is_null($userObject) === false) {
                 $name = $userObject->getAuthIdentifier();
                 if (is_numeric($name)) {
                     if (isset($userObject->username) === true) {

@@ -1,6 +1,6 @@
 <div class="Laravel-AuthPanel">
-    <h1><?php echo $logged === true ? 'Logged in' : 'Unlogged' ?></h1>
-    <?php if ($logged === false): ?>
+    <h1><?php echo is_null($user) === false ? 'Logged in' : 'Unlogged' ?></h1>
+    <?php if (is_null($user) === false): ?>
         <p>No identity</p>
     <?php else: ?>
         <table>
