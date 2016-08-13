@@ -111,31 +111,28 @@ class DatabasePanel extends AbstractPanel
      *
      * @return string
      */
-    public static function prepareBindings($sql, $params = [])
+    public static function prepareBindings($sql, $bindings = [])
     {
-        return preg_replace_callback('#\?#', function () use ($params) {
-            static $i = 0;
-            if (! isset($params[$i])) {
-                return '?';
+        $bindings = array_map(function ($binding) {
+            if (is_array($binding) === true) {
+                $binding = implode(',', array_map(function ($value) {
+                    return is_string($value) === true ? htmlspecialchars('\''.$value.'\'', ENT_NOQUOTES, 'UTF-8') : $value;
+                }, $binding));
+
+                return htmlspecialchars('('.$binding.')', ENT_NOQUOTES, 'UTF-8');
             }
 
-            $param = $params[$i++];
-            if (is_string($param) && (preg_match('#[^\x09\x0A\x0D\x20-\x7E\xA0-\x{10FFFF}]#u', $param) || preg_last_error())) {
-                return '&lt;binary&gt;';
-            } elseif (is_string($param) === true) {
-                return htmlspecialchars('\''.$param.'\'', ENT_NOQUOTES, 'UTF-8');
-            } elseif (is_resource($param) === true) {
-                $type = get_resource_type($param);
-
-                return '&lt;'.htmlspecialchars($type, ENT_NOQUOTES, 'UTF-8').' resource&gt;';
-            } else {
-                if ($param instanceof DateTime) {
-                    $param = '\''.$param->format('Y-m-d H:i:s').'\'';
-                }
-
-                return htmlspecialchars($param, ENT_NOQUOTES, 'UTF-8');
+            if ($binding instanceof DateTime) {
+                return htmlspecialchars('\''.$binding->format('Y-m-d H:i:s').'\'', ENT_NOQUOTES, 'UTF-8');
             }
-        }, $sql);
+
+            return is_string($binding) === true ? htmlspecialchars('\''.$binding.'\'', ENT_NOQUOTES, 'UTF-8') : $binding;
+        }, $bindings);
+
+        $sql = str_replace(['%', '?'], ['%%', '%s'], $sql);
+        $sql = vsprintf($sql, $bindings);
+
+        return $sql;
     }
 
     /**

@@ -67,6 +67,9 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
                 $queryExecuted = new QueryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection);
                 $closure($queryExecuted);
+
+                $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` IN ? ORDER BY RAND(); /** **/', [['1', '2', 'test\'s']], 1.1, $connection);
+                $closure($queryExecuted);
             });
 
         $app
