@@ -17,7 +17,6 @@ class AuthPanel extends AbstractPanel
         $name = 'Guest';
         $user = [];
         if ($this->isLaravel() === true) {
-            $token = $this->laravel['session']->token();
             $userObject = $this->laravel['auth']->user();
             if (is_null($userObject) === false) {
                 $name = $userObject->getAuthIdentifier();
@@ -32,7 +31,6 @@ class AuthPanel extends AbstractPanel
                 }
                 $user = $userObject->toArray();
             }
-            $this->laravel['session']->put('_token', $token);
         }
 
         return compact('logged', 'name', 'user');

@@ -18,5 +18,6 @@ class StandaloneTest extends PHPUnit_Framework_TestCase
         $tracy->getPanel('database');
         $tracy->getPanel('session');
         $tracy->getPanel('request');
+        Tracy::instance();
     }
 }

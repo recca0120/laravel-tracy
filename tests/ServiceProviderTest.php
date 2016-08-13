@@ -2,12 +2,13 @@
 
 use Illuminate\Contracts\Config\Repository as ConfigContract;
 use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
-use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Http\Kernel as HttpKernelContract;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Mockery as m;
 use Recca0120\LaravelTracy\Exceptions\Handler;
+use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
 use Recca0120\LaravelTracy\ServiceProvider;
 use Recca0120\LaravelTracy\Tracy;
 use Recca0120\Terminal\ServiceProvider as TerminalServiceProvider;
@@ -96,7 +97,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $response = m::mock(Response::class);
         $tracy = m::mock(Tracy::class);
         $exceptionHandler = m::mock(ExceptionHandlerContract::class);
-        $events = m::mock(DispatcherContract::class);
+        $kernel = m::mock(HttpKernelContract::class);
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
         $provider = new ServiceProvider($app);
 
@@ -107,15 +108,9 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         */
 
         $tracy
-            ->shouldReceive('initialize')->once()->andReturn(true)
-            ->shouldReceive('startBuffering')->once()
-            ->shouldReceive('renderResponse')->once()
-            ->shouldReceive('stopBuffering')->once();
+            ->shouldReceive('initialize')->once()->andReturn(true);
 
-        $events
-            ->shouldReceive('listen')->with('kernel.handled', m::type(Closure::class))->once()->andReturnUsing(function ($eventName, $closure) use ($request, $response) {
-                return $closure($request, $response);
-            });
+        $kernel->shouldReceive('pushMiddleware')->with(AppendDebugbar::class)->once();
 
         $app
             ->shouldReceive('extend')->with(ExceptionHandlerContract::class, m::type(Closure::class))->once()->andReturnUsing(function ($className, $closure) use ($exceptionHandler) {
@@ -131,6 +126,6 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $provider->boot($tracy, $events);
+        $provider->boot($tracy, $kernel);
     }
 }

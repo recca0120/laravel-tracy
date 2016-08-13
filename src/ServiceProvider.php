@@ -3,9 +3,10 @@
 namespace Recca0120\LaravelTracy;
 
 use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
-use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
+use Illuminate\Contracts\Http\Kernel as HttpKernelContract;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Recca0120\LaravelTracy\Exceptions\Handler;
+use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
 use Recca0120\Terminal\ServiceProvider as TerminalServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
@@ -16,9 +17,8 @@ class ServiceProvider extends BaseServiceProvider
      * @method boot
      *
      * @param  \Recca0120\LaravelTracy\Tracy            $tracy
-     * @param  \Illuminate\Contracts\Events\Dispatcher  $events
      */
-    public function boot(Tracy $tracy, DispatcherContract $events)
+    public function boot(Tracy $tracy, HttpKernelContract $kernel)
     {
         $this->publishes([
             __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
@@ -31,11 +31,7 @@ class ServiceProvider extends BaseServiceProvider
                 ]);
             });
 
-            $tracy->startBuffering();
-            $events->listen('kernel.handled', function ($request, $response) use ($tracy) {
-                $response = $tracy->renderResponse($response);
-                $tracy->stopBuffering();
-            });
+            $kernel->pushMiddleware(AppendDebugbar::class);
         }
     }
 
