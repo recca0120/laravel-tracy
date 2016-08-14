@@ -14,7 +14,7 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testLaravel52()
+    public function test_laravel_52()
     {
         /*
         |------------------------------------------------------------
@@ -50,7 +50,7 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
         $events
             ->shouldReceive('listen')->with(QueryExecuted::class, m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
-                $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/', ['1'], 1.1, $connection);
+                $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/ **foo**', ['1'], 1.1, $connection);
                 $closure($queryExecuted);
 
                 $queryExecuted = new QueryExecuted('SELECT * FROM `users` ORDER BY id', [], 1.1, $connection);
@@ -88,7 +88,7 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         $panel->getPanel();
     }
 
-    public function testLaravel51()
+    public function test_laravel_51()
     {
         /*
         |------------------------------------------------------------
@@ -157,7 +157,7 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         $panel->getPanel();
     }
 
-    public function testMysql52()
+    public function test_mysql_52()
     {
         /*
         |------------------------------------------------------------

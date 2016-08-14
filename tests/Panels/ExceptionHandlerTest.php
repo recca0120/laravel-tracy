@@ -17,7 +17,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testHandler()
+    public function test_handler()
     {
         /*
         |------------------------------------------------------------
@@ -55,7 +55,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         $handler->report($exception);
     }
 
-    public function testHttpException()
+    public function test_http_exception()
     {
         /*
         |------------------------------------------------------------
@@ -88,10 +88,6 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         */
 
         $handler->render($request, $exception);
-    }
-
-    public function test_http_exception()
-    {
     }
 
     public function test_http_response_exception()

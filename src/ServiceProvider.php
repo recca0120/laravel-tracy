@@ -16,12 +16,13 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @method boot
      *
-     * @param  \Recca0120\LaravelTracy\Tracy            $tracy
+     * @param \Recca0120\LaravelTracy\Tracy     $tracy
+     * @param \Illuminate\Contracts\Http\Kernel $kernel
      */
     public function boot(Tracy $tracy, HttpKernelContract $kernel)
     {
         $this->publishes([
-            __DIR__.'/../config/tracy.php' => config_path('tracy.php'),
+            __DIR__.'/../config/tracy.php' => $this->app->configPath().'/tracy.php',
         ], 'config');
 
         if ($tracy->initialize() === true) {

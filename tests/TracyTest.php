@@ -43,7 +43,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testNotRunningInConsole()
+    public function test_not_running_in_console()
     {
         /*
         |------------------------------------------------------------
@@ -72,7 +72,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($tracy->initialize());
     }
 
-    public function testRunningInConsole()
+    public function test_running_in_console()
     {
         /*
         |------------------------------------------------------------
@@ -104,7 +104,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
        $this->assertFalse($tracy->initialize());
     }
 
-    public function testBlueScreen()
+    public function test_blue_screen()
     {
         /*
         |------------------------------------------------------------
@@ -129,7 +129,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $tracy->renderBlueScreen(new Exception());
     }
 
-    public function testObEnd()
+    public function test_ob_end()
     {
         /*
         |------------------------------------------------------------
@@ -155,7 +155,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         */
     }
 
-    public function testHiddenBar()
+    public function test_hidden_bar()
     {
         /*
         |------------------------------------------------------------
@@ -182,7 +182,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($excepted, $tracy->appendDebugbar($excepted));
     }
 
-    public function testAjaxPanel()
+    public function test_ajax_panel()
     {
         /*
         |------------------------------------------------------------
@@ -222,7 +222,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $tracy->renderPanel();
     }
 
-    public function testBinaryfileResponse()
+    public function test_binaryfile_response()
     {
         /*
         |------------------------------------------------------------
@@ -256,7 +256,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($excepted, $response);
     }
 
-    public function testStreamedResponse()
+    public function test_streamed_response()
     {
         /*
         |------------------------------------------------------------
@@ -290,7 +290,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($excepted, $response);
     }
 
-    public function testRedirectResponse()
+    public function test_redirect_response()
     {
         /*
         |------------------------------------------------------------
@@ -325,7 +325,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($excepted, $response);
     }
 
-    public function testAjax()
+    public function test_ajax()
     {
         /*
         |------------------------------------------------------------
@@ -365,7 +365,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($excepted, $response);
     }
 
-    public function testAcceptContentType()
+    public function test_accept_content_type()
     {
         /*
         |------------------------------------------------------------
@@ -405,7 +405,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($excepted, $response);
     }
 
-    public function testNotAcceptContentType()
+    public function test_not_accept_content_type()
     {
         /*
         |------------------------------------------------------------
@@ -442,7 +442,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($excepted, $response);
     }
 
-    public function testWithoutAccepts()
+    public function test_without_accepts()
     {
         /*
         |------------------------------------------------------------
@@ -483,7 +483,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($excepted, $response);
     }
 
-    public function testEmptyContentType()
+    public function test_empty_content_type()
     {
         /*
         |------------------------------------------------------------
@@ -523,7 +523,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($excepted, $response);
     }
 
-    public function testAcceptContentTypeWithBody()
+    public function test_accept_content_type_with_body()
     {
         /*
         |------------------------------------------------------------
@@ -563,7 +563,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($excepted, $response);
     }
 
-    public function testAcceptContentTypeWithoutBody()
+    public function test_accept_content_type_without_body()
     {
         /*
         |------------------------------------------------------------
@@ -605,7 +605,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertSame($excepted, $response);
     }
 
-    public function testHtmlValidatorPanel()
+    public function test_html_validator_panel()
     {
         /*
         |------------------------------------------------------------

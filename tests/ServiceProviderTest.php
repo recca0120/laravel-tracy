@@ -20,7 +20,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testRegister()
+    public function test_register()
     {
         /*
         |------------------------------------------------------------
@@ -85,7 +85,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $provider->provides();
     }
 
-    public function testBoot()
+    public function test_boot()
     {
         /*
         |------------------------------------------------------------
@@ -113,6 +113,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $kernel->shouldReceive('pushMiddleware')->with(AppendDebugbar::class)->once();
 
         $app
+            ->shouldReceive('configPath')->once()->andReturn(__DIR__)
             ->shouldReceive('extend')->with(ExceptionHandlerContract::class, m::type(Closure::class))->once()->andReturnUsing(function ($className, $closure) use ($exceptionHandler) {
                 return $closure($exceptionHandler, m::self());
             })

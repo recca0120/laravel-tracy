@@ -13,7 +13,7 @@ class AppendDebugbarTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testMiddleware()
+    public function test_middleware()
     {
         /*
         |------------------------------------------------------------

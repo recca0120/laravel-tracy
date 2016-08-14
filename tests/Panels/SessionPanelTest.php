@@ -12,7 +12,7 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testWithLaravel()
+    public function test_with_laravel()
     {
         /*
         |------------------------------------------------------------
@@ -49,7 +49,7 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
         $panel->getPanel();
     }
 
-    public function testWithoutLaravel()
+    public function test_without_laravel()
     {
         /*
         |------------------------------------------------------------
@@ -75,7 +75,7 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
         $panel->getPanel();
     }
 
-    public function testWithoutLaravelAndessionStart()
+    public function test_without_laravel_andession_start()
     {
         /*
         |------------------------------------------------------------

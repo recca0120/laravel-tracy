@@ -13,7 +13,7 @@ class ViewPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testRender()
+    public function test_render()
     {
         /*
         |------------------------------------------------------------

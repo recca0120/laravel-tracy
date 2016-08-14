@@ -12,7 +12,7 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testRender()
+    public function test_render()
     {
         /*
         |------------------------------------------------------------
@@ -47,7 +47,7 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         $panel->getPanel();
     }
 
-    public function testNotFound()
+    public function test_not_found()
     {
         /*
         |------------------------------------------------------------

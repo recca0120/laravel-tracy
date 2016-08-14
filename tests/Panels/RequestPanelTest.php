@@ -12,7 +12,7 @@ class RequestPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testRenderWithLaravel()
+    public function test_render_with_laravel()
     {
         /*
         |------------------------------------------------------------
@@ -45,7 +45,7 @@ class RequestPanelTest extends PHPUnit_Framework_TestCase
         $panel->getPanel();
     }
 
-    public function testRenderWithoutLaravel()
+    public function test_render_without_laravel()
     {
         /*
         |------------------------------------------------------------

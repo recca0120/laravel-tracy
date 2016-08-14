@@ -12,7 +12,7 @@ class RoutingPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testWithLaravel()
+    public function test_with_laravel()
     {
         /*
         |------------------------------------------------------------
@@ -51,7 +51,7 @@ class RoutingPanelTest extends PHPUnit_Framework_TestCase
         $panel->getPanel();
     }
 
-    public function testWithoutLaravel()
+    public function test_without_laravel()
     {
         /*
         |------------------------------------------------------------
@@ -77,7 +77,7 @@ class RoutingPanelTest extends PHPUnit_Framework_TestCase
         $panel->getPanel();
     }
 
-    public function testWithoutLaravelButWithHost()
+    public function test_without_laravel_but_with_host()
     {
         /*
         |------------------------------------------------------------

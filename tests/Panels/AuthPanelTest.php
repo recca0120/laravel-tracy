@@ -12,7 +12,7 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testUsername()
+    public function test_username()
     {
         /*
         |------------------------------------------------------------
@@ -56,7 +56,7 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         $panel->getPanel();
     }
 
-    public function testEmail()
+    public function test_email()
     {
         /*
         |------------------------------------------------------------
@@ -100,7 +100,7 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         $panel->getPanel();
     }
 
-    public function testName()
+    public function test_name()
     {
         /*
         |------------------------------------------------------------

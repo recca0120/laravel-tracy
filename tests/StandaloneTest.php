@@ -10,7 +10,7 @@ class StandaloneTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testStandalone()
+    public function test_standalone()
     {
         $tracy = Tracy::instance();
         $tracy->getPanel('request');
