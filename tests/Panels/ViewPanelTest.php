@@ -36,10 +36,12 @@ class ViewPanelTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getName')->andReturn('name')
             ->shouldReceive('getData')->andReturn([])
             ->shouldReceive('getPath')->andReturn(__FILE__);
+
         $events
             ->shouldReceive('listen')->with('composing:*', m::any())->andReturnUsing(function ($eventName, $closure) use ($view) {
                 return $closure($view);
             });
+
         $app
             ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('offsetGet')->with('events')->andReturn($events);

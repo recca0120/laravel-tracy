@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Contracts\Auth\Guard as GuardContract;
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -53,6 +54,9 @@ class TracyTest extends PHPUnit_Framework_TestCase
 
         $config = $this->getConfig();
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $auth = m::mock(GuardContract::class);
+        $user = m::mock(stdClass::class);
+        $user->username = 'username';
 
         /*
         |------------------------------------------------------------
@@ -60,7 +64,15 @@ class TracyTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app->shouldReceive('runningInConsole')->once()->andReturn(false);
+        $user
+            ->shouldReceive('getAuthIdentifier')->andReturn(0)
+            ->shouldReceive('toArray')->andReturn([]);
+
+        $auth->shouldReceive('user')->andReturn($user);
+
+        $app
+            ->shouldReceive('runningInConsole')->once()->andReturn(false)
+            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
 
         /*
         |------------------------------------------------------------
@@ -199,6 +211,9 @@ class TracyTest extends PHPUnit_Framework_TestCase
         ];
         $request = m::mock(Request::class);
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $auth = m::mock(GuardContract::class);
+        $user = m::mock(stdClass::class);
+        $user->username = 'username';
 
         /*
         |------------------------------------------------------------
@@ -206,7 +221,16 @@ class TracyTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app->shouldReceive('runningInConsole')->once()->andReturn(false);
+        $user
+            ->shouldReceive('getAuthIdentifier')->andReturn(0)
+            ->shouldReceive('toArray')->andReturn([]);
+
+        $auth->shouldReceive('user')->andReturn($user);
+
+        $app
+            ->shouldReceive('runningInConsole')->once()->andReturn(false)
+            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
+
         $request
             ->shouldReceive('ajax')->once()->andReturn(true)
             ->shouldReceive('has')->once()->andReturn(false);
@@ -218,6 +242,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         | Assertion
         |------------------------------------------------------------
         */
+
         $tracy->initialize();
         $tracy->renderPanel();
     }

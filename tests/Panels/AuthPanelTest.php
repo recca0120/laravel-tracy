@@ -24,7 +24,6 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         $user->username = 'username';
         $auth = m::mock(Guard::class);
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
-        $panel = new AuthPanel();
 
         /*
         |------------------------------------------------------------
@@ -44,6 +43,7 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
 
+        $panel = new AuthPanel();
         $panel->setLaravel($app);
 
         /*
@@ -68,7 +68,6 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         $user->email = 'email';
         $auth = m::mock(Guard::class);
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
-        $panel = new AuthPanel();
 
         /*
         |------------------------------------------------------------
@@ -88,6 +87,7 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
 
+        $panel = new AuthPanel();
         $panel->setLaravel($app);
 
         /*
@@ -112,7 +112,6 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         $user->name = 'name';
         $auth = m::mock(Guard::class);
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
-        $panel = new AuthPanel();
 
         /*
         |------------------------------------------------------------
@@ -132,6 +131,7 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
 
+        $panel = new AuthPanel();
         $panel->setLaravel($app);
 
         /*

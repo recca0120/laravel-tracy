@@ -6,6 +6,7 @@ use ErrorException;
 use Exception;
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use LogicException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -78,7 +79,7 @@ class Tracy
      */
     public function initialize()
     {
-        if ($this->isRunningInConsole() === true || array_get($this->config, 'enabled', true) === false) {
+        if ($this->isRunningInConsole() === true || Arr::get($this->config, 'enabled', true) === false) {
             return false;
         }
 
@@ -94,14 +95,14 @@ class Tracy
             $this->closeSession();
         }
 
-        Debugger::$editor = array_get($this->config, 'editor', Debugger::$editor);
-        Debugger::$maxDepth = array_get($this->config, 'maxDepth', Debugger::$maxDepth);
-        Debugger::$maxLength = array_get($this->config, 'maxLength', Debugger::$maxLength);
-        Debugger::$scream = array_get($this->config, 'scream', true);
-        Debugger::$showLocation = array_get($this->config, 'showLocation', true);
-        Debugger::$strictMode = array_get($this->config, 'strictMode', true);
-        Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
-        $panels = array_get($this->config, 'panels', []);
+        Debugger::$editor = Arr::get($this->config, 'editor', Debugger::$editor);
+        Debugger::$maxDepth = Arr::get($this->config, 'maxDepth', Debugger::$maxDepth);
+        Debugger::$maxLength = Arr::get($this->config, 'maxLength', Debugger::$maxLength);
+        Debugger::$scream = Arr::get($this->config, 'scream', true);
+        Debugger::$showLocation = Arr::get($this->config, 'showLocation', true);
+        Debugger::$strictMode = Arr::get($this->config, 'strictMode', true);
+        Debugger::$time = Arr::get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
+        $panels = Arr::get($this->config, 'panels', []);
         if (isset($panels['user']) === true) {
             $panels['auth'] = $panels['user'];
             unset($panels['user']);
@@ -213,7 +214,7 @@ class Tracy
             return false;
         }
 
-        $accepts = array_get($this->config, 'accepts', []);
+        $accepts = Arr::get($this->config, 'accepts', []);
         if (count($accepts) === 0) {
             return false;
         }
@@ -240,7 +241,7 @@ class Tracy
      */
     public function appendDebugbar($content, $statusCode = 200)
     {
-        if (array_get($this->config, 'showBar', true) === false) {
+        if (Arr::get($this->config, 'showBar', true) === false) {
             return $content;
         }
 
@@ -289,7 +290,7 @@ class Tracy
      */
     public function getPanel($id)
     {
-        return array_get($this->panels, $id);
+        return Arr::get($this->panels, $id);
     }
 
     /**
