@@ -390,6 +390,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $response
             ->shouldReceive('getContent')->once()
             ->shouldReceive('setContent')->once()
+            ->shouldReceive('isRedirection')->once()->andReturn(false)
             ->shouldReceive('getStatusCode')->once()->andReturn(200);
 
         $tracy = new Tracy($config, $app, $request);

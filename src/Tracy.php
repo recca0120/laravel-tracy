@@ -192,10 +192,6 @@ class Tracy
      */
     protected function denyRenderResponse($response)
     {
-        if ($this->ajax === true) {
-            return false;
-        }
-
         if ($response instanceof BinaryFileResponse) {
             return true;
         }
@@ -206,6 +202,10 @@ class Tracy
 
         if ($response->isRedirection() === true) {
             return true;
+        }
+
+        if ($this->ajax === true) {
+            return false;
         }
 
         $contentType = $response->headers->get('Content-type');
