@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Contracts\Auth\Guard as GuardContract;
+use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -57,6 +58,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $auth = m::mock(GuardContract::class);
         $user = m::mock(stdClass::class);
         $user->username = 'username';
+        $events = m::mock(DispatcherContract::class);
 
         /*
         |------------------------------------------------------------
@@ -70,8 +72,14 @@ class TracyTest extends PHPUnit_Framework_TestCase
 
         $auth->shouldReceive('user')->andReturn($user);
 
+        $events->shouldReceive('listen')->andReturnUsing(function ($eventName, $closure) {
+            $closure($eventName);
+        });
+
         $app
+            ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('runningInConsole')->once()->andReturn(false)
+            ->shouldReceive('offsetGet')->with('events')->andReturn($events)
             ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
 
         /*
@@ -214,6 +222,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $auth = m::mock(GuardContract::class);
         $user = m::mock(stdClass::class);
         $user->username = 'username';
+        $events = m::mock(DispatcherContract::class);
 
         /*
         |------------------------------------------------------------
@@ -227,8 +236,14 @@ class TracyTest extends PHPUnit_Framework_TestCase
 
         $auth->shouldReceive('user')->andReturn($user);
 
+        $events->shouldReceive('listen')->andReturnUsing(function ($eventName, $closure) {
+            $closure($eventName);
+        });
+
         $app
+            ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('runningInConsole')->once()->andReturn(false)
+            ->shouldReceive('offsetGet')->with('events')->andReturn($events)
             ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
 
         $request
