@@ -5,12 +5,12 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Exception\HttpResponseException;
 use Illuminate\Http\Request;
 use Mockery as m;
+use Recca0120\LaravelTracy\BlueScreen;
 use Recca0120\LaravelTracy\Exceptions\Handler;
-use Recca0120\LaravelTracy\Tracy;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
+class HandlerTest extends PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
@@ -27,13 +27,13 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
 
         $exception = new Exception();
 
-        $tracy = m::mock(Tracy::class);
+        $blueScreen = m::mock(BlueScreen::class);
 
         $request = m::mock(Request::class);
         $responseFactory = m::mock(ResponseFactory::class);
 
         $exceptionHandler = m::mock(ExceptionHandlerContract::class);
-        $handler = new Handler($tracy, $responseFactory, $exceptionHandler);
+        $handler = new Handler($blueScreen, $responseFactory, $exceptionHandler);
 
         /*
         |------------------------------------------------------------
@@ -41,7 +41,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $tracy->shouldReceive('renderBlueScreen')->once();
+        $blueScreen->shouldReceive('render')->with($exception);
         $responseFactory->shouldReceive('make');
         $exceptionHandler->shouldReceive('report')->with($exception);
 
@@ -66,11 +66,11 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         $statusCode = 404;
         $headers = [];
         $exception = new HttpException($statusCode, null, null, $headers);
-        $tracy = m::mock(Tracy::class);
+        $blueScreen = m::mock(BlueScreen::class);
         $request = m::mock(Request::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $exeptionHandler = m::mock(ExceptionHandlerContract::class);
-        $handler = new Handler($tracy, $responseFactory, $exeptionHandler);
+        $handler = new Handler($blueScreen, $responseFactory, $exeptionHandler);
 
         /*
         |------------------------------------------------------------
@@ -78,7 +78,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $tracy->shouldReceive('renderBlueScreen')->once();
+        $blueScreen->shouldReceive('render')->with($exception)->once();
         $responseFactory->shouldReceive('make')->with(m::any(), $statusCode, $headers)->once();
 
         /*
@@ -94,13 +94,13 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
     {
         $exception = new HttpResponseException(m::mock(Response::class));
 
-        $tracy = m::mock(Tracy::class);
+        $blueScreen = m::mock(BlueScreen::class);
         $request = m::mock(Request::class);
         $responseFactory = m::mock(ResponseFactory::class);
 
         $exeptionHandler = m::mock(ExceptionHandlerContract::class);
 
-        $handler = new Handler($tracy, $responseFactory, $exeptionHandler);
+        $handler = new Handler($blueScreen, $responseFactory, $exeptionHandler);
         $handler->render($request, $exception);
     }
 
@@ -109,13 +109,13 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         $output = '';
         $exception = new Exception();
 
-        $tracy = m::mock(Tracy::class);
+        $blueScreen = m::mock(BlueScreen::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $exeptionHandler = m::mock(ExceptionHandlerContract::class)
             ->shouldReceive('renderForConsole')->with($output, $exception)->once()
             ->mock();
 
-        $handler = new Handler($tracy, $responseFactory, $exeptionHandler);
+        $handler = new Handler($blueScreen, $responseFactory, $exeptionHandler);
         $handler->renderForConsole($output, $exception);
     }
 }

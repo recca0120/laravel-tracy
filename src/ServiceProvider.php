@@ -25,13 +25,12 @@ class ServiceProvider extends BaseServiceProvider
             __DIR__.'/../config/tracy.php' => $this->app->configPath().'/tracy.php',
         ], 'config');
 
-        if ($tracy->initialize() === true) {
+        if ($tracy->dispatch() === true) {
             $this->app->extend(ExceptionHandlerContract::class, function ($exceptionHandler, $app) {
                 return $app->make(Handler::class, [
                     'exceptionHandler' => $exceptionHandler,
                 ]);
             });
-
             $kernel->pushMiddleware(AppendDebugbar::class);
         }
     }
@@ -44,13 +43,17 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
+
         $this->app->singleton(Tracy::class, function ($app) {
-            return new Tracy($this->app['config']->get('tracy'), $app);
+            return new Tracy($app['config']->get('tracy', []), $app);
         });
 
+        $this->app->singleton(Debugbar::class, Debugbar::class);
+
+        $this->app->singleton(BlueScreen::class, BlueScreen::class);
+
         if ($this->app['config']->get('tracy.panels.terminal') === true) {
-            $serviceProvider = TerminalServiceProvider::class;
-            $this->app->register($serviceProvider);
+            $this->app->register(TerminalServiceProvider::class);
         }
     }
 

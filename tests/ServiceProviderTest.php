@@ -1,12 +1,11 @@
 <?php
 
-use Illuminate\Contracts\Config\Repository as ConfigContract;
 use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
-use Illuminate\Contracts\Http\Kernel as HttpKernelContract;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Contracts\Http\Kernel;
 use Mockery as m;
+use Recca0120\LaravelTracy\BlueScreen;
+use Recca0120\LaravelTracy\Debugbar;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
 use Recca0120\LaravelTracy\ServiceProvider;
@@ -28,33 +27,8 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $configData = [
-            'enabled'      => true,
-            'showBar'      => true,
-            'accepts'      => [
-                'text/html',
-            ],
-            'editor'       => 'subl://open?url=file://%file&line=%line',
-            'maxDepth'     => 4,
-            'maxLength'    => 1000,
-            'scream'       => true,
-            'showLocation' => true,
-            'strictMode'   => true,
-            'panels'       => [
-                'routing'  => true,
-                'database' => true,
-                'view'     => true,
-                'event'    => false,
-                'session'  => true,
-                'request'  => true,
-                'auth'     => true,
-                'terminal' => true,
-            ],
-        ];
-
-        $config = m::mock(ConfigContract::class);
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
-        $provider = new ServiceProvider($app);
+        $config = m::mock(stdClass::class);
 
         /*
         |------------------------------------------------------------
@@ -63,17 +37,18 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         */
 
         $config
-            ->shouldReceive('get')->with('tracy', [])->once()->andReturn($configData)
-            ->shouldReceive('set')->with('tracy', $configData)->once()
-            ->shouldReceive('get')->with('tracy')->once()->andReturn($configData)
-            ->shouldReceive('get')->with('tracy.panels.terminal')->once()->andReturn(true);
+            ->shouldReceive('get')->with('tracy', [])->andReturn([])
+            ->shouldReceive('set')
+            ->shouldReceive('get')->with('tracy.panels.terminal')->andReturn(true);
 
         $app
-            ->shouldReceive('offsetGet')->with('config')->times(4)->andReturn($config)
-            ->shouldReceive('singleton')->with(Tracy::class, m::type(Closure::class))->once()->andReturnUsing(function ($className, $closure) {
-                return $closure(m::self());
+            ->shouldReceive('offsetGet')->with('config')->andReturn($config)
+            ->shouldReceive('singleton')->with(Tracy::class, m::type(Closure::class))->andReturnUsing(function ($className, $closure) use ($app) {
+                return $closure($app);
             })
-            ->shouldReceive('register')->with(TerminalServiceProvider::class)->once();
+            ->shouldReceive('singleton')->with(Debugbar::class, Debugbar::class)
+            ->shouldReceive('singleton')->with(BlueScreen::class, BlueScreen::class)
+            ->shouldReceive('register')->with(TerminalServiceProvider::class);
 
         /*
         |------------------------------------------------------------
@@ -81,8 +56,9 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $provider->register();
-        $provider->provides();
+        $serviceProvider = new ServiceProvider($app);
+        $serviceProvider->register();
+        $serviceProvider->provides();
     }
 
     public function test_boot()
@@ -93,13 +69,10 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $request = m::mock(Request::class);
-        $response = m::mock(Response::class);
-        $tracy = m::mock(Tracy::class);
-        $exceptionHandler = m::mock(ExceptionHandlerContract::class);
-        $kernel = m::mock(HttpKernelContract::class);
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
-        $provider = new ServiceProvider($app);
+        $tracy = m::mock(Tracy::class);
+        $kernel = m::mock(Kernel::class);
+        $handler = m::mock(ExceptionHandlerContract::class);
 
         /*
         |------------------------------------------------------------
@@ -107,19 +80,18 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $tracy
-            ->shouldReceive('initialize')->once()->andReturn(true);
-
-        $kernel->shouldReceive('pushMiddleware')->with(AppendDebugbar::class)->once();
-
         $app
-            ->shouldReceive('configPath')->once()->andReturn(__DIR__)
-            ->shouldReceive('extend')->with(ExceptionHandlerContract::class, m::type(Closure::class))->once()->andReturnUsing(function ($className, $closure) use ($exceptionHandler) {
-                return $closure($exceptionHandler, m::self());
+            ->shouldReceive('configPath')->andReturn(__DIR__)
+            ->shouldReceive('extend')->with(ExceptionHandlerContract::class, m::type(Closure::class))->andReturnUsing(function ($className, $closure) use ($handler, $app) {
+                return $closure($handler, $app);
             })
             ->shouldReceive('make')->with(Handler::class, [
-                'exceptionHandler' => $exceptionHandler,
-            ])->once();
+                'exceptionHandler' => $handler,
+            ]);
+
+        $tracy->shouldReceive('dispatch')->andReturn(true);
+
+        $kernel->shouldReceive('pushMiddleware')->with(AppendDebugbar::class)->once();
 
         /*
         |------------------------------------------------------------
@@ -127,6 +99,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $provider->boot($tracy, $kernel);
+        $serviceProvider = new ServiceProvider($app);
+        $serviceProvider->boot($tracy, $kernel);
     }
 }

@@ -2,27 +2,27 @@
 
 namespace Recca0120\LaravelTracy\Middleware;
 
-use Recca0120\LaravelTracy\Tracy;
+use Recca0120\LaravelTracy\Debugbar;
 
 class AppendDebugbar
 {
     /**
-     * $tracy.
+     * $debugbar.
      *
-     * @var \Recca0120\LaravelTracy\Tracy
+     * @var \Recca0120\LaravelTracy\Debugbar
      */
-    protected $tracy;
+    protected $debugbar;
 
     /**
      * __construct.
      *
      * @method __construct
      *
-     * @param \Recca0120\LaravelTracy\Tracy $tracy
+     * @param \Recca0120\LaravelTracy\Debugbar $debugbar
      */
-    public function __construct(Tracy $tracy)
+    public function __construct(Debugbar $debugbar)
     {
-        $this->tracy = $tracy;
+        $this->debugbar = $debugbar;
     }
 
     /**
@@ -37,9 +37,7 @@ class AppendDebugbar
      */
     public function handle($request, $next)
     {
-        $this->tracy->startBuffering();
-        $response = $this->tracy->renderResponse($next($request));
-        $this->tracy->stopBuffering();
+        $response = $this->debugbar->render($next($request));
 
         return $response;
     }
