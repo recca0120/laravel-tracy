@@ -12,6 +12,7 @@ return [
     'scream'       => true,
     'showLocation' => true,
     'strictMode'   => true,
+    'editorMapping' => [],
     'panels'       => [
         'routing'        => true,
         'database'       => true,
