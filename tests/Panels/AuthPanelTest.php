@@ -13,7 +13,7 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_laravel52()
+    public function test_session_not_exists()
     {
         /*
         |------------------------------------------------------------
@@ -23,6 +23,7 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
 
         $user = m::mock(stdClass::class);
         $user->username = 'username';
+        $session = m::mock(stdClass::class);
         $auth = m::mock(Guard::class);
         $events = m::mock(DispatcherContract::class);
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
@@ -33,72 +34,14 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $user
-            ->shouldReceive('getAuthIdentifier')->andReturn(0)
-            ->shouldReceive('toArray')->andReturn([]);
+        $auth->shouldReceive('getName')->once()->andReturn('foo');
 
-        $auth
-            ->shouldReceive('check')->andReturn(true)
-            ->shouldReceive('user')->andReturn($user);
-
-        $events->shouldReceive('listen')->with('Illuminate\Auth\Events\Login', m::type(Closure::class))->andReturnUsing(function ($eventName, $closure) {
-            $closure($eventName);
-        });
+        $session->shouldReceive('has')->with('foo')->once()->andReturn(false);
 
         $app
             ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events)
-            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
-
-        $panel = new AuthPanel();
-        $panel->setLaravel($app);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $panel->getTab();
-        $panel->getPanel();
-    }
-
-    public function test_laravel51()
-    {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $user = m::mock(stdClass::class);
-        $user->username = 'username';
-        $auth = m::mock(Guard::class);
-        $events = m::mock(DispatcherContract::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $user
-            ->shouldReceive('getAuthIdentifier')->andReturn(0)
-            ->shouldReceive('toArray')->andReturn([]);
-
-        $auth
-            ->shouldReceive('check')->andReturn(true)
-            ->shouldReceive('user')->andReturn($user);
-
-        $events->shouldReceive('listen')->with('auth.login', m::type(Closure::class))->andReturnUsing(function ($eventName, $closure) {
-            $closure($eventName);
-        });
-
-        $app
-            ->shouldReceive('version')->andReturn(5.1)
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events)
-            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
+            ->shouldReceive('offsetGet')->once()->with('auth')->andReturn($auth)
+            ->shouldReceive('offsetGet')->once()->with('session')->andReturn($session);
 
         $panel = new AuthPanel();
         $panel->setLaravel($app);
@@ -123,6 +66,7 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
 
         $user = m::mock(stdClass::class);
         $user->username = 'username';
+        $session = m::mock(stdClass::class);
         $auth = m::mock(Guard::class);
         $events = m::mock(DispatcherContract::class);
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
@@ -134,21 +78,19 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         */
 
         $user
-            ->shouldReceive('getAuthIdentifier')->andReturn(0)
-            ->shouldReceive('toArray')->andReturn([]);
+            ->shouldReceive('getAuthIdentifier')->once()->andReturn(0)
+            ->shouldReceive('toArray')->once()->andReturn([]);
 
         $auth
-            ->shouldReceive('check')->andReturn(true)
-            ->shouldReceive('user')->andReturn($user);
+            ->shouldReceive('user')->once()->andReturn($user)
+            ->shouldReceive('getName')->once()->andReturn('foo');
 
-        $events->shouldReceive('listen')->andReturnUsing(function ($eventName, $closure) {
-            $closure($eventName);
-        });
+        $session->shouldReceive('has')->with('foo')->once()->andReturn(true);
 
         $app
             ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events)
-            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
+            ->shouldReceive('offsetGet')->once()->with('auth')->andReturn($auth)
+            ->shouldReceive('offsetGet')->once()->with('session')->andReturn($session);
 
         $panel = new AuthPanel();
         $panel->setLaravel($app);
@@ -173,6 +115,7 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
 
         $user = m::mock(stdClass::class);
         $user->email = 'email';
+        $session = m::mock(stdClass::class);
         $auth = m::mock(Guard::class);
         $events = m::mock(DispatcherContract::class);
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
@@ -184,21 +127,19 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         */
 
         $user
-            ->shouldReceive('getAuthIdentifier')->andReturn(0)
-            ->shouldReceive('toArray')->andReturn([]);
+            ->shouldReceive('getAuthIdentifier')->once()->andReturn(0)
+            ->shouldReceive('toArray')->once()->andReturn([]);
 
         $auth
-            ->shouldReceive('check')->andReturn(true)
-            ->shouldReceive('user')->andReturn($user);
+            ->shouldReceive('user')->once()->andReturn($user)
+            ->shouldReceive('getName')->once()->andReturn('foo');
 
-        $events->shouldReceive('listen')->andReturnUsing(function ($eventName, $closure) {
-            $closure($eventName);
-        });
+        $session->shouldReceive('has')->with('foo')->once()->andReturn(true);
 
         $app
             ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events)
-            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
+            ->shouldReceive('offsetGet')->with('auth')->once()->andReturn($auth)
+            ->shouldReceive('offsetGet')->with('session')->once()->andReturn($session);
 
         $panel = new AuthPanel();
         $panel->setLaravel($app);
@@ -223,6 +164,7 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
 
         $user = m::mock(stdClass::class);
         $user->name = 'name';
+        $session = m::mock(stdClass::class);
         $auth = m::mock(Guard::class);
         $events = m::mock(DispatcherContract::class);
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
@@ -234,21 +176,19 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         */
 
         $user
-            ->shouldReceive('getAuthIdentifier')->andReturn(0)
-            ->shouldReceive('toArray')->andReturn([]);
+            ->shouldReceive('getAuthIdentifier')->once()->andReturn(0)
+            ->shouldReceive('toArray')->once()->andReturn([]);
 
         $auth
-            ->shouldReceive('check')->andReturn(true)
-            ->shouldReceive('user')->andReturn($user);
+            ->shouldReceive('user')->once()->andReturn($user)
+            ->shouldReceive('getName')->once()->andReturn('foo');
 
-        $events->shouldReceive('listen')->with('Illuminate\Auth\Events\Login', m::type(Closure::class))->andReturnUsing(function ($eventName, $closure) {
-            $closure('Illuminate\Auth\Events\Login');
-        });
+        $session->shouldReceive('has')->with('foo')->once()->andReturn(true);
 
         $app
             ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events)
-            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
+            ->shouldReceive('offsetGet')->with('auth')->once()->andReturn($auth)
+            ->shouldReceive('offsetGet')->with('session')->once()->andReturn($session);
 
         $panel = new AuthPanel();
         $panel->setLaravel($app);

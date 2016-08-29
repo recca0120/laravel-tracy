@@ -59,6 +59,7 @@ class Tracy
         Debugger::$showLocation = Arr::get($this->config, 'showLocation', true);
         Debugger::$strictMode = Arr::get($this->config, 'strictMode', true);
         Debugger::$time = Arr::get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
+        Debugger::$editorMapping = Arr::get($this->config, 'editorMapping', []);
 
         return true;
     }

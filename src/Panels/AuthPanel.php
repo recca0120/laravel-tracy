@@ -20,34 +20,6 @@ class AuthPanel extends AbstractPanel
     protected $user = null;
 
     /**
-     * subscribe.
-     *
-     * @method subscribe
-     */
-    public function subscribe()
-    {
-        $eventName = $this->getEventName();
-        $this->laravel['events']->listen($eventName, function ($event) {
-            $data = $this->loadUser();
-            $this->name = $data['name'];
-            $this->user = $data['user'];
-        });
-    }
-
-    /**
-     * getEventName.
-     *
-     * @method getEventName
-     *
-     * @return string
-     */
-    public function getEventName()
-    {
-        return (version_compare($this->laravel->version(), 5.2, '>=') === true) ?
-            'Illuminate\Auth\Events\Login' : 'auth.login';
-    }
-
-    /**
      * loadUser.
      *
      * @method loadUser
@@ -56,7 +28,12 @@ class AuthPanel extends AbstractPanel
     {
         $name = 'Guest';
         $user = null;
-        $userObject = $this->laravel['auth']->user();
+        $session = $this->laravel['session'];
+        $auth = $this->laravel['auth'];
+        if ($session->has($auth->getName()) === false) {
+            return;
+        }
+        $userObject = $auth->user();
         if (is_null($userObject) === false) {
             $name = $userObject->getAuthIdentifier();
             if (is_numeric($name)) {
@@ -71,10 +48,8 @@ class AuthPanel extends AbstractPanel
             $user = $userObject->toArray();
         }
 
-        return [
-            'name' => $name,
-            'user' => $user,
-        ];
+        $this->name = $name;
+        $this->user = $user;
     }
 
     /**
@@ -88,6 +63,9 @@ class AuthPanel extends AbstractPanel
     {
         $this->loadUser();
 
-        return $this->loadUser();
+        return [
+            'name' => $this->name,
+            'user' => $this->user,
+        ];
     }
 }
