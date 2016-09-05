@@ -1,4 +1,4 @@
-<style>
+<style class="tracy-debug">
 	#tracy-debug .Laravel-HtmlValidatorPanel {min-width: 700px;}
 	#tracy-debug .Laravel-HtmlValidatorPanel table {width: 100%;max-width: 700px;}
 	#tracy-debug .Laravel-HtmlValidatorPanel table pre {max-width: 670px;overflow: hidden;box-shadow: none !important;}

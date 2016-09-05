@@ -1,10 +1,13 @@
+<style class="tracy-debug">
+	#tracy-debug .Laravel-TerminalPanel {background: #000; min-width: 700px; padding-bottom:15px;}
+</style>
+
 <h1>Terminal</h1>
-<div class="tracy-inner" style=" overflow-x: hidden !important;">
+
+<div class="tracy-inner Laravel-TerminalPanel">
     <?php if (empty($html) === false): ?>
-        <div style="min-width: 700px; min-height: 500px; background: #000;">
-            <?php echo $html; ?>
-        </div>
+        <?php echo $html; ?>
     <?php else: ?>
-        Terminal is Disabled
+        <span style="color: #fff;">Terminal is Disabled</span>
     <?php endif ?>
 </div>
