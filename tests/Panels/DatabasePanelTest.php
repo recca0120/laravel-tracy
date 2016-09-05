@@ -16,6 +16,9 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
     public function test_laravel_52()
     {
+        if (class_exists(QueryExecuted::class, false) === false) {
+            return;
+        }
         /*
         |------------------------------------------------------------
         | Set
@@ -162,6 +165,10 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
     public function test_mysql_52()
     {
+        if (class_exists(QueryExecuted::class, false) === false) {
+            return;
+        }
+
         /*
         |------------------------------------------------------------
         | Set
