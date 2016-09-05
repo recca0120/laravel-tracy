@@ -8,36 +8,26 @@ php:
   - 7.1
   - hhvm
 
-env:
-  global:
-    - setup=basic
+# This triggers builds to run on the new TravisCI infrastructure.
+# See: http://docs.travis-ci.com/user/workers/container-based-infrastructure/
+sudo: false
+
+## Cache composer
+cache:
+  directories:
+    - $HOME/.composer/cache
 
 matrix:
   include:
-    - php: 5.5.9
-      env: setup=lowest
-    - php: 5.5.9
-      env: setup=stable
+    - php: 5.6
+      env: 'COMPOSER_FLAGS="--prefer-stable --prefer-lowest"'
 
-sudo: false
-
-services:
-  - memcached
-  - redis-server
-
-before_install:
-  - if [[ $TRAVIS_PHP_VERSION != 7.1 ]] ; then phpenv config-rm xdebug.ini; fi
-  - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+before_script:
   - travis_retry composer self-update
+  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-dist
 
-install:
-  - if [[ $setup = 'basic' ]]; then travis_retry composer install --no-interaction --prefer-dist --no-suggest; fi
-  - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest; fi
-  - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable --no-suggest; fi
+script:
+  - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
 
-script: vendor/bin/phpunit
-
-matrix:
-  allow_failures:
-    - php: 7.1
-  fast_finish: true
+after_script:
+  - if [[ $TRAVIS_PHP_VERSION != 'hhvm' && $TRAVIS_PHP_VERSION != '7.0' ]]; then php vendor/bin/ocular code-coverage:upload --format=php-clover coverage.clover; fi

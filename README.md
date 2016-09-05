@@ -2,10 +2,12 @@
 
 Better Laravel Exception Handler
 
-[![Latest Stable Version](https://poser.pugx.org/recca0120/laravel-tracy/v/stable)](https://packagist.org/packages/recca0120/laravel-tracy)
-[![Total Downloads](https://poser.pugx.org/recca0120/laravel-tracy/downloads)](https://packagist.org/packages/recca0120/laravel-tracy)
-[![Latest Unstable Version](https://poser.pugx.org/recca0120/laravel-tracy/v/unstable)](https://packagist.org/packages/recca0120/laravel-tracy)
-[![License](https://poser.pugx.org/recca0120/laravel-tracy/license)](https://packagist.org/packages/recca0120/laravel-tracy)
+[![StyleCI](https://styleci.io/repos/40661503/shield?style=flat)](https://styleci.io/repos/40661503)
+[![Build Status](https://travis-ci.org/recca0120/laravel-tracy.svg)](https://travis-ci.org/recca0120/laravel-tracy)
+[![Total Downloads](https://poser.pugx.org/recca0120/laravel-tracy/d/total.svg)](https://packagist.org/packages/recca0120/laravel-tracy)
+[![Latest Stable Version](https://poser.pugx.org/recca0120/laravel-tracy/v/stable.svg)](https://packagist.org/packages/recca0120/laravel-tracy)
+[![Latest Unstable Version](https://poser.pugx.org/recca0120/laravel-tracy/v/unstable.svg)](https://packagist.org/packages/recca0120/laravel-tracy)
+[![License](https://poser.pugx.org/recca0120/laravel-tracy/license.svg)](https://packagist.org/packages/recca0120/laravel-tracy)
 [![Monthly Downloads](https://poser.pugx.org/recca0120/laravel-tracy/d/monthly)](https://packagist.org/packages/recca0120/laravel-tracy)
 [![Daily Downloads](https://poser.pugx.org/recca0120/laravel-tracy/d/daily)](https://packagist.org/packages/recca0120/laravel-tracy)
 

@@ -48,6 +48,9 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getName')->andReturn('mysql')
             ->shouldReceive('getPdo')->andReturn($pdo);
 
+        if (class_exists(QueryExecuted::class) === false) {
+            return;
+        }
         $events
             ->shouldReceive('listen')->with(QueryExecuted::class, m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
                 $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/ **foo**', ['1'], 1.1, $connection);
