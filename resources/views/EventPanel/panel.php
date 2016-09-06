@@ -15,7 +15,7 @@
                 <td>
                     <?php
                         echo Tracy\Dumper::toHtml(array_get($value, 'params'), [
-                            Tracy\Dumper::LIVE     => true,
+                            Tracy\Dumper::LIVE => true,
                             Tracy\Dumper::TRUNCATE => 50,
                             Tracy\Dumper::COLLAPSE => true,
                         ]);

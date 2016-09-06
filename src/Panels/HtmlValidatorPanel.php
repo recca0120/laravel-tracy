@@ -33,8 +33,8 @@ class HtmlValidatorPanel extends AbstractPanel
      */
     public static $severenity = [
         LIBXML_ERR_WARNING => 'Warning',
-        LIBXML_ERR_ERROR   => 'Error',
-        LIBXML_ERR_FATAL   => 'Fatal error',
+        LIBXML_ERR_ERROR => 'Error',
+        LIBXML_ERR_FATAL => 'Fatal error',
     ];
 
     /**
@@ -70,6 +70,7 @@ class HtmlValidatorPanel extends AbstractPanel
 
         return $s;
     }
+
     /**
      * Standardize line endings to unix-like.
      * @param  string  UTF-8 encoding or 8-bit
@@ -112,9 +113,9 @@ class HtmlValidatorPanel extends AbstractPanel
 
         return [
             'severenity' => static::$severenity,
-            'counter'    => count($errors),
-            'errors'     => $errors,
-            'html'       => $this->html,
+            'counter' => count($errors),
+            'errors' => $errors,
+            'html' => $this->html,
         ];
     }
 }

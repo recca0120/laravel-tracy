@@ -26,7 +26,7 @@ class Handler implements ExceptionHandlerContract
 
     /**
      * app exception handler.
-     * 
+     *
      * @var \Illuminate\Contracts\Debug\ExceptionHandler
      */
     protected $exceptionHandler;

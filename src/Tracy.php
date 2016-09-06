@@ -133,22 +133,22 @@ class Tracy
         }
 
         $config = array_merge([
-            'enabled'      => true,
-            'showBar'      => true,
-            'editor'       => 'subl://open?url=file://%file&line=%line',
-            'maxDepth'     => 4,
-            'maxLength'    => 1000,
-            'scream'       => true,
+            'enabled' => true,
+            'showBar' => true,
+            'editor' => 'subl://open?url=file://%file&line=%line',
+            'maxDepth' => 4,
+            'maxLength' => 1000,
+            'scream' => true,
             'showLocation' => true,
-            'strictMode'   => true,
-            'panels'       => [
-                'routing'  => false,
+            'strictMode' => true,
+            'panels' => [
+                'routing' => false,
                 'database' => true,
-                'view'     => false,
-                'event'    => false,
-                'session'  => true,
-                'request'  => true,
-                'auth'     => false,
+                'view' => false,
+                'event' => false,
+                'session' => true,
+                'request' => true,
+                'auth' => false,
                 'terminal' => false,
             ],
         ], $config);

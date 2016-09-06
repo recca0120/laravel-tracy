@@ -17,8 +17,8 @@ class SessionPanel extends AbstractPanel
         if ($this->isLaravel() === true) {
             $session = $this->laravel['session'];
             $data = [
-                'sessionId'      => $session->getId(),
-                'config'         => $session->getSessionConfig(),
+                'sessionId' => $session->getId(),
+                'config' => $session->getSessionConfig(),
                 'laravelSession' => $session->all(),
             ];
 
@@ -32,8 +32,8 @@ class SessionPanel extends AbstractPanel
             // }
             if (session_status() == PHP_SESSION_ACTIVE) {
                 $data = [
-                    'sessionId'      => session_id(),
-                    'nativeSession'  => $_SESSION,
+                    'sessionId' => session_id(),
+                    'nativeSession' => $_SESSION,
                 ];
             }
         }

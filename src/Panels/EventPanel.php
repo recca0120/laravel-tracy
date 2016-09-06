@@ -55,9 +55,9 @@ class EventPanel extends AbstractPanel
     protected function getAttributes()
     {
         return [
-            'counter'   => $this->counter,
+            'counter' => $this->counter,
             'totalTime' => $this->totalTime,
-            'events'    => $this->events,
+            'events' => $this->events,
         ];
     }
 }

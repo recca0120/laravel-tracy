@@ -88,16 +88,16 @@ class DatabasePanel extends AbstractPanel
         $source = self::findSource();
         $editorLink = self::editorLink($source);
         $this->queries[] = [
-            'sql'          => $sql,
-            'bindings'     => $bindings,
-            'time'         => $time,
-            'name'         => $name,
-            'pdo'          => $pdo,
-            'driver'       => $driver,
-            'source'       => $source,
-            'editorLink'   => $editorLink,
+            'sql' => $sql,
+            'bindings' => $bindings,
+            'time' => $time,
+            'name' => $name,
+            'pdo' => $pdo,
+            'driver' => $driver,
+            'source' => $source,
+            'editorLink' => $editorLink,
             'formattedSql' => null,
-            'fullSql'      => null,
+            'fullSql' => null,
         ];
 
         return $this;
@@ -311,9 +311,9 @@ class DatabasePanel extends AbstractPanel
         }
 
         return [
-            'counter'   => $this->counter,
+            'counter' => $this->counter,
             'totalTime' => $this->totalTime,
-            'queries'   => $queries,
+            'queries' => $queries,
         ];
     }
 }
