@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Exception\HttpResponseException;
 use Illuminate\Http\Request;
@@ -32,7 +32,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $request = m::mock(Request::class);
         $responseFactory = m::mock(ResponseFactory::class);
 
-        $exceptionHandler = m::mock(ExceptionHandlerContract::class);
+        $exceptionHandler = m::mock(ExceptionHandler::class);
         $handler = new Handler($blueScreen, $responseFactory, $exceptionHandler);
 
         /*
@@ -69,7 +69,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $blueScreen = m::mock(BlueScreen::class);
         $request = m::mock(Request::class);
         $responseFactory = m::mock(ResponseFactory::class);
-        $exeptionHandler = m::mock(ExceptionHandlerContract::class);
+        $exeptionHandler = m::mock(ExceptionHandler::class);
         $handler = new Handler($blueScreen, $responseFactory, $exeptionHandler);
 
         /*
@@ -98,7 +98,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $request = m::mock(Request::class);
         $responseFactory = m::mock(ResponseFactory::class);
 
-        $exeptionHandler = m::mock(ExceptionHandlerContract::class);
+        $exeptionHandler = m::mock(ExceptionHandler::class);
 
         $handler = new Handler($blueScreen, $responseFactory, $exeptionHandler);
         $handler->render($request, $exception);
@@ -111,7 +111,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $blueScreen = m::mock(BlueScreen::class);
         $responseFactory = m::mock(ResponseFactory::class);
-        $exeptionHandler = m::mock(ExceptionHandlerContract::class)
+        $exeptionHandler = m::mock(ExceptionHandler::class)
             ->shouldReceive('renderForConsole')->with($output, $exception)->once()
             ->mock();
 

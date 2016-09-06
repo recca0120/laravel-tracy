@@ -18,14 +18,14 @@ class RequestPanel extends AbstractPanel
             $request = $this->laravel['request'];
             $server = $request->server();
             $data = [
-                'ip'        => $request->ip(),
-                'ips'       => $request->ips(),
-                'query'     => $request->query(),
-                'request'   => $request->all(),
-                'file'      => $request->file(),
-                'cookies'   => $request->cookie(),
-                'format'    => $request->format(),
-                'path'      => $request->path(),
+                'ip' => $request->ip(),
+                'ips' => $request->ips(),
+                'query' => $request->query(),
+                'request' => $request->all(),
+                'file' => $request->file(),
+                'cookies' => $request->cookie(),
+                'format' => $request->format(),
+                'path' => $request->path(),
                 // 'headers' => $request->header(),
             ];
         } else {
@@ -33,12 +33,12 @@ class RequestPanel extends AbstractPanel
             $remoteAddr = array_get($server, 'REMOTE_ADDR');
             $query = array_get($server, 'QUERY_STRING');
             $data = [
-                'ip'        => $remoteAddr,
-                'ips'       => $remoteAddr,
-                'query'     => $query,
-                'request'   => $_REQUEST,
-                'file'      => $_FILES,
-                'cookies'   => $_COOKIE,
+                'ip' => $remoteAddr,
+                'ips' => $remoteAddr,
+                'query' => $query,
+                'request' => $_REQUEST,
+                'file' => $_FILES,
+                'cookies' => $_COOKIE,
                 // 'format'    => $remoteAddr,
                 // 'path' => $server['REMOTE_ADDR'],
             ];

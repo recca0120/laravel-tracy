@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Events\QueryExecuted;
 use Mockery as m;
@@ -28,8 +28,8 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         $statement = m::mock(PDOStatement::class);
         $pdo = m::mock(PDO::class);
         $connection = m::mock(Connection::class);
-        $events = m::mock(DispatcherContract::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $events = m::mock(Dispatcher::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $panel = new DatabasePanel();
 
         /*
@@ -105,8 +105,8 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         $statement = m::mock(PDOStatement::class);
         $pdo = m::mock(PDO::class);
         $connection = m::mock(Connection::class);
-        $events = m::mock(DispatcherContract::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $events = m::mock(Dispatcher::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $panel = new DatabasePanel();
 
         /*
@@ -177,8 +177,8 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
         $pdo = m::mock(PDO::class);
         $connection = m::mock(Connection::class);
-        $events = m::mock(DispatcherContract::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $events = m::mock(Dispatcher::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $panel = new DatabasePanel();
 
         /*

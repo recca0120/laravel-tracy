@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Http\Kernel;
 use Mockery as m;
 use Recca0120\LaravelTracy\BlueScreen;
@@ -27,7 +27,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $config = m::mock(stdClass::class);
 
         /*
@@ -69,10 +69,10 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $tracy = m::mock(Tracy::class);
         $kernel = m::mock(Kernel::class);
-        $handler = m::mock(ExceptionHandlerContract::class);
+        $handler = m::mock(ExceptionHandler::class);
 
         /*
         |------------------------------------------------------------
@@ -82,7 +82,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app
             ->shouldReceive('configPath')->andReturn(__DIR__)
-            ->shouldReceive('extend')->with(ExceptionHandlerContract::class, m::type(Closure::class))->andReturnUsing(function ($className, $closure) use ($handler, $app) {
+            ->shouldReceive('extend')->with(ExceptionHandler::class, m::type(Closure::class))->andReturnUsing(function ($className, $closure) use ($handler, $app) {
                 return $closure($handler, $app);
             })
             ->shouldReceive('make')->with(Handler::class, [

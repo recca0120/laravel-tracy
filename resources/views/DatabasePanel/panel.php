@@ -51,13 +51,13 @@
                         <table class="tracy-collapsed Laravel-DatabasePanel-explain">
                             <tr>
                                 <?php foreach ($query['explains'][0] as $col => $foo): ?>
-                                    <th><?php echo htmlSpecialChars($col, ENT_NOQUOTES, 'UTF-8') ?></th>
+                                    <th><?php echo htmlspecialchars($col, ENT_NOQUOTES, 'UTF-8') ?></th>
                                  <?php endforeach ?>
                             </tr>
                             <?php foreach ($query['explains'] as $row): ?>
                                 <tr>
                                     <?php foreach ($row as $col): ?>
-                                        <td><?php echo htmlSpecialChars($col, ENT_NOQUOTES, 'UTF-8') ?></td>
+                                        <td><?php echo htmlspecialchars($col, ENT_NOQUOTES, 'UTF-8') ?></td>
                                     <?php endforeach ?>
                                 </tr>
                             <?php endforeach ?>

@@ -3,12 +3,12 @@
 namespace Recca0120\LaravelTracy\Exceptions;
 
 use Exception;
-use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
-use Illuminate\Contracts\Routing\ResponseFactory as ResponseFactoryContract;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Recca0120\LaravelTracy\BlueScreen;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class Handler implements ExceptionHandlerContract
+class Handler implements ExceptionHandler
 {
     /**
      * $blueScreen.
@@ -26,7 +26,7 @@ class Handler implements ExceptionHandlerContract
 
     /**
      * app exception handler.
-     * 
+     *
      * @var \Illuminate\Contracts\Debug\ExceptionHandler
      */
     protected $exceptionHandler;
@@ -42,7 +42,7 @@ class Handler implements ExceptionHandlerContract
      */
     public function __construct(
         BlueScreen $blueScreen,
-        ResponseFactoryContract $responseFactory,
+        ResponseFactory $responseFactory,
         $exceptionHandler
     ) {
         $this->blueScreen = $blueScreen;

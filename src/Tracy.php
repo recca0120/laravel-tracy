@@ -2,7 +2,7 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Arr;
 use Tracy\Debugger;
 
@@ -23,7 +23,7 @@ class Tracy
      * @param  array                                            $config
      * @param  \Illuminate\Contracts\Foundation\Application     $app
      */
-    public function __construct($config = [], ApplicationContract $app = null)
+    public function __construct($config = [], Application $app = null)
     {
         $this->config = $config;
         $this->app = $app;
@@ -133,22 +133,22 @@ class Tracy
         }
 
         $config = array_merge([
-            'enabled'      => true,
-            'showBar'      => true,
-            'editor'       => 'subl://open?url=file://%file&line=%line',
-            'maxDepth'     => 4,
-            'maxLength'    => 1000,
-            'scream'       => true,
+            'enabled' => true,
+            'showBar' => true,
+            'editor' => 'subl://open?url=file://%file&line=%line',
+            'maxDepth' => 4,
+            'maxLength' => 1000,
+            'scream' => true,
             'showLocation' => true,
-            'strictMode'   => true,
-            'panels'       => [
-                'routing'  => false,
+            'strictMode' => true,
+            'panels' => [
+                'routing' => false,
                 'database' => true,
-                'view'     => false,
-                'event'    => false,
-                'session'  => true,
-                'request'  => true,
-                'auth'     => false,
+                'view' => false,
+                'event' => false,
+                'session' => true,
+                'request' => true,
+                'auth' => false,
                 'terminal' => false,
             ],
         ], $config);

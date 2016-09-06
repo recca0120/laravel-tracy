@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\TerminalPanel;
 use Recca0120\Terminal\Http\Controllers\TerminalController;
@@ -21,7 +21,7 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         */
 
         $controller = m::mock(TerminalController::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $panel = new TerminalPanel();
 
         /*
@@ -56,7 +56,7 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         */
 
         $controller = m::mock(TerminalController::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $panel = new TerminalPanel();
 
         /*

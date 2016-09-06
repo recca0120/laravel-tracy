@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Foundation\Application;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\AuthPanel;
 
@@ -25,8 +25,8 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         $user->username = 'username';
         $session = m::mock(stdClass::class);
         $auth = m::mock(Guard::class);
-        $events = m::mock(DispatcherContract::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $events = m::mock(Dispatcher::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
 
         /*
         |------------------------------------------------------------
@@ -68,8 +68,8 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         $user->username = 'username';
         $session = m::mock(stdClass::class);
         $auth = m::mock(Guard::class);
-        $events = m::mock(DispatcherContract::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $events = m::mock(Dispatcher::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
 
         /*
         |------------------------------------------------------------
@@ -117,8 +117,8 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         $user->email = 'email';
         $session = m::mock(stdClass::class);
         $auth = m::mock(Guard::class);
-        $events = m::mock(DispatcherContract::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $events = m::mock(Dispatcher::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
 
         /*
         |------------------------------------------------------------
@@ -166,8 +166,8 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         $user->name = 'name';
         $session = m::mock(stdClass::class);
         $auth = m::mock(Guard::class);
-        $events = m::mock(DispatcherContract::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $events = m::mock(Dispatcher::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
 
         /*
         |------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -51,7 +51,7 @@ class Debugbar
      * @param  \Illuminate\Http\Request                     $request
      * @param  \Illuminate\Contracts\Foundation\Application $app
      */
-    public function __construct(Tracy $tracy, Request $request = null, ApplicationContract $app = null)
+    public function __construct(Tracy $tracy, Request $request = null, Application $app = null)
     {
         $this->config = $tracy->getConfig();
         $this->app = $app;

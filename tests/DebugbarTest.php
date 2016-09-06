@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use Mockery as m;
 use Recca0120\LaravelTracy\Debugbar;
@@ -27,7 +27,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $config = [];
         $tracy = m::mock(Tracy::class);
         $request = m::mock(Request::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $response = m::mock(BinaryFileResponse::class);
 
         /*
@@ -63,7 +63,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $config = [];
         $tracy = m::mock(Tracy::class);
         $request = m::mock(Request::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $response = m::mock(StreamedResponse::class);
 
         /*
@@ -99,7 +99,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $config = [];
         $tracy = m::mock(Tracy::class);
         $request = m::mock(Request::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $response = m::mock(Response::class);
 
         /*
@@ -139,7 +139,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $content = '<body></body>';
         $tracy = m::mock(Tracy::class);
         $request = m::mock(Request::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $response = m::mock(Response::class);
         $headers = m::mock(stdClass::class);
         $response->headers = $headers;
@@ -183,7 +183,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $content = '<body></body>';
         $tracy = m::mock(Tracy::class);
         $request = m::mock(Request::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $response = m::mock(Response::class);
         $headers = m::mock(stdClass::class);
         $response->headers = $headers;
@@ -229,7 +229,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $content = '<body></body>';
         $tracy = m::mock(Tracy::class);
         $request = m::mock(Request::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $response = m::mock(Response::class);
         $headers = m::mock(stdClass::class);
         $response->headers = $headers;
@@ -279,7 +279,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $content = '';
         $tracy = m::mock(Tracy::class);
         $request = m::mock(Request::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $response = m::mock(Response::class);
         $headers = m::mock(stdClass::class);
         $response->headers = $headers;
@@ -329,7 +329,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $content = '<body></body>';
         $tracy = m::mock(Tracy::class);
         $request = m::mock(Request::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $response = m::mock(Response::class);
         $headers = m::mock(stdClass::class);
         $response->headers = $headers;
@@ -373,14 +373,14 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
                 'text/html',
             ],
             'panels' => [
-                'routing'        => false,
-                'database'       => false,
-                'view'           => false,
-                'event'          => false,
-                'session'        => false,
-                'request'        => false,
-                'user'           => true,
-                'terminal'       => true,
+                'routing' => false,
+                'database' => false,
+                'view' => false,
+                'event' => false,
+                'session' => false,
+                'request' => false,
+                'user' => true,
+                'terminal' => true,
                 'html-validator' => true,
             ],
         ];
@@ -389,7 +389,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $content = '';
         $tracy = m::mock(Tracy::class);
         $request = m::mock(Request::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $response = m::mock(Response::class);
         $headers = m::mock(stdClass::class);
         $response->headers = $headers;
@@ -453,7 +453,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $config = ['showBar' => false];
         $tracy = m::mock(Tracy::class);
         $request = m::mock(Request::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $response = m::mock(BinaryFileResponse::class);
 
         /*

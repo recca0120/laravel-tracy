@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Session\SessionInterface;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\SessionPanel;
@@ -21,7 +21,7 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
         */
 
         $session = m::mock(SessionInterface::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $panel = new SessionPanel();
 
         /*

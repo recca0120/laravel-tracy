@@ -2,7 +2,7 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Tracy\Helpers;
 use Tracy\IBarPanel;
 
@@ -83,7 +83,7 @@ abstract class AbstractPanel implements IBarPanel
      *
      * @return self;
      */
-    public function setLaravel(ApplicationContract $laravel = null)
+    public function setLaravel(Application $laravel = null)
     {
         if (is_null($laravel) === false) {
             $this->laravel = $laravel;
@@ -103,7 +103,7 @@ abstract class AbstractPanel implements IBarPanel
      */
     protected function isLaravel()
     {
-        return is_a($this->laravel, ApplicationContract::class);
+        return is_a($this->laravel, Application::class);
     }
 
     /**

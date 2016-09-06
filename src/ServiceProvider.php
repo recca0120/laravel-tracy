@@ -2,8 +2,8 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
-use Illuminate\Contracts\Http\Kernel as HttpKernelContract;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
@@ -19,14 +19,14 @@ class ServiceProvider extends BaseServiceProvider
      * @param \Recca0120\LaravelTracy\Tracy     $tracy
      * @param \Illuminate\Contracts\Http\Kernel $kernel
      */
-    public function boot(Tracy $tracy, HttpKernelContract $kernel)
+    public function boot(Tracy $tracy, Kernel $kernel)
     {
         $this->publishes([
             __DIR__.'/../config/tracy.php' => $this->app->configPath().'/tracy.php',
         ], 'config');
 
         if ($tracy->dispatch() === true) {
-            $this->app->extend(ExceptionHandlerContract::class, function ($exceptionHandler, $app) {
+            $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
                 return $app->make(Handler::class, [
                     'exceptionHandler' => $exceptionHandler,
                 ]);

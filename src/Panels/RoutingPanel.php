@@ -14,7 +14,7 @@ class RoutingPanel extends AbstractPanel
     protected function getAttributes()
     {
         $data = [
-            'uri'    => 404,
+            'uri' => 404,
             'action' => [],
         ];
         if ($this->isLaravel() === true) {
@@ -22,21 +22,21 @@ class RoutingPanel extends AbstractPanel
             $currentRoute = $router->getCurrentRoute();
             if ($currentRoute !== null) {
                 $data = [
-                    'uri'    => $currentRoute->uri(),
+                    'uri' => $currentRoute->uri(),
                     'action' => $currentRoute->getAction(),
                 ];
             }
         } else {
             if (empty($_SERVER['HTTP_HOST'])) {
                 return [
-                    'uri'    => '404',
+                    'uri' => '404',
                     'action' => [],
                 ];
             }
             $http_host = array_get($_SERVER, 'HTTP_HOST');
             $requestUri = array_get($_SERVER, 'REQUEST_URI');
             $data = [
-                'uri'    => $requestUri,
+                'uri' => $requestUri,
                 'action' => [],
             ];
         }
