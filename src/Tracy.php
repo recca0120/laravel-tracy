@@ -2,9 +2,10 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Arr;
 use Tracy\Debugger;
+use Illuminate\Session\SessionManager;
 
 class Tracy
 {
@@ -20,13 +21,27 @@ class Tracy
      *
      * @method __construct
      *
-     * @param  array                                            $config
-     * @param  \Illuminate\Contracts\Foundation\Application     $app
+     * @param  array                                        $config
+     * @param  \Illuminate\Contracts\Foundation\Application $app
+     * @param  \Illuminate\Session\SessionManager           $session
      */
-    public function __construct($config = [], ApplicationContract $app = null)
+    public function __construct($config = [], Application $app = null, SessionManager $session = null)
     {
         $this->config = $config;
         $this->app = $app;
+        $this->session = $session;
+    }
+
+    /**
+     * replaceNativeSessionHandler.
+     *
+     * @method replaceNativeSessionHandler
+     */
+    public function replaceNativeSessionHandler()
+    {
+        if (is_null($this->session) === false) {
+            session_set_save_handler($this->session->driver()->getHandler(), true);
+        }
     }
 
     /**
@@ -48,6 +63,7 @@ class Tracy
             }
 
             if (session_status() !== PHP_SESSION_ACTIVE) {
+                $this->replaceNativeSessionHandler();
                 Debugger::dispatch();
             }
         }

@@ -11,11 +11,11 @@
     ],
     "require": {
         "php": ">=5.4",
-        "illuminate/contracts": "~5.0",
-        "illuminate/database": "~5.0",
-        "illuminate/routing": "~5.0",
-        "illuminate/session": "~5.0",
-        "illuminate/support": "~5.0",
+        "illuminate/contracts": "5.0.*",
+        "illuminate/database": "5.0.*",
+        "illuminate/routing": "5.0.*",
+        "illuminate/session": "5.0.*",
+        "illuminate/support": "5.0.*",
         "tracy/tracy": "^2.4.2"
     },
     "require-dev": {

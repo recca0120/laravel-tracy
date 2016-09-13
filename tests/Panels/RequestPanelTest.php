@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\RequestPanel;
@@ -20,7 +20,7 @@ class RequestPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock('\Illuminate\Contracts\Foundation\Application'.','.'\ArrayAccess');
         $panel = new RequestPanel();
 
         /*

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
-use Illuminate\Contracts\Routing\Registrar as RegistrarContract;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\Registrar;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\RoutingPanel;
 
@@ -20,9 +20,9 @@ class RoutingPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $route = m::mock(stdClass::class);
-        $router = m::mock(RegistrarContract::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $route = m::mock('\stdClass');
+        $router = m::mock('\Illuminate\Contracts\Routing\Registrar');
+        $app = m::mock('\Illuminate\Contracts\Foundation\Application'.','.'\ArrayAccess');
         $panel = new RoutingPanel();
 
         /*

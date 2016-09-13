@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Foundation\Application;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\AuthPanel;
 
@@ -21,12 +21,12 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $user = m::mock(stdClass::class);
+        $user = m::mock('\stdClass');
         $user->username = 'username';
-        $session = m::mock(stdClass::class);
-        $auth = m::mock(Guard::class);
-        $events = m::mock(DispatcherContract::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $session = m::mock('\stdClass');
+        $auth = m::mock('\Illuminate\Contracts\Auth\Guard');
+        $events = m::mock('\Illuminate\Contracts\Events\Dispatcher');
+        $app = m::mock('\Illuminate\Contracts\Foundation\Application'.','.'\ArrayAccess');
 
         /*
         |------------------------------------------------------------
@@ -64,12 +64,12 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $user = m::mock(stdClass::class);
+        $user = m::mock('\stdClass');
         $user->username = 'username';
-        $session = m::mock(stdClass::class);
-        $auth = m::mock(Guard::class);
-        $events = m::mock(DispatcherContract::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $session = m::mock('\stdClass');
+        $auth = m::mock('\Illuminate\Contracts\Auth\Guard');
+        $events = m::mock('\Illuminate\Contracts\Events\Dispatcher');
+        $app = m::mock('\Illuminate\Contracts\Foundation\Application'.','.'\ArrayAccess');
 
         /*
         |------------------------------------------------------------
@@ -113,12 +113,12 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $user = m::mock(stdClass::class);
+        $user = m::mock('\stdClass');
         $user->email = 'email';
-        $session = m::mock(stdClass::class);
-        $auth = m::mock(Guard::class);
-        $events = m::mock(DispatcherContract::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $session = m::mock('\stdClass');
+        $auth = m::mock('\Illuminate\Contracts\Auth\Guard');
+        $events = m::mock('\Illuminate\Contracts\Events\Dispatcher');
+        $app = m::mock('\Illuminate\Contracts\Foundation\Application'.','.'\ArrayAccess');
 
         /*
         |------------------------------------------------------------
@@ -162,12 +162,12 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $user = m::mock(stdClass::class);
+        $user = m::mock('\stdClass');
         $user->name = 'name';
-        $session = m::mock(stdClass::class);
-        $auth = m::mock(Guard::class);
-        $events = m::mock(DispatcherContract::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $session = m::mock('\stdClass');
+        $auth = m::mock('\Illuminate\Contracts\Auth\Guard');
+        $events = m::mock('\Illuminate\Contracts\Events\Dispatcher');
+        $app = m::mock('\Illuminate\Contracts\Foundation\Application'.','.'\ArrayAccess');
 
         /*
         |------------------------------------------------------------
