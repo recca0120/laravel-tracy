@@ -45,7 +45,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
 
         $this->app->singleton(Tracy::class, function ($app) {
-            return new Tracy($app['config']->get('tracy', []), $app);
+            return new Tracy($app['config']->get('tracy', []), $app, $app['session']);
         });
 
         $this->app->singleton(Debugbar::class, Debugbar::class);

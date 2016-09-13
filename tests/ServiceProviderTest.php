@@ -11,6 +11,7 @@ use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
 use Recca0120\LaravelTracy\ServiceProvider;
 use Recca0120\LaravelTracy\Tracy;
 use Recca0120\Terminal\ServiceProvider as TerminalServiceProvider;
+use Illuminate\Session\SessionManager;
 
 class ServiceProviderTest extends PHPUnit_Framework_TestCase
 {
@@ -29,6 +30,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app = m::mock(Application::class.','.ArrayAccess::class);
         $config = m::mock(stdClass::class);
+        $session = m::mock(SessionManager::class);
 
         /*
         |------------------------------------------------------------
@@ -46,9 +48,10 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('singleton')->with(Tracy::class, m::type(Closure::class))->andReturnUsing(function ($className, $closure) use ($app) {
                 return $closure($app);
             })
-            ->shouldReceive('singleton')->with(Debugbar::class, Debugbar::class)
-            ->shouldReceive('singleton')->with(BlueScreen::class, BlueScreen::class)
-            ->shouldReceive('register')->with(TerminalServiceProvider::class);
+            ->shouldReceive('singleton')->with(Debugbar::class, Debugbar::class)->once()
+            ->shouldReceive('singleton')->with(BlueScreen::class, BlueScreen::class)->once()
+            ->shouldReceive('register')->with(TerminalServiceProvider::class)->once()
+            ->shouldReceive('offsetGet')->with('session')->once()->andReturn($session);
 
         /*
         |------------------------------------------------------------

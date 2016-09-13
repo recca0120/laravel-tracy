@@ -8,6 +8,8 @@ use Recca0120\LaravelTracy\Tracy;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Contracts\Event\Dispatcher;
 
 class DebugbarTest extends PHPUnit_Framework_TestCase
 {
@@ -394,10 +396,10 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $headers = m::mock(stdClass::class);
         $response->headers = $headers;
 
-        $auth = m::mock(GuardContract::class);
+        $auth = m::mock(Guard::class);
         $user = m::mock(stdClass::class);
         $user->username = 'username';
-        $events = m::mock(DispatcherContract::class);
+        $events = m::mock(Dispatcher::class);
 
         /*
         |------------------------------------------------------------
