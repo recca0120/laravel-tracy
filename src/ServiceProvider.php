@@ -5,8 +5,6 @@ namespace Recca0120\LaravelTracy;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
-use Recca0120\LaravelTracy\Exceptions\Handler;
-use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
 use Recca0120\Terminal\ServiceProvider as TerminalServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
@@ -26,12 +24,12 @@ class ServiceProvider extends BaseServiceProvider
         ], 'config');
 
         if ($tracy->dispatch() === true) {
-            $this->app->extend('\Illuminate\Contracts\Debug\ExceptionHandler', function ($exceptionHandler, $app) {
-                return $app->make('\Recca0120\LaravelTracy\Exceptions\Handler', [
+            $this->app->extend('Illuminate\Contracts\Debug\ExceptionHandler', function ($exceptionHandler, $app) {
+                return $app->make('Recca0120\LaravelTracy\Exceptions\Handler', [
                     'exceptionHandler' => $exceptionHandler,
                 ]);
             });
-            $kernel->pushMiddleware('\Recca0120\LaravelTracy\Middleware\AppendDebugbar');
+            $kernel->pushMiddleware('Recca0120\LaravelTracy\Middleware\AppendDebugbar');
         }
     }
 
@@ -44,13 +42,13 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
 
-        $this->app->singleton('\Recca0120\LaravelTracy\Tracy', function ($app) {
+        $this->app->singleton('Recca0120\LaravelTracy\Tracy', function ($app) {
             return new Tracy($app['config']->get('tracy', []), $app, $app['session']);
         });
 
-        $this->app->singleton('\Recca0120\LaravelTracy\Debugbar', '\Recca0120\LaravelTracy\Debugbar');
+        $this->app->singleton('Recca0120\LaravelTracy\Debugbar', 'Recca0120\LaravelTracy\Debugbar');
 
-        $this->app->singleton('\Recca0120\LaravelTracy\BlueScreen', '\Recca0120\LaravelTracy\BlueScreen');
+        $this->app->singleton('Recca0120\LaravelTracy\BlueScreen', 'Recca0120\LaravelTracy\BlueScreen');
 
         // if ($this->app['config']->get('tracy.panels.terminal') === true) {
         //     $this->app->register(TerminalServiceProvider::class);
@@ -64,6 +62,6 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function provides()
     {
-        return ['\Illuminate\Contracts\Debug\ExceptionHandler'];
+        return ['Illuminate\Contracts\Debug\ExceptionHandler'];
     }
 }

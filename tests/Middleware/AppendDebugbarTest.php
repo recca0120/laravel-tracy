@@ -1,10 +1,7 @@
 <?php
 
-use \Recca0120\LaravelTracy\Debugbar;
-use Illuminate\Http\Request;
 use Mockery as m;
 use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
-use Symfony\Component\HttpFoundation\Response;
 
 class AppendDebugbarTest extends PHPUnit_Framework_TestCase
 {
@@ -21,9 +18,9 @@ class AppendDebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock('\Recca0120\LaravelTracy\Debugbar');
-        $request = m::mock('\Illuminate\Http\Request');
-        $response = m::mock('\Symfony\Component\HttpFoundation\Response');
+        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
+        $request = m::mock('Illuminate\Http\Request');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $next = function ($request) use ($response) {
             return $response;
         };

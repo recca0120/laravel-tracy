@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application;
 use Mockery as m;
 use Recca0120\LaravelTracy\Tracy;
-use Illuminate\Session\SessionManager;
 
 class TracyTest extends PHPUnit_Framework_TestCase
 {
@@ -49,8 +47,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         */
 
         $config = [];
-        $app = m::mock('\Illuminate\Contracts\Foundation\Application');
-        $session = m::mock('\Illuminate\Session\SessionManager');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application');
+        $session = m::mock('Illuminate\Session\SessionManager');
 
         /*
         |------------------------------------------------------------
@@ -81,8 +79,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $config = [
             'enabled' => false,
         ];
-        $app = m::mock('\Illuminate\Contracts\Foundation\Application');
-        $session = m::mock('\Illuminate\Session\SessionManager');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application');
+        $session = m::mock('Illuminate\Session\SessionManager');
 
         /*
         |------------------------------------------------------------
@@ -113,8 +111,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $config = [
             'enabled' => false,
         ];
-        $app = m::mock('\Illuminate\Contracts\Foundation\Application');
-        $session = m::mock('\Illuminate\Session\SessionManager');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application');
+        $session = m::mock('Illuminate\Session\SessionManager');
 
         /*
         |------------------------------------------------------------
@@ -146,8 +144,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $config = [
             'enabled' => true,
         ];
-        $app = m::mock('\Illuminate\Contracts\Foundation\Application');
-        $session = m::mock('\Illuminate\Session\SessionManager');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application');
+        $session = m::mock('Illuminate\Session\SessionManager');
 
         /*
         |------------------------------------------------------------
@@ -178,9 +176,9 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $config = [
             'enabled' => true,
         ];
-        $app = m::mock('\Illuminate\Contracts\Foundation\Application');
-        $session = m::mock('\Illuminate\Session\SessionManager');
-        $sessionHandler = m::mock('\SessionHandlerInterface');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application');
+        $session = m::mock('Illuminate\Session\SessionManager');
+        $sessionHandler = m::mock('SessionHandlerInterface');
 
         /*
         |------------------------------------------------------------

@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\TerminalPanel;
-use Recca0120\Terminal\Http\Controllers\TerminalController;
 
 class TerminalPanelTest extends PHPUnit_Framework_TestCase
 {
@@ -20,8 +18,8 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $controller = m::mock('\Recca0120\Terminal\Http\Controllers\TerminalController');
-        $app = m::mock('\Illuminate\Contracts\Foundation\Application'.','.'\ArrayAccess');
+        $controller = m::mock('Recca0120\Terminal\Http\Controllers\TerminalController');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $panel = new TerminalPanel();
 
         /*
@@ -33,7 +31,7 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         $controller->shouldReceive('render');
         $app
             ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('make')->with('\Recca0120\Terminal\Http\Controllers\TerminalController')->andReturn($controller)
+            ->shouldReceive('make')->with('Recca0120\Terminal\Http\Controllers\TerminalController')->andReturn($controller)
             ->shouldReceive('call')->with([$controller, 'index'], ['view' => 'panel'])->andReturn($controller);
         $panel->setLaravel($app);
 
@@ -55,8 +53,8 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $controller = m::mock('\Recca0120\Terminal\Http\Controllers\TerminalController');
-        $app = m::mock('\Illuminate\Contracts\Foundation\Application'.','.'\ArrayAccess');
+        $controller = m::mock('Recca0120\Terminal\Http\Controllers\TerminalController');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $panel = new TerminalPanel();
 
         /*

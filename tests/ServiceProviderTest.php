@@ -1,17 +1,9 @@
 <?php
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\Http\Kernel;
 use Mockery as m;
-use Recca0120\LaravelTracy\BlueScreen;
-use Recca0120\LaravelTracy\Debugbar;
-use Recca0120\LaravelTracy\Exceptions\Handler;
-use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
 use Recca0120\LaravelTracy\ServiceProvider;
 use Recca0120\LaravelTracy\Tracy;
-use Recca0120\Terminal\ServiceProvider as TerminalServiceProvider;
-use Illuminate\Session\SessionManager;
 
 class ServiceProviderTest extends PHPUnit_Framework_TestCase
 {
@@ -28,9 +20,9 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app = m::mock('\Illuminate\Contracts\Foundation\Application'.','.'ArrayAccess');
-        $config = m::mock('\stdClass');
-        $session = m::mock('\Illuminate\Session\SessionManager');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application'.','.'ArrayAccess');
+        $config = m::mock('stdClass');
+        $session = m::mock('Illuminate\Session\SessionManager');
 
         /*
         |------------------------------------------------------------
@@ -45,12 +37,12 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app
             ->shouldReceive('offsetGet')->with('config')->andReturn($config)
-            ->shouldReceive('singleton')->with('\Recca0120\LaravelTracy\Tracy', m::type('\Closure'))->andReturnUsing(function ($className, $closure) use ($app) {
+            ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\Tracy', m::type('Closure'))->andReturnUsing(function ($className, $closure) use ($app) {
                 return $closure($app);
             })
-            ->shouldReceive('singleton')->with('\Recca0120\LaravelTracy\Debugbar', '\Recca0120\LaravelTracy\Debugbar')->once()
-            ->shouldReceive('singleton')->with('\Recca0120\LaravelTracy\BlueScreen', '\Recca0120\LaravelTracy\BlueScreen')->once()
-            // ->shouldReceive('register')->with('\Recca0120\Terminal\ServiceProvider')->once()
+            ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\Debugbar', 'Recca0120\LaravelTracy\Debugbar')->once()
+            ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\BlueScreen', 'Recca0120\LaravelTracy\BlueScreen')->once()
+            // ->shouldReceive('register')->with('Recca0120\Terminal\ServiceProvider')->once()
             ->shouldReceive('offsetGet')->with('session')->once()->andReturn($session);
 
         /*
@@ -72,10 +64,10 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app = m::mock('\Illuminate\Contracts\Foundation\Application'.','.'ArrayAccess');
-        $tracy = m::mock('\Recca0120\LaravelTracy\Tracy');
-        $kernel = m::mock('\Illuminate\Contracts\Http\Kernel');
-        $handler = m::mock('\Illuminate\Contracts\Debug\ExceptionHandler');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application'.','.'ArrayAccess');
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $kernel = m::mock('Illuminate\Contracts\Http\Kernel');
+        $handler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
 
         /*
         |------------------------------------------------------------
@@ -85,16 +77,16 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app
             ->shouldReceive('configPath')->andReturn(__DIR__)
-            ->shouldReceive('extend')->with('\Illuminate\Contracts\Debug\ExceptionHandler', m::type('\Closure'))->andReturnUsing(function ($className, $closure) use ($handler, $app) {
+            ->shouldReceive('extend')->with('Illuminate\Contracts\Debug\ExceptionHandler', m::type('Closure'))->andReturnUsing(function ($className, $closure) use ($handler, $app) {
                 return $closure($handler, $app);
             })
-            ->shouldReceive('make')->with('\Recca0120\LaravelTracy\Exceptions\Handler', [
+            ->shouldReceive('make')->with('Recca0120\LaravelTracy\Exceptions\Handler', [
                 'exceptionHandler' => $handler,
             ]);
 
         $tracy->shouldReceive('dispatch')->andReturn(true);
 
-        $kernel->shouldReceive('pushMiddleware')->with('\Recca0120\LaravelTracy\Middleware\AppendDebugbar')->once();
+        $kernel->shouldReceive('pushMiddleware')->with('Recca0120\LaravelTracy\Middleware\AppendDebugbar')->once();
 
         /*
         |------------------------------------------------------------

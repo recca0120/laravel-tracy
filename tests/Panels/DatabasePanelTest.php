@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Events\QueryExecuted;
 use Mockery as m;
@@ -16,7 +14,7 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
     public function test_laravel_52()
     {
-        if (class_exists('\Illuminate\Database\Events\QueryExecuted', false) === false) {
+        if (class_exists('Illuminate\Database\Events\QueryExecuted', false) === false) {
             return;
         }
         /*
@@ -25,11 +23,11 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $statement = m::mock('\PDOStatement');
+        $statement = m::mock('PDOStatement');
         $pdo = m::mock('PDO');
-        $connection = m::mock('\Illuminate\Database\Connection');
-        $events = m::mock('\Illuminate\Contracts\Events\Dispatcher');
-        $app = m::mock('\Illuminate\Contracts\Foundation\Application'.','.'\ArrayAccess');
+        $connection = m::mock('Illuminate\Database\Connection');
+        $events = m::mock('Illuminate\Contracts\Events\Dispatcher');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $panel = new DatabasePanel();
 
         /*
@@ -51,11 +49,11 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getName')->andReturn('mysql')
             ->shouldReceive('getPdo')->andReturn($pdo);
 
-        if (class_exists('\Illuminate\Database\Events\QueryExecuted') === false) {
+        if (class_exists('Illuminate\Database\Events\QueryExecuted') === false) {
             return;
         }
         $events
-            ->shouldReceive('listen')->with('\Illuminate\Database\Events\QueryExecuted', m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
+            ->shouldReceive('listen')->with('Illuminate\Database\Events\QueryExecuted', m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
                 $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/ **foo**', ['1'], 1.1, $connection);
                 $closure($queryExecuted);
 
@@ -102,11 +100,11 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $statement = m::mock('\PDOStatement');
-        $pdo = m::mock('\PDO');
-        $connection = m::mock('\Illuminate\Database\Connection');
-        $events = m::mock('\Illuminate\Contracts\Events\Dispatcher');
-        $app = m::mock('\Illuminate\Contracts\Foundation\Application'.','.'\ArrayAccess');
+        $statement = m::mock('PDOStatement');
+        $pdo = m::mock('PDO');
+        $connection = m::mock('Illuminate\Database\Connection');
+        $events = m::mock('Illuminate\Contracts\Events\Dispatcher');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $panel = new DatabasePanel();
 
         /*
@@ -175,10 +173,10 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $pdo = m::mock('\PDO');
-        $connection = m::mock('\Illuminate\Database\Connection');
-        $events = m::mock('\Illuminate\Contracts\Events\Dispatcher');
-        $app = m::mock('\Illuminate\Contracts\Foundation\Application'.','.'\ArrayAccess');
+        $pdo = m::mock('PDO');
+        $connection = m::mock('Illuminate\Database\Connection');
+        $events = m::mock('Illuminate\Contracts\Events\Dispatcher');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $panel = new DatabasePanel();
 
         /*
@@ -187,12 +185,12 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $pdo = m::mock('\PDO');
+        $pdo = m::mock('PDO');
         $connection
             ->shouldReceive('getName')->andReturn('sqlsrv')
             ->shouldReceive('getPdo')->andReturn($pdo);
         $events
-            ->shouldReceive('listen')->with('\Illuminate\Database\Events\QueryExecuted', m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
+            ->shouldReceive('listen')->with('Illuminate\Database\Events\QueryExecuted', m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
                 $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, $connection);
                 $closure($queryExecuted);
 
