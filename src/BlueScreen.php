@@ -29,6 +29,16 @@ class BlueScreen
         return ob_get_clean();
     }
 
+    /**
+     * render.
+     *
+     * @method render
+     *
+     * @param \Exception $exception
+     * @param array $error
+     *
+     * @return \Exception
+     */
     protected function fixStack($exception, $error = null)
     {
         $error = is_null($error) ? error_get_last() : $error;

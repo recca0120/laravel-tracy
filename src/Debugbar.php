@@ -234,6 +234,13 @@ class Debugbar
         return $response;
     }
 
+    /**
+     * dispatchAssets.
+     *
+     * @method dispatchAssets
+     *
+     * @return string
+     */
     public function dispatchAssets()
     {
         ob_start();
@@ -242,6 +249,13 @@ class Debugbar
         return ob_get_clean();
     }
 
+    /**
+     * dispatch.
+     *
+     * @method dispatch
+     *
+     * @return string
+     */
     public function dispatch()
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {

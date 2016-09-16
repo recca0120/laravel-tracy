@@ -51,7 +51,17 @@ class Dispatch
         return $next($request);
     }
 
-    protected function streamedResponse($content) {
+    /**
+     * streamedResponse.
+     *
+     * @method streamedResponse
+     *
+     * @param string $content
+     *
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    protected function streamedResponse($content)
+    {
         return new StreamedResponse(function () use ($content) {
             echo $content;
         });
