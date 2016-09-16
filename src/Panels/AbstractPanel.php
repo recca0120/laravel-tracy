@@ -126,14 +126,10 @@ abstract class AbstractPanel implements IBarPanel
                 continue;
             }
 
-            if (isset($row['class']) === true &&
-                (
-                    ($row['class'] === 'Recca0120\LaravelTracy\Collectors\Collector') === true ||
-                    is_subclass_of($row['class'], '\Tracy\IBarPanel') === true ||
-                    is_subclass_of($row['class'], '\Recca0120\LaravelTracy\Collectors\Collector') === true ||
-                    strpos(str_replace('/', '\\', $row['file']), 'Illuminate\\') !== false
-                )
-            ) {
+            if (isset($row['class']) === true && (
+                is_subclass_of($row['class'], '\Tracy\IBarPanel') === true ||
+                strpos(str_replace('/', '\\', $row['file']), 'Illuminate\\') !== false
+            )) {
                 continue;
             }
 

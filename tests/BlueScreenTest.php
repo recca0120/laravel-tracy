@@ -18,7 +18,7 @@ class BlueScreenTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $bluescreen = new BlueScreen();
+        $blueScreen = new BlueScreen();
 
         /*
         |------------------------------------------------------------
@@ -32,6 +32,38 @@ class BlueScreenTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $bluescreen->render(new Exception);
+        $blueScreen->render(new Exception);
+    }
+
+    public function test_fix_stack()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $blueScreen = m::mock(new BlueScreen());
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $blueScreen->shouldAllowMockingProtectedMethods();
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $blueScreen->fixStack(new Exception, [
+            'message' => 'testing',
+            'type' => E_ERROR,
+            'file' => __FILE__,
+            'line' => __LINE__,
+        ]);
     }
 }
