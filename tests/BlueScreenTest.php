@@ -32,6 +32,6 @@ class BlueScreenTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $bluescreen->render(new Exception());
+        $bluescreen->render(new Exception);
     }
 }

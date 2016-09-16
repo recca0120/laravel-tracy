@@ -3,8 +3,9 @@
 namespace Recca0120\LaravelTracy\Middleware;
 
 use Recca0120\LaravelTracy\Debugbar;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class AppendDebugbar
+class Dispatch
 {
     /**
      * $debugbar.
@@ -37,6 +38,21 @@ class AppendDebugbar
      */
     public function handle($request, $next)
     {
-        return $this->debugbar->render($next($request));
+        $dispatchAssets = $this->debugbar->dispatchAssets();
+
+        if (empty($dispatchAssets) === false) {
+            return new StreamedResponse(function () use ($dispatchAssets) {
+                echo $dispatchAssets;
+            });
+        }
+
+        $dispatch = $this->debugbar->dispatch();
+        if (empty($dispatch) === false) {
+            return new StreamedResponse(function () use ($dispatch) {
+                echo $dispatch;
+            });
+        }
+
+        return $next($request);
     }
 }

@@ -14,7 +14,7 @@ class BlueScreen
      *
      * @method render
      *
-     * @param  \Exception $exception
+     * @param \Exception $exception
      *
      * @return string
      */

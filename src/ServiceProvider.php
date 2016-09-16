@@ -7,6 +7,7 @@ use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
+use Recca0120\LaravelTracy\Middleware\Dispatch;
 use Recca0120\Terminal\ServiceProvider as TerminalServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
@@ -25,12 +26,13 @@ class ServiceProvider extends BaseServiceProvider
             __DIR__.'/../config/tracy.php' => $this->app->configPath().'/tracy.php',
         ], 'config');
 
-        if ($tracy->dispatch() === true) {
+        if ($tracy->enable() === true) {
             $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
                 return $app->make(Handler::class, [
                     'exceptionHandler' => $exceptionHandler,
                 ]);
             });
+            $kernel->prependMiddleware(Dispatch::class);
             $kernel->pushMiddleware(AppendDebugbar::class);
         }
     }
@@ -45,7 +47,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
 
         $this->app->singleton(Tracy::class, function ($app) {
-            return new Tracy($app['config']->get('tracy', []), $app, $app['session']);
+            return new Tracy($app['config']->get('tracy', []), $app);
         });
 
         $this->app->singleton(Debugbar::class, Debugbar::class);

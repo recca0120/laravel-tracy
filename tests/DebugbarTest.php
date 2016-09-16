@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Event\Dispatcher;
+use Illuminate\Session\SessionManager;
 
 class DebugbarTest extends PHPUnit_Framework_TestCase
 {
@@ -476,5 +477,79 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
 
         $debugbar = new Debugbar($tracy, $request, $app);
         $this->assertSame($response, $debugbar->render($response));
+    }
+
+    public function test_dispatch_assets()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = [];
+        $tracy = m::mock(Tracy::class);
+        $request = m::mock(Request::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
+        $request->shouldReceive('ajax')->once()->andReturn(false);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $debugbar = new Debugbar($tracy, $request, $app);
+        $this->assertEmpty($debugbar->dispatchAssets());
+    }
+
+    public function test_dispatch()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = [];
+        $tracy = m::mock(Tracy::class);
+        $request = m::mock(Request::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
+        $session = m::mock(SessionManager::class);
+        $sessionHandler = m::mock(SessionHandlerInterface::class);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
+        $request->shouldReceive('ajax')->once()->andReturn(false);
+
+        $app->shouldReceive('offsetGet')->with('session')->twice()->andReturn($session);
+
+        $session->shouldReceive('getHandler')->once()->andReturn($sessionHandler);
+
+        $sessionHandler
+            ->shouldReceive('open')->once()->andReturn(true)
+            ->shouldReceive('read')->once()->andReturn('');
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar->dispatch();
     }
 }

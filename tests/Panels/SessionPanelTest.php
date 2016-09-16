@@ -83,7 +83,7 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        @session_start();
+        // @session_start();
         $panel = new SessionPanel();
 
         /*

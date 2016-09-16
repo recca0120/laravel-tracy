@@ -233,4 +233,33 @@ class Debugbar
 
         return $response;
     }
+
+    public function dispatchAssets()
+    {
+        ob_start();
+        Debugger::getBar()->dispatchAssets();
+
+        return ob_get_clean();
+    }
+
+    public function dispatch()
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            if (is_null($this->app) === false && is_null($this->app['session']) === false) {
+                session_set_save_handler($this->app['session']->getHandler(), true);
+            }
+
+            ini_set('session.use_cookies', '1');
+            ini_set('session.use_only_cookies', '1');
+            ini_set('session.use_trans_sid', '0');
+            ini_set('session.cookie_path', '/');
+            ini_set('session.cookie_httponly', '1');
+            @session_start();
+        }
+
+        ob_start();
+        Debugger::getBar()->dispatchContent();
+
+        return ob_get_clean();
+    }
 }

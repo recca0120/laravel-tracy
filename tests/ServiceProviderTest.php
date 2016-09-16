@@ -8,10 +8,10 @@ use Recca0120\LaravelTracy\BlueScreen;
 use Recca0120\LaravelTracy\Debugbar;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
+use Recca0120\LaravelTracy\Middleware\Dispatch;
 use Recca0120\LaravelTracy\ServiceProvider;
 use Recca0120\LaravelTracy\Tracy;
 use Recca0120\Terminal\ServiceProvider as TerminalServiceProvider;
-use Illuminate\Session\SessionManager;
 
 class ServiceProviderTest extends PHPUnit_Framework_TestCase
 {
@@ -30,7 +30,6 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app = m::mock(Application::class.','.ArrayAccess::class);
         $config = m::mock(stdClass::class);
-        $session = m::mock(SessionManager::class);
 
         /*
         |------------------------------------------------------------
@@ -50,8 +49,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             })
             ->shouldReceive('singleton')->with(Debugbar::class, Debugbar::class)->once()
             ->shouldReceive('singleton')->with(BlueScreen::class, BlueScreen::class)->once()
-            ->shouldReceive('register')->with(TerminalServiceProvider::class)->once()
-            ->shouldReceive('offsetGet')->with('session')->once()->andReturn($session);
+            ->shouldReceive('register')->with(TerminalServiceProvider::class)->once();
 
         /*
         |------------------------------------------------------------
@@ -92,9 +90,11 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
                 'exceptionHandler' => $handler,
             ]);
 
-        $tracy->shouldReceive('dispatch')->andReturn(true);
+        $tracy->shouldReceive('enable')->andReturn(true);
 
-        $kernel->shouldReceive('pushMiddleware')->with(AppendDebugbar::class)->once();
+        $kernel
+            ->shouldReceive('prependMiddleware')->with(Dispatch::class)->once()
+            ->shouldReceive('pushMiddleware')->with(AppendDebugbar::class)->once();
 
         /*
         |------------------------------------------------------------
