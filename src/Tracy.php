@@ -42,13 +42,6 @@ class Tracy
             return false;
         }
 
-        // if ($test === false) {
-        //     if (session_status() !== PHP_SESSION_ACTIVE) {
-        //         $this->replaceNativeSessionHandler();
-        //         Debugger::dispatch();
-        //     }
-        // }
-
         Debugger::$editor = Arr::get($this->config, 'editor', Debugger::$editor);
         Debugger::$maxDepth = Arr::get($this->config, 'maxDepth', Debugger::$maxDepth);
         Debugger::$maxLength = Arr::get($this->config, 'maxLength', Debugger::$maxLength);

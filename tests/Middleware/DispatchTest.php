@@ -1,6 +1,6 @@
 <?php
 
-use \Recca0120\LaravelTracy\Debugbar;
+use Recca0120\LaravelTracy\Debugbar;
 use Illuminate\Http\Request;
 use Mockery as m;
 use Recca0120\LaravelTracy\Middleware\Dispatch;
