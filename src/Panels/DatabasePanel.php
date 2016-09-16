@@ -300,7 +300,7 @@ class DatabasePanel extends AbstractPanel
                 if ($driver === 'mysql') {
                     $explains = static::explain($pdo, $sql, $bindings);
                     try {
-                        $version = $this->pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+                        $version = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
                     } catch (Exception $e) {
                     }
                     $hints = static::performQueryAnalysis($fullSql, $version, $driver);
