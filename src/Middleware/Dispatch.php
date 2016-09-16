@@ -39,20 +39,21 @@ class Dispatch
     public function handle($request, $next)
     {
         $dispatchAssets = $this->debugbar->dispatchAssets();
-
         if (empty($dispatchAssets) === false) {
-            return new StreamedResponse(function () use ($dispatchAssets) {
-                echo $dispatchAssets;
-            });
+            return $this->streamedResponse($dispatchAssets);
         }
 
         $dispatch = $this->debugbar->dispatch();
         if (empty($dispatch) === false) {
-            return new StreamedResponse(function () use ($dispatch) {
-                echo $dispatch;
-            });
+            return $this->streamedResponse($dispatch);
         }
 
         return $next($request);
+    }
+
+    protected function streamedResponse($content) {
+        return new StreamedResponse(function () use ($content) {
+            echo $content;
+        });
     }
 }
