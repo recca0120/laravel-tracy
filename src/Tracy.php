@@ -42,6 +42,8 @@ class Tracy
         if (is_null($this->session) === false) {
             session_set_save_handler($this->session->driver()->getHandler(), true);
         }
+
+        return $this;
     }
 
     /**
