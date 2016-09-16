@@ -102,24 +102,6 @@ class Tracy
     }
 
     /**
-     * dispatch.
-     *
-     * @method dispatch
-     *
-     * @return static
-     */
-    // public function dispatch() {
-    //     if (session_status() !== PHP_SESSION_ACTIVE) {
-    //         if (is_null($this->session) === false) {
-    //             session_set_save_handler($this->session->getHandler(), true);
-    //         }
-    //         Debugger::dispatch();
-    //     }
-    //
-    //     return $this;
-    // }
-
-    /**
      * isRunningInConsole.
      *
      * @method isRunningInConsole
