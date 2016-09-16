@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Event\Dispatcher;
 use Illuminate\Session\SessionManager;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 
 class DebugbarTest extends PHPUnit_Framework_TestCase
 {
@@ -524,7 +525,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $request = m::mock(Request::class);
         $app = m::mock(Application::class.','.ArrayAccess::class);
         $session = m::mock(SessionManager::class);
-        $sessionHandler = m::mock(SessionHandlerInterface::class);
+        $sessionHandler = new NullSessionHandler();
 
         /*
         |------------------------------------------------------------
@@ -538,10 +539,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $app->shouldReceive('offsetGet')->with('session')->twice()->andReturn($session);
 
         $session->shouldReceive('getHandler')->once()->andReturn($sessionHandler);
-
-        $sessionHandler
-            ->shouldReceive('open')->once()->andReturn(true)
-            ->shouldReceive('read')->once()->andReturn('');
 
         /*
         |------------------------------------------------------------
