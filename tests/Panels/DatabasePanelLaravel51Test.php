@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Connection;
-use Illuminate\Database\Events\QueryExecuted;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\DatabasePanel;
 
