@@ -4,9 +4,9 @@ namespace Recca0120\LaravelTracy\Exceptions;
 
 use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Recca0120\LaravelTracy\BlueScreen;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Illuminate\Contracts\View\View;
 
 class Handler implements ExceptionHandler
 {
@@ -16,13 +16,6 @@ class Handler implements ExceptionHandler
      * @var \Recca0120\LaravelTracy\BlueScreen
      */
     protected $blueScreen;
-
-    /**
-     * response factory.
-     *
-     * @var \Illuminate\Contracts\Routing\ResponseFactory
-     */
-    protected $responseFactory;
 
     /**
      * app exception handler.
@@ -37,16 +30,11 @@ class Handler implements ExceptionHandler
      * @method __construct
      *
      * @param  \Recca0120\LaravelTracy\BlueScreen            $blueScreen
-     * @param  \Illuminate\Contracts\Routing\ResponseFactory $responseFactory
      * @param  \Illuminate\Contracts\Debug\ExceptionHandler  $exceptionHandler
      */
-    public function __construct(
-        BlueScreen $blueScreen,
-        ResponseFactory $responseFactory,
-        $exceptionHandler
-    ) {
+    public function __construct(BlueScreen $blueScreen, $exceptionHandler)
+    {
         $this->blueScreen = $blueScreen;
-        $this->responseFactory = $responseFactory;
         $this->exceptionHandler = $exceptionHandler;
     }
 
@@ -72,28 +60,19 @@ class Handler implements ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        if (method_exists($e, 'getResponse') === true) {
-            return $e->getResponse();
-        }
-        $statusCode = 500;
-        $headers = [];
-        if (
-            is_null($this->exceptionHandler) === false &&
-            $this->isHttpException($e) === true
-        ) {
-            $statusCode = $e->getStatusCode();
-            $headers = $e->getHeaders();
-            try {
-                return $this->responseFactory->view("errors.{$statusCode}", [], $statusCode);
-            } catch (Exception $fileNotFoundException) {
-            }
+        $response = $this->exceptionHandler->render($request, $e);
+        if ($response instanceof RedirectResponse) {
+            return $response;
         }
 
-        return $this->responseFactory->make(
-            $this->blueScreen->render($e),
-            $statusCode,
-            $headers
-        );
+        $content = $response->getContent();
+        if ($content instanceof View) {
+            return $response;
+        }
+
+        $response->setContent($this->blueScreen->render($e));
+
+        return $response;
     }
 
     /**
@@ -108,15 +87,5 @@ class Handler implements ExceptionHandler
         if (is_null($this->exceptionHandler) === false) {
             $this->exceptionHandler->renderForConsole($output, $e);
         }
-    }
-
-    /**
-     * is http exception.
-     * @param  \Exception $e
-     * @return bool
-     */
-    protected function isHttpException(Exception $e)
-    {
-        return ($e instanceof HttpException) === true;
     }
 }
