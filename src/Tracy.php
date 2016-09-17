@@ -5,7 +5,6 @@ namespace Recca0120\LaravelTracy;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Arr;
 use Tracy\Debugger;
-use Illuminate\Session\SessionManager;
 
 class Tracy
 {
@@ -23,50 +22,32 @@ class Tracy
      *
      * @param  array                                        $config
      * @param  \Illuminate\Contracts\Foundation\Application $app
-     * @param  \Illuminate\Session\SessionManager           $session
      */
-    public function __construct($config = [], Application $app = null, SessionManager $session = null)
+    public function __construct($config = [], Application $app = null)
     {
         $this->config = $config;
         $this->app = $app;
-        $this->session = $session;
     }
 
     /**
-     * replaceNativeSessionHandler.
+     * enable.
      *
-     * @method replaceNativeSessionHandler
-     */
-    public function replaceNativeSessionHandler()
-    {
-        if (is_null($this->session) === false) {
-            session_set_save_handler($this->session->driver()->getHandler(), true);
-        }
-    }
-
-    /**
-     * dispatch.
-     *
-     * @method dispatch
+     * @method enable
      *
      * @return bool
      */
-    public function dispatch($test = false)
+    public function enable()
     {
         if ($this->isRunningInConsole() === true || Arr::get($this->config, 'enabled', true) === false) {
             return false;
         }
 
-        if ($test === false) {
-            if (Debugger::getBar()->dispatchAssets() === true) {
-                exit;
-            }
-
-            if (session_status() !== PHP_SESSION_ACTIVE) {
-                $this->replaceNativeSessionHandler();
-                Debugger::dispatch();
-            }
-        }
+        // if ($test === false) {
+        //     if (session_status() !== PHP_SESSION_ACTIVE) {
+        //         $this->replaceNativeSessionHandler();
+        //         Debugger::dispatch();
+        //     }
+        // }
 
         Debugger::$editor = Arr::get($this->config, 'editor', Debugger::$editor);
         Debugger::$maxDepth = Arr::get($this->config, 'maxDepth', Debugger::$maxDepth);

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Mockery as m;
 use Recca0120\LaravelTracy\Debugbar;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 
 class DebugbarTest extends PHPUnit_Framework_TestCase
 {
@@ -469,5 +470,75 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
 
         $debugbar = new Debugbar($tracy, $request, $app);
         $this->assertSame($response, $debugbar->render($response));
+    }
+
+    public function test_dispatch_assets()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = [];
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
+        $request->shouldReceive('ajax')->once()->andReturn(false);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $debugbar = new Debugbar($tracy, $request, $app);
+        $this->assertEmpty($debugbar->dispatchAssets());
+    }
+
+    public function test_dispatch()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = [];
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $session = m::mock('Illuminate\Session\SessionManager');
+        $sessionHandler = new NullSessionHandler();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
+        $request->shouldReceive('ajax')->once()->andReturn(false);
+
+        $app->shouldReceive('offsetGet')->with('session')->twice()->andReturn($session);
+
+        $session->shouldReceive('getHandler')->once()->andReturn($sessionHandler);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar->dispatch();
     }
 }

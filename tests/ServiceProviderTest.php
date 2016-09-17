@@ -22,7 +22,6 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app = m::mock('Illuminate\Contracts\Foundation\Application'.','.'ArrayAccess');
         $config = m::mock('stdClass');
-        $session = m::mock('Illuminate\Session\SessionManager');
 
         /*
         |------------------------------------------------------------
@@ -41,9 +40,8 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
                 return $closure($app);
             })
             ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\Debugbar', 'Recca0120\LaravelTracy\Debugbar')->once()
-            ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\BlueScreen', 'Recca0120\LaravelTracy\BlueScreen')->once()
+            ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\BlueScreen', 'Recca0120\LaravelTracy\BlueScreen')->once();
             // ->shouldReceive('register')->with('Recca0120\Terminal\ServiceProvider')->once()
-            ->shouldReceive('offsetGet')->with('session')->once()->andReturn($session);
 
         /*
         |------------------------------------------------------------
@@ -84,9 +82,11 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
                 'exceptionHandler' => $handler,
             ]);
 
-        $tracy->shouldReceive('dispatch')->andReturn(true);
+        $tracy->shouldReceive('enable')->andReturn(true);
 
-        $kernel->shouldReceive('pushMiddleware')->with('Recca0120\LaravelTracy\Middleware\AppendDebugbar')->once();
+        $kernel
+            ->shouldReceive('prependMiddleware')->with('Recca0120\LaravelTracy\Middleware\Dispatch')->once()
+            ->shouldReceive('pushMiddleware')->with('Recca0120\LaravelTracy\Middleware\AppendDebugbar')->once();
 
         /*
         |------------------------------------------------------------

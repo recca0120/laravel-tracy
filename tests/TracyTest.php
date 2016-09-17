@@ -35,7 +35,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         */
 
         $tracy = new Tracy($config);
-        $this->assertFalse($tracy->dispatch(true));
+        $this->assertFalse($tracy->enable());
     }
 
     public function test_app_is_running_in_console()
@@ -48,7 +48,6 @@ class TracyTest extends PHPUnit_Framework_TestCase
 
         $config = [];
         $app = m::mock('Illuminate\Contracts\Foundation\Application');
-        $session = m::mock('Illuminate\Session\SessionManager');
 
         /*
         |------------------------------------------------------------
@@ -64,8 +63,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $tracy = new Tracy($config, $app, $session);
-        $this->assertFalse($tracy->dispatch(true));
+        $tracy = new Tracy($config, $app);
+        $this->assertFalse($tracy->enable());
     }
 
     public function test_app_disabled_with_app()
@@ -80,7 +79,6 @@ class TracyTest extends PHPUnit_Framework_TestCase
             'enabled' => false,
         ];
         $app = m::mock('Illuminate\Contracts\Foundation\Application');
-        $session = m::mock('Illuminate\Session\SessionManager');
 
         /*
         |------------------------------------------------------------
@@ -96,8 +94,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $tracy = new Tracy($config, $app, $session);
-        $this->assertFalse($tracy->dispatch(true));
+        $tracy = new Tracy($config, $app);
+        $this->assertFalse($tracy->enable());
     }
 
     public function test_get_config()
@@ -112,7 +110,6 @@ class TracyTest extends PHPUnit_Framework_TestCase
             'enabled' => false,
         ];
         $app = m::mock('Illuminate\Contracts\Foundation\Application');
-        $session = m::mock('Illuminate\Session\SessionManager');
 
         /*
         |------------------------------------------------------------
@@ -128,8 +125,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $tracy = new Tracy($config, $app, $session);
-        $this->assertFalse($tracy->dispatch(true));
+        $tracy = new Tracy($config, $app);
+        $this->assertFalse($tracy->enable());
         $this->assertSame($config, $tracy->getConfig());
     }
 
@@ -145,7 +142,6 @@ class TracyTest extends PHPUnit_Framework_TestCase
             'enabled' => true,
         ];
         $app = m::mock('Illuminate\Contracts\Foundation\Application');
-        $session = m::mock('Illuminate\Session\SessionManager');
 
         /*
         |------------------------------------------------------------
@@ -161,42 +157,8 @@ class TracyTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $tracy = new Tracy($config, $app, $session);
-        $this->assertTrue($tracy->dispatch(true));
-    }
-
-    public function test_replace_native_session_handler()
-    {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $config = [
-            'enabled' => true,
-        ];
-        $app = m::mock('Illuminate\Contracts\Foundation\Application');
-        $session = m::mock('Illuminate\Session\SessionManager');
-        $sessionHandler = m::mock('SessionHandlerInterface');
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $app->shouldReceive('runningInConsole')->andReturn(false);
-        $session->shouldReceive('driver->getHandler')->andReturn($sessionHandler);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $tracy = new Tracy($config, $app, $session);
-        $tracy->replaceNativeSessionHandler();
+        $tracy = new Tracy($config, $app);
+        $this->assertTrue($tracy->enable());
     }
 
     public function test_instance()
