@@ -1,9 +1,8 @@
 <?php
 
-use Illuminate\Http\Exception\HttpResponseException;
+use Illuminate\Contracts\View\View;
 use Mockery as m;
 use Recca0120\LaravelTracy\Exceptions\Handler;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class HandlerTest extends PHPUnit_Framework_TestCase
 {
@@ -12,7 +11,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_handler()
+    public function test_exception_response()
     {
         /*
         |------------------------------------------------------------
@@ -21,14 +20,11 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         */
 
         $exception = new Exception();
-
         $blueScreen = m::mock('Recca0120\LaravelTracy\BlueScreen');
-
         $request = m::mock('Illuminate\Http\Request');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-
         $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
-        $handler = new Handler($blueScreen, $responseFactory, $exceptionHandler);
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $handler = new Handler($blueScreen, $exceptionHandler);
 
         /*
         |------------------------------------------------------------
@@ -36,9 +32,15 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $blueScreen->shouldReceive('render')->with($exception);
-        $responseFactory->shouldReceive('make');
-        $exceptionHandler->shouldReceive('report')->with($exception);
+        $blueScreen->shouldReceive('render')->once()->with($exception);
+
+        $exceptionHandler
+            ->shouldReceive('report')->with($exception)->once()
+            ->shouldReceive('render')->once()->andReturn($response);
+
+        $response
+            ->shouldReceive('getContent')->once()->andReturn($exception)
+            ->shouldReceive('setContent')->once();
 
         /*
         |------------------------------------------------------------
@@ -50,7 +52,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $handler->report($exception);
     }
 
-    public function test_http_exception()
+    public function test_view_response()
     {
         /*
         |------------------------------------------------------------
@@ -58,14 +60,13 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $statusCode = 404;
-        $headers = [];
-        $exception = new HttpException($statusCode, null, null, $headers);
+        $exception = new Exception();
         $blueScreen = m::mock('Recca0120\LaravelTracy\BlueScreen');
         $request = m::mock('Illuminate\Http\Request');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $exeptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
-        $handler = new Handler($blueScreen, $responseFactory, $exeptionHandler);
+        $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $view = m::mock('Illuminate\Contracts\View\View');
+        $handler = new Handler($blueScreen, $exceptionHandler);
 
         /*
         |------------------------------------------------------------
@@ -73,8 +74,12 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $blueScreen->shouldReceive('render')->with($exception)->once();
-        $responseFactory->shouldReceive('make')->with(m::any(), $statusCode, $headers)->once();
+        $exceptionHandler
+            ->shouldReceive('report')->with($exception)->once()
+            ->shouldReceive('render')->once()->andReturn($response);
+
+        $response
+            ->shouldReceive('getContent')->once()->andReturn($view);
 
         /*
         |------------------------------------------------------------
@@ -83,20 +88,42 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         */
 
         $handler->render($request, $exception);
+        $handler->report($exception);
     }
 
-    public function test_http_response_exception()
+    public function test_redirect_response()
     {
-        $exception = new HttpResponseException(m::mock('Symfony\Component\HttpFoundation\Response'));
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
+        $exception = new Exception();
         $blueScreen = m::mock('Recca0120\LaravelTracy\BlueScreen');
         $request = m::mock('Illuminate\Http\Request');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
+        $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
+        $response = m::mock('Symfony\Component\HttpFoundation\RedirectResponse');
+        $handler = new Handler($blueScreen, $exceptionHandler);
 
-        $exeptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
 
-        $handler = new Handler($blueScreen, $responseFactory, $exeptionHandler);
+        $exceptionHandler
+            ->shouldReceive('report')->with($exception)->once()
+            ->shouldReceive('render')->once()->andReturn($response);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
         $handler->render($request, $exception);
+        $handler->report($exception);
     }
 
     public function test_console()
@@ -105,12 +132,11 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $exception = new Exception();
 
         $blueScreen = m::mock('Recca0120\LaravelTracy\BlueScreen');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
         $exeptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler')
             ->shouldReceive('renderForConsole')->with($output, $exception)->once()
             ->mock();
 
-        $handler = new Handler($blueScreen, $responseFactory, $exeptionHandler);
+        $handler = new Handler($blueScreen, $exeptionHandler);
         $handler->renderForConsole($output, $exception);
     }
 }
