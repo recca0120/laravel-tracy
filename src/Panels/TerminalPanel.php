@@ -3,7 +3,6 @@
 namespace Recca0120\LaravelTracy\Panels;
 
 use Exception;
-use Recca0120\Terminal\Http\Controllers\TerminalController;
 
 class TerminalPanel extends AbstractPanel
 {
@@ -27,12 +26,13 @@ class TerminalPanel extends AbstractPanel
             'html' => null,
         ];
         if ($this->isLaravel() === true) {
-            // try {
-            //     $controller = $this->laravel->make(TerminalController::class);
-            //     $response = $this->laravel->call([$controller, 'index'], ['view' => 'panel']);
-            //     $data['html'] = $response->getContent();
-            // } catch (Exception $e) {
-            // }
+            try {
+                $controller = $this->laravel->make('Recca0120\Terminal\Http\Controllers\TerminalController');
+                $response = $this->laravel->call([$controller, 'index'], ['view' => 'panel']);
+                $data['html'] = $response->getContent();
+            } catch (Exception $e) {
+                dump($e->getMessage());
+            }
         }
 
         return $data;

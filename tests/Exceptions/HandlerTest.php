@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Contracts\View\View;
 use Mockery as m;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 
