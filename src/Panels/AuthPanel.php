@@ -2,7 +2,6 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-// Illuminate\Auth\Events\Login;
 class AuthPanel extends AbstractPanel
 {
     /**

@@ -36,7 +36,6 @@ class EventPanelTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('firing')->andReturn('event');
 
         $app
-            ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('offsetGet')->with('events')->andReturn($events);
 
         $panel = new EventPanel();

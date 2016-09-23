@@ -9,13 +9,6 @@ use Recca0120\LaravelTracy\Panels\DatabasePanel;
 
 class DatabasePanelTest extends PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-        if (class_exists(QueryExecuted::class) === false) {
-            $this->markTestSkipped('laravel 5.2 only');
-        }
-    }
-
     public function tearDown()
     {
         m::close();
@@ -79,9 +72,7 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
                 $closure($queryExecuted);
             })->once();
 
-        $app
-            ->shouldReceive('version')->once()->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('events')->once()->andReturn($events);
+        $app->shouldReceive('offsetGet')->with('events')->once()->andReturn($events);
 
         $panel->setLaravel($app);
 
@@ -119,6 +110,7 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         $connection
             ->shouldReceive('getName')->andReturn('sqlsrv')
             ->shouldReceive('getPdo')->andReturn($pdo);
+
         $events
             ->shouldReceive('listen')->with(QueryExecuted::class, m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
                 $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, $connection);
@@ -139,9 +131,9 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
                 $queryExecuted = new QueryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection);
                 $closure($queryExecuted);
             });
-        $app
-            ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events);
+
+        $app->shouldReceive('offsetGet')->with('events')->andReturn($events);
+
         $panel->setLaravel($app);
 
         /*

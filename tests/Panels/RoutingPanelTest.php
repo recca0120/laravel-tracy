@@ -36,9 +36,9 @@ class RoutingPanelTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getAction')->andReturn([]);
         $router
             ->shouldReceive('getCurrentRoute')->andReturn($route);
-        $app
-            ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('router')->andReturn($router);
+
+        $app->shouldReceive('offsetGet')->with('router')->andReturn($router);
+
         $panel->setLaravel($app);
 
         /*

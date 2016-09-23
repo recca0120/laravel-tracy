@@ -29,9 +29,7 @@ class RequestPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app
-            ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('request')->andReturn(Request::capture());
+        $app->shouldReceive('offsetGet')->with('request')->andReturn(Request::capture());
 
         $panel->setLaravel($app);
 

@@ -1,13 +1,13 @@
 <?php
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 use Mockery as m;
 use Recca0120\LaravelTracy\BlueScreen;
 use Recca0120\LaravelTracy\Exceptions\Handler;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class HandlerTest extends PHPUnit_Framework_TestCase
 {
