@@ -28,7 +28,6 @@ class HtmlValidatorPanelTest extends PHPUnit_Framework_TestCase
         */
 
         $excepted = '<!DOCTYPE html><html><head><title>title</title></head><body></body></html>';
-        $app->shouldReceive('version')->andReturn(5.2);
 
         $panel = new HtmlValidatorPanel();
         $panel->setLaravel($app);

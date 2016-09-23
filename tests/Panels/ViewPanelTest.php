@@ -42,9 +42,8 @@ class ViewPanelTest extends PHPUnit_Framework_TestCase
                 return $closure($view);
             });
 
-        $app
-            ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events);
+        $app->shouldReceive('offsetGet')->with('events')->andReturn($events);
+
         $panel->setLaravel($app);
 
         /*

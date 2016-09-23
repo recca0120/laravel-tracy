@@ -31,10 +31,11 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         */
 
         $controller->shouldReceive('render');
+
         $app
-            ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('make')->with(TerminalController::class)->andReturn($controller)
             ->shouldReceive('call')->with([$controller, 'index'], ['view' => 'panel'])->andReturn($controller);
+
         $panel->setLaravel($app);
 
         /*
@@ -66,9 +67,9 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         */
 
         $controller->shouldReceive('render');
-        $app
-            ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('call')->with([$controller, 'index'], ['view' => 'panel'])->andReturn($controller);
+
+        $app->shouldReceive('call')->with([$controller, 'index'], ['view' => 'panel'])->andReturn($controller);
+
         $panel->setLaravel($app);
 
         /*

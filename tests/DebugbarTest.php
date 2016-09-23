@@ -1,17 +1,17 @@
 <?php
 
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Contracts\Event\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
+use Illuminate\Session\SessionManager;
 use Mockery as m;
 use Recca0120\LaravelTracy\Debugbar;
 use Recca0120\LaravelTracy\Tracy;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Event\Dispatcher;
-use Illuminate\Session\SessionManager;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DebugbarTest extends PHPUnit_Framework_TestCase
 {
@@ -420,7 +420,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         });
 
         $app
-            ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('offsetGet')->with('events')->andReturn($events)
             ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
 

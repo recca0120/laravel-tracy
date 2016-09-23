@@ -4,9 +4,9 @@ namespace Recca0120\LaravelTracy\Exceptions;
 
 use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Contracts\View\View;
 use Recca0120\LaravelTracy\BlueScreen;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Illuminate\Contracts\View\View;
 
 class Handler implements ExceptionHandler
 {

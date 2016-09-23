@@ -1,8 +1,8 @@
 <?php
 
-use Recca0120\LaravelTracy\Debugbar;
 use Illuminate\Http\Request;
 use Mockery as m;
+use Recca0120\LaravelTracy\Debugbar;
 use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;

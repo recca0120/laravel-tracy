@@ -34,9 +34,9 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getId')
             ->shouldReceive('getSessionConfig')->andReturn([])
             ->shouldReceive('all')->andReturn([]);
-        $app
-            ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('session')->andReturn($session);
+
+        $app->shouldReceive('offsetGet')->with('session')->andReturn($session);
+
         $panel->setLaravel($app);
 
         /*

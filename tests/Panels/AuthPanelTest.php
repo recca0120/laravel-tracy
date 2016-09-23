@@ -39,7 +39,6 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         $session->shouldReceive('has')->with('foo')->once()->andReturn(false);
 
         $app
-            ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('offsetGet')->once()->with('auth')->andReturn($auth)
             ->shouldReceive('offsetGet')->once()->with('session')->andReturn($session);
 
@@ -88,7 +87,6 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         $session->shouldReceive('has')->with('foo')->once()->andReturn(true);
 
         $app
-            ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('offsetGet')->once()->with('auth')->andReturn($auth)
             ->shouldReceive('offsetGet')->once()->with('session')->andReturn($session);
 
@@ -137,7 +135,6 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         $session->shouldReceive('has')->with('foo')->once()->andReturn(true);
 
         $app
-            ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('offsetGet')->with('auth')->once()->andReturn($auth)
             ->shouldReceive('offsetGet')->with('session')->once()->andReturn($session);
 
@@ -186,7 +183,6 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         $session->shouldReceive('has')->with('foo')->once()->andReturn(true);
 
         $app
-            ->shouldReceive('version')->andReturn(5.2)
             ->shouldReceive('offsetGet')->with('auth')->once()->andReturn($auth)
             ->shouldReceive('offsetGet')->with('session')->once()->andReturn($session);
 
