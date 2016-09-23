@@ -1,20 +1,10 @@
 <?php
 
-use Illuminate\Database\Events\QueryExecuted;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\DatabasePanel;
 
 class DatabasePanelTest extends PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-        if (class_exists('Illuminate\Database\Events\QueryExecuted') === false) {
-            $this->markTestSkipped(
-              'this is laravel 5.2 testing'
-            );
-        }
-    }
-
     public function tearDown()
     {
         m::close();
@@ -47,43 +37,34 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
         $pdo
             ->shouldReceive('getAttribute')->with(PDO::ATTR_DRIVER_NAME)->andReturn('mysql')
-            ->shouldReceive('getAttribute')->with(PDO::ATTR_SERVER_VERSION)->andReturn(5.4)
+            ->shouldReceive('getAttribute')->with(PDO::ATTR_SERVER_VERSION)->andReturn(5.6)
             ->shouldReceive('prepare')->andReturn($statement);
 
         $connection
             ->shouldReceive('getName')->andReturn('mysql')
-            ->shouldReceive('getPdo')->andReturn($pdo);
+            ->shouldReceive('getPdo')->andReturn($pdo)
+            ->shouldReceive('connection')->andReturnSelf();
 
-        if (class_exists('Illuminate\Database\Events\QueryExecuted') === false) {
-            return;
-        }
         $events
-            ->shouldReceive('listen')->with('Illuminate\Database\Events\QueryExecuted', m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
-                $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/ **foo**', ['1'], 1.1, $connection);
-                $closure($queryExecuted);
+            ->shouldReceive('listen')->with('illuminate.query', m::any())->andReturnUsing(function ($eventName, $closure) {
+                $closure('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/ **foo**', ['1'], 1.1, 'mysql');
 
-                $queryExecuted = new QueryExecuted('SELECT * FROM `users` ORDER BY id', [], 1.1, $connection);
-                $closure($queryExecuted);
+                $closure('SELECT * FROM `users` ORDER BY id', [], 1.1, 'mysql');
 
-                $queryExecuted = new QueryExecuted('SELECT * FROM `users` LIMIT 1', [], 1.1, $connection);
-                $closure($queryExecuted);
+                $closure('SELECT * FROM `users` LIMIT 1', [], 1.1, 'mysql');
 
-                $queryExecuted = new QueryExecuted('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, $connection);
-                $closure($queryExecuted);
+                $closure('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, 'mysql');
 
-                $queryExecuted = new QueryExecuted('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, $connection);
-                $closure($queryExecuted);
+                $closure('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, 'mysql');
 
-                $queryExecuted = new QueryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection);
-                $closure($queryExecuted);
+                $closure('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, 'mysql');
 
-                $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` IN ? ORDER BY RAND(); /** **/', [['1', '2', 'test\'s']], 1.1, $connection);
-                $closure($queryExecuted);
+                $closure('SELECT DISTINCT * FROM `users` WHERE `id` IN ? ORDER BY RAND(); /** **/', [['1', '2', 'test\'s']], 1.1, 'mysql');
             });
 
         $app
-            ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events);
+            ->shouldReceive('offsetGet')->with('events')->andReturn($events)
+            ->shouldReceive('offsetGet')->with('db')->andReturn($connection);
 
         $panel->setLaravel($app);
 
@@ -105,6 +86,7 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
+        $statement = m::mock('PDOStatement');
         $pdo = m::mock('PDO');
         $connection = m::mock('Illuminate\Database\Connection');
         $events = m::mock('Illuminate\Contracts\Events\Dispatcher');
@@ -117,33 +99,39 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $pdo = m::mock('PDO');
+        $statement
+            ->shouldReceive('execute')
+            ->shouldReceive('fetchAll');
+
+        $pdo
+            ->shouldReceive('getAttribute')->with(PDO::ATTR_DRIVER_NAME)->andReturn('mysql')
+            ->shouldReceive('getAttribute')->with(PDO::ATTR_SERVER_VERSION)->andReturn(5.6)
+            ->shouldReceive('prepare')->andReturn($statement);
+
         $connection
-            ->shouldReceive('getName')->andReturn('sqlsrv')
-            ->shouldReceive('getPdo')->andReturn($pdo);
+            ->shouldReceive('getName')->andReturn('mysql')
+            ->shouldReceive('getPdo')->andReturn($pdo)
+            ->shouldReceive('connection')->andReturnSelf();
+
         $events
-            ->shouldReceive('listen')->with('Illuminate\Database\Events\QueryExecuted', m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
-                $queryExecuted = new QueryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, $connection);
-                $closure($queryExecuted);
+            ->shouldReceive('listen')->with('illuminate.query', m::any())->andReturnUsing(function ($eventName, $closure) {
+                $closure('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, 'sqlsrv');
 
-                $queryExecuted = new QueryExecuted('SELECT * FROM `users` ORDER BY id', [], 1.1, $connection);
-                $closure($queryExecuted);
+                $closure('SELECT * FROM `users` ORDER BY id', [], 1.1, 'sqlsrv');
 
-                $queryExecuted = new QueryExecuted('SELECT * FROM `users` LIMIT 1', [], 1.1, $connection);
-                $closure($queryExecuted);
+                $closure('SELECT * FROM `users` LIMIT 1', [], 1.1, 'sqlsrv');
 
-                $queryExecuted = new QueryExecuted('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, $connection);
-                $closure($queryExecuted);
+                $closure('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, 'sqlsrv');
 
-                $queryExecuted = new QueryExecuted('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, $connection);
-                $closure($queryExecuted);
+                $closure('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, 'sqlsrv');
 
-                $queryExecuted = new QueryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection);
-                $closure($queryExecuted);
+                $closure('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, 'sqlsrv');
             });
+
         $app
-            ->shouldReceive('version')->andReturn(5.2)
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events);
+            ->shouldReceive('offsetGet')->with('events')->andReturn($events)
+            ->shouldReceive('offsetGet')->with('db')->andReturn($connection);
+
         $panel->setLaravel($app);
 
         /*

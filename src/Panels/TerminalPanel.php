@@ -31,7 +31,6 @@ class TerminalPanel extends AbstractPanel
                 $response = $this->laravel->call([$controller, 'index'], ['view' => 'panel']);
                 $data['html'] = $response->getContent();
             } catch (Exception $e) {
-                dump($e->getMessage());
             }
         }
 

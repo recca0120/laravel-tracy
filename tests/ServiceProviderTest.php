@@ -40,8 +40,8 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
                 return $closure($app);
             })
             ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\Debugbar', 'Recca0120\LaravelTracy\Debugbar')->once()
-            ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\BlueScreen', 'Recca0120\LaravelTracy\BlueScreen')->once();
-            // ->shouldReceive('register')->with('Recca0120\Terminal\ServiceProvider')->once()
+            ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\BlueScreen', 'Recca0120\LaravelTracy\BlueScreen')->once()
+            ->shouldReceive('register')->with('Recca0120\Terminal\ServiceProvider')->once();
 
         /*
         |------------------------------------------------------------
