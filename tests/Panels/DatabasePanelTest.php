@@ -86,10 +86,10 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
             })->once();
 
         $app
-            ->shouldReceive('offsetGet')->with('db')->andReturn($db)
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events);
+            ->shouldReceive('offsetGet')->with('events')->once()->andReturn($events)
+            ->shouldReceive('offsetGet')->with('db')->andReturn($db);
 
-        $db->shouldReceive('connection')->andReturn($connection);
+        $db->shouldReceive('connection')->with('mysql')->andReturn($connection);
 
         $panel->setLaravel($app);
 
@@ -134,7 +134,7 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
                 $connectionName = ($eventName !== 'Illuminate\Database\Events\QueryExecuted') ? 'mysql' : $connection;
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, $connectionName)
+                    $this->queryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/ **foo**', ['1'], 1.1, $connectionName)
                 );
 
                 call_user_func_array(
