@@ -74,7 +74,6 @@ class DatabasePanel extends AbstractPanel
      */
     public function subscribe()
     {
-        $eventName = $this->getEventName();
         if ($this->getEventName() === 'Illuminate\Database\Events\QueryExecuted') {
             $this->laravel['events']->listen('Illuminate\Database\Events\QueryExecuted', function ($event) {
                 $sql = $event->sql;

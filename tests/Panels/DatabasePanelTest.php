@@ -48,7 +48,7 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
         $events
             ->shouldReceive('listen')->with($eventName, m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
-                $connectionName = ($eventName !== 'Illuminate\Database\Events\QueryExecuted') ? 'mysql':$connection;
+                $connectionName = ($eventName !== 'Illuminate\Database\Events\QueryExecuted') ? 'mysql' : $connection;
                 call_user_func_array(
                     $closure,
                     $this->queryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/ **foo**', ['1'], 1.1, $connectionName)
@@ -85,7 +85,11 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
                 );
             })->once();
 
-        $app->shouldReceive('offsetGet')->with('events')->once()->andReturn($events);
+        $app
+            ->shouldReceive('offsetGet')->with('db')->andReturn($db)
+            ->shouldReceive('offsetGet')->with('events')->andReturn($events);
+
+        $db->shouldReceive('connection')->andReturn($connection);
 
         $panel->setLaravel($app);
 
@@ -127,7 +131,7 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
         $events
             ->shouldReceive('listen')->with('Illuminate\Database\Events\QueryExecuted', m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
-                $connectionName = ($eventName !== 'Illuminate\Database\Events\QueryExecuted') ? 'mysql':$connection;
+                $connectionName = ($eventName !== 'Illuminate\Database\Events\QueryExecuted') ? 'mysql' : $connection;
                 call_user_func_array(
                     $closure,
                     $this->queryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, $connectionName)
@@ -211,7 +215,7 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
         $events
             ->shouldReceive('listen')->with('illuminate.query', m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
-                $connectionName = ($eventName !== 'Illuminate\Database\Events\QueryExecuted') ? 'mysql':$connection;
+                $connectionName = ($eventName !== 'Illuminate\Database\Events\QueryExecuted') ? 'mysql' : $connection;
                 call_user_func_array(
                     $closure,
                     $this->queryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/ **foo**', ['1'], 1.1, $connectionName)
@@ -266,13 +270,15 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         $panel->getPanel();
     }
 
-    public function test_get_event_name() {
+    public function test_get_event_name()
+    {
         $panel = new DatabasePanel();
-        $eventName = class_exists('Illuminate\Database\Events\QueryExecuted') ? 'Illuminate\Database\Events\QueryExecuted':'illuminate.query';
+        $eventName = class_exists('Illuminate\Database\Events\QueryExecuted') ? 'Illuminate\Database\Events\QueryExecuted' : 'illuminate.query';
         $this->assertSame($eventName, $panel->getEventName());
     }
 
-    protected function queryExecuted($sql, $bindings, $time, $connection) {
+    protected function queryExecuted($sql, $bindings, $time, $connection)
+    {
         if (is_string($connection) == true) {
             return [$sql, $bindings, $time, $connection];
         }
