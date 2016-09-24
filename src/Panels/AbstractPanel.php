@@ -30,6 +30,13 @@ abstract class AbstractPanel implements IBarPanel
     protected $cached;
 
     /**
+     * $viewPath.
+     *
+     * @var string
+     */
+    protected $viewPath = null;
+
+    /**
      * Renders HTML code for custom tab.
      *
      * @return string
@@ -60,8 +67,7 @@ abstract class AbstractPanel implements IBarPanel
      */
     public function render($view)
     {
-        $viewPath = __DIR__.'/../../resources/views/';
-        $view = $viewPath.ucfirst(class_basename(static::class)).'/'.$view.'.php';
+        $view = $this->getViewPath().$view.'.php';
         if (empty($this->cached) === true) {
             $this->cached = $this->getAttributes();
         }
@@ -162,6 +168,22 @@ abstract class AbstractPanel implements IBarPanel
         // $link = self::updateEditorUri($link);
 
         return $link;
+    }
+
+    /**
+     * getViewPath.
+     *
+     * @method getViewPath
+     *
+     * @return string
+     */
+    protected function getViewPath()
+    {
+        if (is_null($this->viewPath) === false) {
+            return $this->viewPath;
+        }
+
+        return $this->viewPath = __DIR__.'/../../resources/views/'.ucfirst(class_basename(get_class($this))).'/';
     }
 
     /**
