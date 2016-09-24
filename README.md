@@ -34,7 +34,7 @@ Instead, you may of course manually update your require block and run `composer 
 ```json
 {
     "require": {
-        "recca0120/laravel-tracy": "^1.5.6"
+        "recca0120/laravel-tracy": "^1.7.5"
     }
 }
 ```

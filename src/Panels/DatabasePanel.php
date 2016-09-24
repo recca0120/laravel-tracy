@@ -31,18 +31,60 @@ class DatabasePanel extends AbstractPanel
     protected $counter = 0;
 
     /**
+     * $eventName
+     *
+     * @var string
+     */
+    protected $eventName = null;
+
+    /**
+     * setEventName
+     *
+     * @method setEventName
+     *
+     * @param  static
+     */
+    public function setEventName($eventName) {
+        $this->eventName = $eventName;
+
+        return $this;
+    }
+
+    /**
+     * getEventName
+     *
+     * @method getEventName
+     *
+     * @return string
+     */
+    public function getEventName() {
+        if (is_null($this->eventName) === true) {
+            $this->setEventName(class_exists('Illuminate\Database\Events\QueryExecuted') === true?
+                'Illuminate\Database\Events\QueryExecuted':'illuminate.query');
+        }
+        return $this->eventName;
+    }
+
+    /**
      * subscribe.
      *
      * @method subscribe
      */
     public function subscribe()
     {
-        $this->laravel['events']->listen(QueryExecuted::class, function ($event) {
-            $sql = $event->sql;
-            $bindings = $event->bindings;
-            $time = $event->time;
-            $name = $event->connectionName;
-            $pdo = $event->connection->getPdo();
+        $eventName = $this->getEventName();
+        $this->laravel['events']->listen($eventName, function ($event) use ($eventName){
+            if ($eventName === 'illuminate.query') {
+                list($sql, $bindings, $time, $name) = func_get_args();
+                $connection = $this->laravel['db']->connection($name);
+                $pdo = $connection->getPdo();
+            } else {
+                $sql = $event->sql;
+                $bindings = $event->bindings;
+                $time = $event->time;
+                $name = $event->connectionName;
+                $pdo = $event->connection->getPdo();
+            }
 
             $this->logQuery($sql, $bindings, $time, $name, $pdo);
         });
