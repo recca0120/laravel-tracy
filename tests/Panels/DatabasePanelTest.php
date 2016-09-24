@@ -23,8 +23,9 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         $connection = m::mock('Illuminate\Database\Connection');
         $events = m::mock('Illuminate\Contracts\Events\Dispatcher');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $db = m::mock('Illuminate\Database\DatabaseManager');
         $panel = new DatabasePanel();
-        $panel->setEventName('Illuminate\Database\Events\QueryExecuted');
+        $eventName = $panel->getEventName();
 
         /*
         |------------------------------------------------------------
@@ -46,40 +47,41 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getPdo')->andReturn($pdo);
 
         $events
-            ->shouldReceive('listen')->with('Illuminate\Database\Events\QueryExecuted', m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
+            ->shouldReceive('listen')->with($eventName, m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
+                $connectionName = ($eventName !== 'Illuminate\Database\Events\QueryExecuted') ? 'mysql':$connection;
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/ **foo**', ['1'], 1.1, $connection)
+                    $this->queryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/ **foo**', ['1'], 1.1, $connectionName)
                 );
 
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('SELECT * FROM `users` ORDER BY id', [], 1.1, $connection)
+                    $this->queryExecuted('SELECT * FROM `users` ORDER BY id', [], 1.1, $connectionName)
                 );
 
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('SELECT * FROM `users` LIMIT 1', [], 1.1, $connection)
+                    $this->queryExecuted('SELECT * FROM `users` LIMIT 1', [], 1.1, $connectionName)
                 );
 
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, $connection)
+                    $this->queryExecuted('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, $connectionName)
                 );
 
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, $connection)
+                    $this->queryExecuted('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, $connectionName)
                 );
 
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection)
+                    $this->queryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connectionName)
                 );
 
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('SELECT * FROM `users` WHERE `id` IN ?;', [['1', '2', 'test\'s']], 1.1, $connection)
+                    $this->queryExecuted('SELECT * FROM `users` WHERE `id` IN ?;', [['1', '2', 'test\'s']], 1.1, $connectionName)
                 );
             })->once();
 
@@ -125,34 +127,35 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
 
         $events
             ->shouldReceive('listen')->with('Illuminate\Database\Events\QueryExecuted', m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
+                $connectionName = ($eventName !== 'Illuminate\Database\Events\QueryExecuted') ? 'mysql':$connection;
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, $connection)
+                    $this->queryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != ? ORDER BY RAND(); /** **/', ['1'], 1.1, $connectionName)
                 );
 
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('SELECT * FROM `users` ORDER BY id', [], 1.1, $connection)
+                    $this->queryExecuted('SELECT * FROM `users` ORDER BY id', [], 1.1, $connectionName)
                 );
 
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('SELECT * FROM `users` LIMIT 1', [], 1.1, $connection)
+                    $this->queryExecuted('SELECT * FROM `users` LIMIT 1', [], 1.1, $connectionName)
                 );
 
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, $connection)
+                    $this->queryExecuted('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, $connectionName)
                 );
 
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, $connection)
+                    $this->queryExecuted('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, $connectionName)
                 );
 
                 call_user_func_array(
                     $closure,
-                    $this->queryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connection)
+                    $this->queryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connectionName)
                 );
             });
 
@@ -207,27 +210,49 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getPdo')->andReturn($pdo);
 
         $events
-            ->shouldReceive('listen')->with('illuminate.query', m::any())->andReturnUsing(function ($eventName, $closure) {
-                $closure('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/ **foo**', ['1'], 1.1, 'mysql');
+            ->shouldReceive('listen')->with('illuminate.query', m::any())->andReturnUsing(function ($eventName, $closure) use ($connection) {
+                $connectionName = ($eventName !== 'Illuminate\Database\Events\QueryExecuted') ? 'mysql':$connection;
+                call_user_func_array(
+                    $closure,
+                    $this->queryExecuted('SELECT DISTINCT * FROM `users` WHERE `id` != (?) ORDER BY RAND(); /** **/ **foo**', ['1'], 1.1, $connectionName)
+                );
 
-                $closure('SELECT * FROM `users` ORDER BY id', [], 1.1, 'mysql');
+                call_user_func_array(
+                    $closure,
+                    $this->queryExecuted('SELECT * FROM `users` ORDER BY id', [], 1.1, $connectionName)
+                );
 
-                $closure('SELECT * FROM `users` LIMIT 1', [], 1.1, 'mysql');
+                call_user_func_array(
+                    $closure,
+                    $this->queryExecuted('SELECT * FROM `users` LIMIT 1', [], 1.1, $connectionName)
+                );
 
-                $closure('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, 'mysql');
+                call_user_func_array(
+                    $closure,
+                    $this->queryExecuted('SELECT * FROM `users` LIKE "%?%"', ['name'], 1.1, $connectionName)
+                );
 
-                $closure('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, 'mysql');
+                call_user_func_array(
+                    $closure,
+                    $this->queryExecuted('SELECT * FROM `users` WHERE id IN (SELECT `id` FROM `users`)', [], 1.1, $connectionName)
+                );
 
-                $closure('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, 'mysql');
+                call_user_func_array(
+                    $closure,
+                    $this->queryExecuted('UPDATE `users` SET `name` = ? WHERE `id` = ? AND `created_at` = ?', ['name', '1', new DateTime()], 1.1, $connectionName)
+                );
 
-                $closure('SELECT * FROM `users` WHERE `id` IN ?;', [['1', '2', 'test\'s']], 1.1, 'mysql');
-            })->once();
+                call_user_func_array(
+                    $closure,
+                    $this->queryExecuted('SELECT * FROM `users` WHERE `id` IN ?;', [['1', '2', 'test\'s']], 1.1, $connectionName)
+                );
+            });
 
         $app
-            ->shouldReceive('offsetGet')->with('events')->once()->andReturn($events)
-            ->shouldReceive('offsetGet')->with('db')->andReturn($db);
+            ->shouldReceive('offsetGet')->with('db')->andReturn($db)
+            ->shouldReceive('offsetGet')->with('events')->andReturn($events);
 
-        $db->shouldReceive('connection')->with('mysql')->andReturn($connection);
+        $db->shouldReceive('connection')->andReturn($connection);
 
         $panel->setLaravel($app);
 
@@ -241,15 +266,17 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         $panel->getPanel();
     }
 
-    public function test_get_event_name()
-    {
+    public function test_get_event_name() {
         $panel = new DatabasePanel();
-        $eventName = class_exists('Illuminate\Database\Events\QueryExecuted') ? 'Illuminate\Database\Events\QueryExecuted' : 'illuminate.query';
+        $eventName = class_exists('Illuminate\Database\Events\QueryExecuted') ? 'Illuminate\Database\Events\QueryExecuted':'illuminate.query';
         $this->assertSame($eventName, $panel->getEventName());
     }
 
-    protected function queryExecuted($sql, $bindings, $time, $connection)
-    {
+    protected function queryExecuted($sql, $bindings, $time, $connection) {
+        if (is_string($connection) == true) {
+            return [$sql, $bindings, $time, $connection];
+        }
+
         if (class_exists('Illuminate\Database\Events\QueryExecuted') === true) {
             $event = new Illuminate\Database\Events\QueryExecuted($sql, $bindings, $time, $connection);
         } else {

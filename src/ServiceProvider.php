@@ -5,13 +5,6 @@ namespace Recca0120\LaravelTracy;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
-<<<<<<< HEAD
-use Recca0120\LaravelTracy\Exceptions\Handler;
-use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
-use Recca0120\LaravelTracy\Middleware\Dispatch;
-use Recca0120\Terminal\ServiceProvider as TerminalServiceProvider;
-=======
->>>>>>> b555fc6590be60f3e0ccfc49e428b448f4e7dc06
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -30,15 +23,6 @@ class ServiceProvider extends BaseServiceProvider
         ], 'config');
 
         if ($tracy->enable() === true) {
-<<<<<<< HEAD
-            $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
-                return $app->make(Handler::class, [
-                    'exceptionHandler' => $exceptionHandler,
-                ]);
-            });
-            $kernel->prependMiddleware(Dispatch::class);
-            $kernel->pushMiddleware(AppendDebugbar::class);
-=======
             $this->app->extend('Illuminate\Contracts\Debug\ExceptionHandler', function ($exceptionHandler, $app) {
                 return $app->make('Recca0120\LaravelTracy\Exceptions\Handler', [
                     'exceptionHandler' => $exceptionHandler,
@@ -46,7 +30,6 @@ class ServiceProvider extends BaseServiceProvider
             });
             $kernel->prependMiddleware('Recca0120\LaravelTracy\Middleware\Dispatch');
             $kernel->pushMiddleware('Recca0120\LaravelTracy\Middleware\AppendDebugbar');
->>>>>>> b555fc6590be60f3e0ccfc49e428b448f4e7dc06
         }
     }
 
