@@ -30,7 +30,7 @@ abstract class AbstractPanel implements IBarPanel
     protected $cached;
 
     /**
-     * $viewPath
+     * $viewPath.
      *
      * @var string
      */
@@ -171,16 +171,18 @@ abstract class AbstractPanel implements IBarPanel
     }
 
     /**
-     * getViewPath
+     * getViewPath.
      *
      * @method getViewPath
      *
      * @return string
      */
-    protected function getViewPath() {
+    protected function getViewPath()
+    {
         if (is_null($this->viewPath) === false) {
             return $this->viewPath;
         }
+
         return $this->viewPath = __DIR__.'/../../resources/views/'.ucfirst(class_basename(get_class($this))).'/';
     }
 
