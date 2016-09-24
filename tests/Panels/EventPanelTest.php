@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Foundation\Application;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\EventPanel;
 
@@ -20,8 +18,8 @@ class EventPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $events = m::mock(Dispatcher::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
+        $events = m::mock('Illuminate\Contracts\Events\Dispatcher');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
 
         /*
         |------------------------------------------------------------

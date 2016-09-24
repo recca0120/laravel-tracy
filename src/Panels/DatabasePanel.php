@@ -72,6 +72,7 @@ class DatabasePanel extends AbstractPanel
      */
     public function subscribe()
     {
+<<<<<<< HEAD
         $eventName = $this->getEventName();
         $this->laravel['events']->listen($eventName, function ($event) use ($eventName){
             if ($eventName === 'illuminate.query') {
@@ -85,6 +86,12 @@ class DatabasePanel extends AbstractPanel
                 $name = $event->connectionName;
                 $pdo = $event->connection->getPdo();
             }
+=======
+        $this->laravel['events']->listen('illuminate.query', function ($event) {
+            list($sql, $bindings, $time, $name) = func_get_args();
+            $connection = $this->laravel['db']->connection($name);
+            $pdo = $connection->getPdo();
+>>>>>>> b555fc6590be60f3e0ccfc49e428b448f4e7dc06
 
             $this->logQuery($sql, $bindings, $time, $name, $pdo);
         });

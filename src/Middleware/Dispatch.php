@@ -64,6 +64,10 @@ class Dispatch
     {
         return new StreamedResponse(function () use ($content) {
             echo $content;
+<<<<<<< HEAD
         }, 200, headers_list());
+=======
+        });
+>>>>>>> b555fc6590be60f3e0ccfc49e428b448f4e7dc06
     }
 }

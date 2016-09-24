@@ -61,7 +61,7 @@ abstract class AbstractPanel implements IBarPanel
     public function render($view)
     {
         $viewPath = __DIR__.'/../../resources/views/';
-        $view = $viewPath.ucfirst(class_basename(static::class)).'/'.$view.'.php';
+        $view = $viewPath.ucfirst(class_basename(get_class($this))).'/'.$view.'.php';
         if (empty($this->cached) === true) {
             $this->cached = $this->getAttributes();
         }
@@ -103,7 +103,11 @@ abstract class AbstractPanel implements IBarPanel
      */
     protected function isLaravel()
     {
+<<<<<<< HEAD
         return is_a($this->laravel, Application::class);
+=======
+        return is_a($this->laravel, 'Illuminate\Contracts\Foundation\Application');
+>>>>>>> b555fc6590be60f3e0ccfc49e428b448f4e7dc06
     }
 
     /**

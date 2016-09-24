@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application;
 use Mockery as m;
 use Recca0120\LaravelTracy\Tracy;
 
@@ -48,7 +47,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         */
 
         $config = [];
-        $app = m::mock(Application::class);
+        $app = m::mock('Illuminate\Contracts\Foundation\Application');
 
         /*
         |------------------------------------------------------------
@@ -79,7 +78,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $config = [
             'enabled' => false,
         ];
-        $app = m::mock(Application::class);
+        $app = m::mock('Illuminate\Contracts\Foundation\Application');
 
         /*
         |------------------------------------------------------------
@@ -110,7 +109,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $config = [
             'enabled' => false,
         ];
-        $app = m::mock(Application::class);
+        $app = m::mock('Illuminate\Contracts\Foundation\Application');
 
         /*
         |------------------------------------------------------------
@@ -142,7 +141,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $config = [
             'enabled' => true,
         ];
-        $app = m::mock(Application::class);
+        $app = m::mock('Illuminate\Contracts\Foundation\Application');
 
         /*
         |------------------------------------------------------------

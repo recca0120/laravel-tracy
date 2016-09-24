@@ -1,11 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Mockery as m;
-use Recca0120\LaravelTracy\Debugbar;
 use Recca0120\LaravelTracy\Middleware\Dispatch;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DispatchTest extends PHPUnit_Framework_TestCase
 {
@@ -22,8 +18,8 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock(Debugbar::class);
-        $request = m::mock(Request::class);
+        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
+        $request = m::mock('Illuminate\Http\Request');
         $middleware = new Dispatch($debugbar);
         $next = function () {
         };
@@ -44,7 +40,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
 
         $this->expectOutputString('testing assets');
         $response = $middleware->handle($request, $next);
-        $this->assertInstanceOf(StreamedResponse::class, $response);
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\StreamedResponse', $response);
         $response->send();
     }
 
@@ -56,9 +52,9 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock(Debugbar::class);
-        $request = m::mock(Request::class);
-        $response = m::mock(Response::class);
+        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
+        $request = m::mock('Illuminate\Http\Request');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $next = function ($request) use ($response) {
             return $response;
         };
@@ -82,7 +78,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
 
         $this->expectOutputString('testing dispatch');
         $response = $middleware->handle($request, $next);
-        $this->assertInstanceOf(StreamedResponse::class, $response);
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\StreamedResponse', $response);
         $response->send();
     }
 
@@ -94,9 +90,9 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock(Debugbar::class);
-        $request = m::mock(Request::class);
-        $response = m::mock(Response::class);
+        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
+        $request = m::mock('Illuminate\Http\Request');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $next = function ($request) use ($response) {
             return $response;
         };
