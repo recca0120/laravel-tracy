@@ -16,7 +16,7 @@
         "illuminate/routing": "~5.2",
         "illuminate/session": "~5.2",
         "illuminate/support": "~5.2",
-        "recca0120/terminal": "~1.2",
+        "recca0120/terminal": "~1.6.1",
         "tracy/tracy": "^2.4.2"
     },
     "require-dev": {
