@@ -30,7 +30,7 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $controller->shouldReceive('render');
+        $controller->shouldReceive('getContent');
 
         $app
             ->shouldReceive('make')->with(TerminalController::class)->andReturn($controller)
@@ -66,7 +66,7 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $controller->shouldReceive('render');
+        $controller->shouldReceive('getContent');
 
         $app->shouldReceive('call')->with([$controller, 'index'], ['view' => 'panel'])->andReturn($controller);
 
