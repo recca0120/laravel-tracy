@@ -41,8 +41,8 @@ class DispatchTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('has')->with('_tracy_bar')->once()->andReturn(true)
             ->shouldReceive('get')->with('_tracy_bar')->once()->andReturn('css');
 
-        $responseFactory->shouldReceive('stream')->once()->andReturnUsing(function ($closure) {
-            $closure();
+        $responseFactory->shouldReceive('make')->once()->andReturnUsing(function ($content) {
+            return $content;
         });
 
         /*
@@ -51,8 +51,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $this->expectOutputString('testing tracy css');
-        $response = $middleware->handle($request, $next);
+        $this->assertSame('testing tracy css', $middleware->handle($request, $next));
     }
 
     public function test_handle_dispatch_js()
@@ -82,8 +81,8 @@ class DispatchTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('has')->with('_tracy_bar')->once()->andReturn(true)
             ->shouldReceive('get')->with('_tracy_bar')->once()->andReturn('js');
 
-        $responseFactory->shouldReceive('stream')->once()->andReturnUsing(function ($closure) {
-            $closure();
+        $responseFactory->shouldReceive('make')->once()->andReturnUsing(function ($content) {
+            return $content;
         });
 
         /*
@@ -92,8 +91,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $this->expectOutputString('testing tracy js');
-        $response = $middleware->handle($request, $next);
+        $this->assertSame('testing tracy js', $middleware->handle($request, $next));
     }
 
     public function test_handle_dispatch()
@@ -125,8 +123,8 @@ class DispatchTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('has')->with('_tracy_bar')->once()->andReturn(true)
             ->shouldReceive('get')->with('_tracy_bar')->once()->andReturn('content.abcde');
 
-        $responseFactory->shouldReceive('stream')->once()->andReturnUsing(function ($closure) {
-            $closure();
+        $responseFactory->shouldReceive('make')->once()->andReturnUsing(function ($content) {
+            return $content;
         });
 
         /*
@@ -135,8 +133,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $this->expectOutputString('testing dispatch');
-        $response = $middleware->handle($request, $next);
+        $this->assertSame('testing dispatch', $middleware->handle($request, $next));
     }
 
     public function test_handle_next()
@@ -161,6 +158,8 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
+
+        $debugbar->shouldReceive('dispatch')->once();
 
         $request->shouldReceive('has')->with('_tracy_bar')->once()->andReturn(false);
 

@@ -276,4 +276,8 @@ class Debugbar
 
         return ob_get_clean();
     }
+
+    /*
+     *
+     */
 }

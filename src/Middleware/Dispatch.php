@@ -52,21 +52,32 @@ class Dispatch
 
             switch ($tracyBar) {
                 case 'css':
-                    $mimeType = 'text/css';
                     $content = $this->debugbar->dispatchAssets();
+                    $headers = [
+                        'content-type' => 'text/css; charset=utf-8',
+                        // 'cache-control' => 'max-age=86400',
+                    ];
                     break;
                 case 'js':
-                    $mimeType = 'text/javascript';
                     $content = $this->debugbar->dispatchAssets();
+                    $headers = [
+                        'content-type' => 'text/javascript; charset=utf-8',
+                        // 'cache-control' => 'max-age=86400',
+                    ];
                     break;
                 default:
-                    $mimeType = 'text/javascript';
                     $content = $this->debugbar->dispatch();
+                    $headers = [
+                        'content-type' => 'text/javascript; charset=utf-8',
+                    ];
                     break;
             }
 
-            return $this->sendStreamedResponse($content, $mimeType);
+            return $this->sendStreamedResponse($content, array_merge($headers, [
+                'content-length' => strlen($content),
+            ]));
         }
+        $this->debugbar->dispatch();
 
         return $next($request);
     }
@@ -78,18 +89,10 @@ class Dispatch
      *
      * @param string $content
      *
-     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function sendStreamedResponse($content, $mimeType)
+    protected function sendStreamedResponse($content, $headers)
     {
-        $headers = [
-            'content-type' => $mimeType.'; charset=utf-8',
-            'cache-control' => 'max-age=86400',
-            'content-length' => strlen($content),
-        ];
-
-        return $this->responseFactory->stream(function () use ($content) {
-            echo $content;
-        }, 200, $headers);
+        return $this->responseFactory->make($content, 200, $headers);
     }
 }
