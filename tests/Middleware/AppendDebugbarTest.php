@@ -1,11 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Mockery as m;
-use Recca0120\LaravelTracy\Debugbar;
 use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AppendDebugbarTest extends PHPUnit_Framework_TestCase
 {
@@ -22,9 +18,9 @@ class AppendDebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock(Debugbar::class);
-        $request = m::mock(Request::class);
-        $response = m::mock(Response::class);
+        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
+        $request = m::mock('Illuminate\Http\Request');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $next = function ($request) use ($response) {
             return $response;
         };
@@ -54,9 +50,9 @@ class AppendDebugbarTest extends PHPUnit_Framework_TestCase
     //     |------------------------------------------------------------
     //     */
     //
-    //     $debugbar = m::mock(Debugbar::class);
-    //     $request = m::mock(Request::class);
-    //     $response = m::mock(Response::class);
+    //     $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
+    //     $request = m::mock('Illuminate\Http\Request');
+    //     $response = m::mock('Symfony\Component\HttpFoundation\Response');
     //     $next = function ($request) use ($response) {
     //         return $response;
     //     };
@@ -79,7 +75,7 @@ class AppendDebugbarTest extends PHPUnit_Framework_TestCase
     //
     //     $this->expectOutputString('testing');
     //     $response = $middleware->handle($request, $next);
-    //     $this->assertInstanceOf(StreamedResponse::class, $response);
+    //     $this->assertInstanceOf(Streamed'Symfony\Component\HttpFoundation\Response', $response);
     //     $response->send();
     // }
 }

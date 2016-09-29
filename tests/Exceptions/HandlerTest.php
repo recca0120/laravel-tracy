@@ -1,13 +1,7 @@
 <?php
 
-use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
 use Mockery as m;
-use Recca0120\LaravelTracy\BlueScreen;
 use Recca0120\LaravelTracy\Exceptions\Handler;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 
 class HandlerTest extends PHPUnit_Framework_TestCase
 {
@@ -25,10 +19,10 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         */
 
         $exception = new Exception();
-        $blueScreen = m::mock(BlueScreen::class);
-        $request = m::mock(Request::class);
-        $exceptionHandler = m::mock(ExceptionHandler::class);
-        $response = m::mock(Response::class);
+        $blueScreen = m::mock('Recca0120\LaravelTracy\BlueScreen');
+        $request = m::mock('Illuminate\Http\Request');
+        $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $handler = new Handler($blueScreen, $exceptionHandler);
 
         /*
@@ -66,11 +60,11 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         */
 
         $exception = new Exception();
-        $blueScreen = m::mock(BlueScreen::class);
-        $request = m::mock(Request::class);
-        $exceptionHandler = m::mock(ExceptionHandler::class);
-        $response = m::mock(Response::class);
-        $view = m::mock(View::class);
+        $blueScreen = m::mock('Recca0120\LaravelTracy\BlueScreen');
+        $request = m::mock('Illuminate\Http\Request');
+        $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $view = m::mock('Illuminate\Contracts\View\View');
         $handler = new Handler($blueScreen, $exceptionHandler);
 
         /*
@@ -105,10 +99,10 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         */
 
         $exception = new Exception();
-        $blueScreen = m::mock(BlueScreen::class);
-        $request = m::mock(Request::class);
-        $exceptionHandler = m::mock(ExceptionHandler::class);
-        $response = m::mock(RedirectResponse::class);
+        $blueScreen = m::mock('Recca0120\LaravelTracy\BlueScreen');
+        $request = m::mock('Illuminate\Http\Request');
+        $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
+        $response = m::mock('Symfony\Component\HttpFoundation\RedirectResponse');
         $handler = new Handler($blueScreen, $exceptionHandler);
 
         /*
@@ -136,8 +130,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $output = '';
         $exception = new Exception();
 
-        $blueScreen = m::mock(BlueScreen::class);
-        $exeptionHandler = m::mock(ExceptionHandler::class)
+        $blueScreen = m::mock('Recca0120\LaravelTracy\BlueScreen');
+        $exeptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler')
             ->shouldReceive('renderForConsole')->with($output, $exception)->once()
             ->mock();
 

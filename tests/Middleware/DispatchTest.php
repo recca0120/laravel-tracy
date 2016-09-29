@@ -1,11 +1,7 @@
 <?php
 
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Http\Request;
 use Mockery as m;
-use Recca0120\LaravelTracy\Debugbar;
 use Recca0120\LaravelTracy\Middleware\Dispatch;
-use Symfony\Component\HttpFoundation\Response;
 
 class DispatchTest extends PHPUnit_Framework_TestCase
 {
@@ -22,9 +18,9 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock(Debugbar::class);
-        $responseFactory = m::mock(ResponseFactory::class);
-        $request = m::mock(Request::class);
+        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
+        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
+        $request = m::mock('Illuminate\Http\Request');
         $middleware = new Dispatch($debugbar, $responseFactory);
         $next = function () {
         };
@@ -62,9 +58,9 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock(Debugbar::class);
-        $responseFactory = m::mock(ResponseFactory::class);
-        $request = m::mock(Request::class);
+        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
+        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
+        $request = m::mock('Illuminate\Http\Request');
         $middleware = new Dispatch($debugbar, $responseFactory);
         $next = function () {
         };
@@ -102,10 +98,10 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock(Debugbar::class);
-        $responseFactory = m::mock(ResponseFactory::class);
-        $request = m::mock(Request::class);
-        $response = m::mock(Response::class);
+        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
+        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
+        $request = m::mock('Illuminate\Http\Request');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $next = function ($request) use ($response) {
             return $response;
         };
@@ -144,10 +140,10 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock(Debugbar::class);
-        $responseFactory = m::mock(ResponseFactory::class);
-        $request = m::mock(Request::class);
-        $response = m::mock(Response::class);
+        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
+        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
+        $request = m::mock('Illuminate\Http\Request');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $next = function ($request) use ($response) {
             return $response;
         };

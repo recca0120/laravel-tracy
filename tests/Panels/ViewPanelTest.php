@@ -1,8 +1,5 @@
 <?php
 
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\View;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\ViewPanel;
 
@@ -21,9 +18,9 @@ class ViewPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $events = m::mock(Dispatcher::class);
-        $view = m::mock(View::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
+        $events = m::mock('Illuminate\Contracts\Event\Dispatcher');
+        $view = m::mock('Illuminate\Contracts\View\View');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $panel = new ViewPanel();
 
         /*

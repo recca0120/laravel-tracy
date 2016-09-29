@@ -1,9 +1,6 @@
 <?php
 
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Connection;
-use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Events\QueryExecuted;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\DatabasePanel;
@@ -23,12 +20,12 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $statement = m::mock(PDOStatement::class);
-        $pdo = m::mock(PDO::class);
-        $connection = m::mock(Connection::class);
-        $events = m::mock(Dispatcher::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $db = m::mock(DatabaseManager::class);
+        $statement = m::mock('PDOStatement');
+        $pdo = m::mock('PDO');
+        $connection = m::mock('Illuminate\Database\Connection');
+        $events = m::mock('Illuminate\Contracts\Event\Dispatcher');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $db = m::mock('Illuminate\Database\DatabaseManager');
         $panel = new DatabasePanel();
         $eventName = $panel->getEventName();
 
@@ -116,10 +113,10 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $pdo = m::mock(PDO::class);
-        $connection = m::mock(Connection::class);
-        $events = m::mock(Dispatcher::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
+        $pdo = m::mock('PDO');
+        $connection = m::mock('Illuminate\Database\Connection');
+        $events = m::mock('Illuminate\Contracts\Event\Dispatcher');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $panel = new DatabasePanel();
         $panel->setEventName('Illuminate\Database\Events\QueryExecuted');
 
@@ -129,7 +126,7 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $pdo = m::mock(PDO::class);
+        $pdo = m::mock('PDO');
         $connection
             ->shouldReceive('getName')->andReturn('sqlsrv')
             ->shouldReceive('getPdo')->andReturn($pdo);
@@ -195,12 +192,12 @@ class DatabasePanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $statement = m::mock(PDOStatement::class);
-        $pdo = m::mock(PDO::class);
-        $connection = m::mock(Connection::class);
-        $events = m::mock(Dispatcher::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $db = m::mock(DatabaseManager::class);
+        $statement = m::mock('PDOStatement');
+        $pdo = m::mock('PDO');
+        $connection = m::mock('Illuminate\Database\Connection');
+        $events = m::mock('Illuminate\Contracts\Event\Dispatcher');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $db = m::mock('Illuminate\Database\DatabaseManager');
         $panel = new DatabasePanel();
         $panel->setEventName('illuminate.query');
 

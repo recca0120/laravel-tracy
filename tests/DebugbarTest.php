@@ -1,17 +1,9 @@
 <?php
 
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Event\Dispatcher;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
-use Illuminate\Session\SessionManager;
 use Mockery as m;
 use Recca0120\LaravelTracy\Debugbar;
-use Recca0120\LaravelTracy\Tracy;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DebugbarTest extends PHPUnit_Framework_TestCase
 {
@@ -29,10 +21,10 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         */
 
         $config = [];
-        $tracy = m::mock(Tracy::class);
-        $request = m::mock(Request::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $response = m::mock(BinaryFileResponse::class);
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $response = m::mock('Symfony\Component\HttpFoundation\BinaryFileResponse');
 
         /*
         |------------------------------------------------------------
@@ -65,10 +57,10 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         */
 
         $config = [];
-        $tracy = m::mock(Tracy::class);
-        $request = m::mock(Request::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $response = m::mock(StreamedResponse::class);
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $response = m::mock('Symfony\Component\HttpFoundation\StreamedResponse');
 
         /*
         |------------------------------------------------------------
@@ -101,10 +93,10 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         */
 
         $config = [];
-        $tracy = m::mock(Tracy::class);
-        $request = m::mock(Request::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $response = m::mock(Response::class);
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
 
         /*
         |------------------------------------------------------------
@@ -141,11 +133,11 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $config = [];
         $contentType = '';
         $content = '<body></body>';
-        $tracy = m::mock(Tracy::class);
-        $request = m::mock(Request::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $response = m::mock(Response::class);
-        $headers = m::mock(stdClass::class);
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $headers = m::mock('stdClass');
         $response->headers = $headers;
 
         /*
@@ -185,11 +177,11 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $config = [];
         $contentType = '';
         $content = '<body></body>';
-        $tracy = m::mock(Tracy::class);
-        $request = m::mock(Request::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $response = m::mock(Response::class);
-        $headers = m::mock(stdClass::class);
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $headers = m::mock('stdClass');
         $response->headers = $headers;
 
         /*
@@ -231,11 +223,11 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $config = [];
         $contentType = 'text/html';
         $content = '<body></body>';
-        $tracy = m::mock(Tracy::class);
-        $request = m::mock(Request::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $response = m::mock(Response::class);
-        $headers = m::mock(stdClass::class);
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $headers = m::mock('stdClass');
         $response->headers = $headers;
 
         /*
@@ -281,11 +273,11 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         ];
         $contentType = 'text/html';
         $content = '';
-        $tracy = m::mock(Tracy::class);
-        $request = m::mock(Request::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $response = m::mock(Response::class);
-        $headers = m::mock(stdClass::class);
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $headers = m::mock('stdClass');
         $response->headers = $headers;
 
         /*
@@ -331,11 +323,11 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         ];
         $contentType = 'text/html';
         $content = '<body></body>';
-        $tracy = m::mock(Tracy::class);
-        $request = m::mock(Request::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $response = m::mock(Response::class);
-        $headers = m::mock(stdClass::class);
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $headers = m::mock('stdClass');
         $response->headers = $headers;
 
         /*
@@ -391,17 +383,17 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
 
         $contentType = 'text/html';
         $content = '';
-        $tracy = m::mock(Tracy::class);
-        $request = m::mock(Request::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $response = m::mock(Response::class);
-        $headers = m::mock(stdClass::class);
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $headers = m::mock('stdClass');
         $response->headers = $headers;
 
-        $auth = m::mock(Guard::class);
-        $user = m::mock(stdClass::class);
+        $auth = m::mock('Illuminate\Contracts\Auth\Guard');
+        $user = m::mock('stdClass');
         $user->username = 'username';
-        $events = m::mock(Dispatcher::class);
+        $events = m::mock('Illuminate\Contracts\Event\Dispatcher');
 
         /*
         |------------------------------------------------------------
@@ -454,10 +446,10 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         */
 
         $config = ['showBar' => false];
-        $tracy = m::mock(Tracy::class);
-        $request = m::mock(Request::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $response = m::mock(BinaryFileResponse::class);
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $response = m::mock('Symfony\Component\HttpFoundation\BinaryFileResponse');
 
         /*
         |------------------------------------------------------------
@@ -488,9 +480,9 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         */
 
         $config = [];
-        $tracy = m::mock(Tracy::class);
-        $request = m::mock(Request::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
 
         /*
         |------------------------------------------------------------
@@ -520,10 +512,10 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         */
 
         $config = [];
-        $tracy = m::mock(Tracy::class);
-        $request = m::mock(Request::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $session = m::mock(SessionManager::class);
+        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $session = m::mock('Illuminate\Session\SessionManager');
         $sessionHandler = new NullSessionHandler();
 
         /*
