@@ -144,7 +144,7 @@ class Tracy
         ], $config);
         Debugger::enable();
         $tracy = new static($config);
-        $debugbar = new Debugbar($tracy);
+        $debugbar = new Debugbar($config);
         $debugbar->setupBar();
         $tracy->setDebugbar($debugbar);
 

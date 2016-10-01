@@ -55,14 +55,15 @@ class Dispatch
                     $content = $this->debugbar->dispatchAssets();
                     $headers = [
                         'content-type' => 'text/css; charset=utf-8',
-                        // 'cache-control' => 'max-age=86400',
+                        'cache-control' => 'max-age=86400',
                     ];
                     break;
                 case 'js':
+                case 'assets':
                     $content = $this->debugbar->dispatchAssets();
                     $headers = [
                         'content-type' => 'text/javascript; charset=utf-8',
-                        // 'cache-control' => 'max-age=86400',
+                        'cache-control' => 'max-age=86400',
                     ];
                     break;
                 default:

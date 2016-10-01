@@ -4,6 +4,7 @@ namespace Recca0120\LaravelTracy;
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
@@ -47,10 +48,20 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
 
         $this->app->singleton(Tracy::class, function ($app) {
-            return new Tracy($app['config']->get('tracy', []), $app);
+            $config = $app['config']->get('tracy', []);
+
+            return new Tracy($config, $app);
         });
 
-        $this->app->singleton(Debugbar::class, Debugbar::class);
+        $this->app->singleton(Debugbar::class, function ($app) {
+            $config = $app['config']->get('tracy', []);
+            $debugbar = new Debugbar($config, $app['request'], $app);
+            if (Arr::get($config, 'useLaravelSession', false) === true) {
+                $debugbar->useLaravelSession();
+            }
+
+            return $debugbar;
+        });
 
         $this->app->singleton(BlueScreen::class, BlueScreen::class);
 

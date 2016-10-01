@@ -47,13 +47,13 @@ class Debugbar
      *
      * @method __construct
      *
-     * @param  \Recca0120\LaravelTracy\Tracy                $tracy
+     * @param  array                                        $config
      * @param  \Illuminate\Http\Request                     $request
      * @param  \Illuminate\Contracts\Foundation\Application $app
      */
-    public function __construct(Tracy $tracy, Request $request = null, Application $app = null)
+    public function __construct($config, Request $request = null, Application $app = null)
     {
-        $this->config = $tracy->getConfig();
+        $this->config = $config;
         $this->app = $app;
         $this->request = is_null($request) === true ? Request::capture() : $request;
         $this->ajax = $this->request->ajax();
@@ -259,10 +259,6 @@ class Debugbar
     public function dispatch()
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
-            if (is_null($this->app) === false && is_null($this->app['session']) === false) {
-                session_set_save_handler($this->app['session']->getHandler(), true);
-            }
-
             ini_set('session.use_cookies', '1');
             ini_set('session.use_only_cookies', '1');
             ini_set('session.use_trans_sid', '0');
@@ -277,7 +273,15 @@ class Debugbar
         return ob_get_clean();
     }
 
-    /*
+    /**
+     * useLaravelSession.
      *
+     * @method useLaravelSession
      */
+    public function useLaravelSession()
+    {
+        if (is_null($this->app) === false && is_null($this->app['session']) === false) {
+            session_set_save_handler(new SessionHandlerWrapper($this->app['session']->driver()->getHandler()), true);
+        }
+    }
 }

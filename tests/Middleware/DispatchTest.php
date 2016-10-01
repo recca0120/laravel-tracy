@@ -90,6 +90,46 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $this->assertSame('testing tracy js', $middleware->handle($request, $next));
     }
 
+    public function test_handle_dispatch_assets()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
+        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
+        $request = m::mock('Illuminate\Http\Request');
+        $middleware = new Dispatch($debugbar, $responseFactory);
+        $next = function () {
+        };
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $debugbar->shouldReceive('dispatchAssets')->once()->andReturn('testing tracy assets');
+
+        $request
+            ->shouldReceive('has')->with('_tracy_bar')->once()->andReturn(true)
+            ->shouldReceive('get')->with('_tracy_bar')->once()->andReturn('assets');
+
+        $responseFactory->shouldReceive('make')->once()->andReturnUsing(function ($content) {
+            return $content;
+        });
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame('testing tracy assets', $middleware->handle($request, $next));
+    }
+
     public function test_handle_dispatch()
     {
         /*

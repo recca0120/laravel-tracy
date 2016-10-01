@@ -21,7 +21,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         */
 
         $config = [];
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
         $request = m::mock('Illuminate\Http\Request');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $response = m::mock('Symfony\Component\HttpFoundation\BinaryFileResponse');
@@ -31,8 +30,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
-
-        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
 
         $request->shouldReceive('ajax')->once()->andReturn(false);
 
@@ -44,7 +41,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar = new Debugbar($config, $request, $app);
         $this->assertSame($response, $debugbar->render($response));
     }
 
@@ -57,7 +54,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         */
 
         $config = [];
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
         $request = m::mock('Illuminate\Http\Request');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $response = m::mock('Symfony\Component\HttpFoundation\StreamedResponse');
@@ -67,8 +63,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
-
-        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
 
         $request->shouldReceive('ajax')->once()->andReturn(false);
 
@@ -80,7 +74,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar = new Debugbar($config, $request, $app);
         $this->assertSame($response, $debugbar->render($response));
     }
 
@@ -93,7 +87,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         */
 
         $config = [];
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
         $request = m::mock('Illuminate\Http\Request');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
@@ -103,8 +96,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
-
-        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
 
         $request->shouldReceive('ajax')->once()->andReturn(false);
 
@@ -118,7 +109,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar = new Debugbar($config, $request, $app);
         $this->assertSame($response, $debugbar->render($response));
     }
 
@@ -133,7 +124,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $config = [];
         $contentType = '';
         $content = '<body></body>';
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
         $request = m::mock('Illuminate\Http\Request');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
@@ -145,8 +135,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
-
-        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
 
         $request->shouldReceive('ajax')->once()->andReturn(true);
 
@@ -162,7 +150,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar = new Debugbar($config, $request, $app);
         $this->assertSame($response, $debugbar->render($response));
     }
 
@@ -177,7 +165,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $config = [];
         $contentType = '';
         $content = '<body></body>';
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
         $request = m::mock('Illuminate\Http\Request');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
@@ -189,8 +176,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
-
-        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
 
         $request->shouldReceive('ajax')->once()->andReturn(false);
 
@@ -208,7 +193,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar = new Debugbar($config, $request, $app);
         $this->assertSame($response, $debugbar->render($response));
     }
 
@@ -223,7 +208,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $config = [];
         $contentType = 'text/html';
         $content = '<body></body>';
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
         $request = m::mock('Illuminate\Http\Request');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
@@ -235,8 +219,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
-
-        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
 
         $request->shouldReceive('ajax')->once()->andReturn(false);
 
@@ -254,7 +236,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar = new Debugbar($config, $request, $app);
         $this->assertSame($response, $debugbar->render($response));
     }
 
@@ -273,7 +255,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         ];
         $contentType = 'text/html';
         $content = '';
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
         $request = m::mock('Illuminate\Http\Request');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
@@ -285,8 +266,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
-
-        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
 
         $request->shouldReceive('ajax')->once()->andReturn(false);
 
@@ -304,7 +283,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar = new Debugbar($config, $request, $app);
         $this->assertSame($response, $debugbar->render($response));
     }
 
@@ -323,7 +302,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         ];
         $contentType = 'text/html';
         $content = '<body></body>';
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
         $request = m::mock('Illuminate\Http\Request');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
@@ -335,8 +313,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         | Expectation
         |------------------------------------------------------------
         */
-
-        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
 
         $request->shouldReceive('ajax')->once()->andReturn(false);
 
@@ -352,7 +328,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar = new Debugbar($config, $request, $app);
         $this->assertSame($response, $debugbar->render($response));
     }
 
@@ -383,7 +359,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
 
         $contentType = 'text/html';
         $content = '';
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
         $request = m::mock('Illuminate\Http\Request');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
@@ -415,8 +390,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('offsetGet')->with('events')->andReturn($events)
             ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
 
-        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
-
         $request->shouldReceive('ajax')->once()->andReturn(true);
 
         $response
@@ -433,7 +406,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar = new Debugbar($config, $request, $app);
         $this->assertSame($response, $debugbar->render($response));
     }
 
@@ -446,7 +419,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         */
 
         $config = ['showBar' => false];
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
         $request = m::mock('Illuminate\Http\Request');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $response = m::mock('Symfony\Component\HttpFoundation\BinaryFileResponse');
@@ -457,8 +429,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
-
         $request->shouldReceive('ajax')->once()->andReturn(false);
 
         /*
@@ -467,7 +437,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar = new Debugbar($config, $request, $app);
         $this->assertSame($response, $debugbar->render($response));
     }
 
@@ -480,7 +450,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         */
 
         $config = [];
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
         $request = m::mock('Illuminate\Http\Request');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
 
@@ -490,7 +459,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
         $request->shouldReceive('ajax')->once()->andReturn(false);
 
         /*
@@ -499,7 +467,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar = new Debugbar($config, $request, $app);
         $this->assertEmpty($debugbar->dispatchAssets());
     }
 
@@ -512,11 +480,10 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         */
 
         $config = [];
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
         $request = m::mock('Illuminate\Http\Request');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $session = m::mock('Illuminate\Session\SessionManager');
-        $sessionHandler = new NullSessionHandler();
+        // $session = m::mock('Illuminate\Session\SessionManager');
+        // $sessionHandler = new NullSessionHandler();
 
         /*
         |------------------------------------------------------------
@@ -524,12 +491,11 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $tracy->shouldReceive('getConfig')->once()->andReturn($config);
         $request->shouldReceive('ajax')->once()->andReturn(false);
 
-        $app->shouldReceive('offsetGet')->with('session')->twice()->andReturn($session);
-
-        $session->shouldReceive('getHandler')->once()->andReturn($sessionHandler);
+        // $app->shouldReceive('offsetGet')->with('session')->twice()->andReturn($session);
+        //
+        // $session->shouldReceive('getHandler')->once()->andReturn($sessionHandler);
 
         /*
         |------------------------------------------------------------
@@ -537,7 +503,43 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $debugbar = new Debugbar($tracy, $request, $app);
+        $debugbar = new Debugbar($config, $request, $app);
         $debugbar->dispatch();
+    }
+
+    public function test_use_laravel_session()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $config = [];
+        $request = m::mock('Illuminate\Http\Request');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $session = m::mock('Illuminate\Session\SessionManager');
+        $sessionHandler = m::mock('SessionHandlerInterface');
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $request->shouldReceive('ajax')->once()->andReturn(false);
+
+        $app->shouldReceive('offsetGet')->with('session')->twice()->andReturn($session);
+
+        $session->shouldReceive('driver->getHandler')->once()->andReturn($sessionHandler);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $debugbar = new Debugbar($config, $request, $app);
+        $debugbar->useLaravelSession();
     }
 }

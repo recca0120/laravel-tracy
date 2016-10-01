@@ -3,6 +3,7 @@
 return [
     'enabled' => true,
     'showBar' => true,
+    'useLavavelSession' => false,
     'accepts' => [
         'text/html',
     ],

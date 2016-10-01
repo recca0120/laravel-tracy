@@ -34,7 +34,7 @@ Instead, you may of course manually update your require block and run `composer 
 ```json
 {
     "require": {
-        "recca0120/laravel-tracy": "^1.7.5"
+        "recca0120/laravel-tracy": "^1.7.8"
     }
 }
 ```
@@ -60,6 +60,7 @@ php artisan vendor:publish --provider="Recca0120\LaravelTracy\ServiceProvider"
 return [
     'enabled'      => true,
     'showBar'      => true,
+    'useLavavelSession' => false,
     'accepts'      => [
         'text/html',
     ],
