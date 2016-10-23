@@ -38,35 +38,6 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($tracy->enable());
     }
 
-    public function test_app_is_running_in_console()
-    {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $config = [];
-        $app = m::mock('Illuminate\Contracts\Foundation\Application');
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $app->shouldReceive('runningInConsole')->andReturn(true);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $tracy = new Tracy($config, $app);
-        $this->assertFalse($tracy->enable());
-    }
-
     public function test_app_disabled_with_app()
     {
         /*
@@ -181,7 +152,9 @@ class TracyTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $tracy = Tracy::instance();
+        $tracy = Tracy::instance([
+            'enabled' => null,
+        ]);
         $tracy = Tracy::instance();
 
         $databasePanel = $tracy->getPanel('database');

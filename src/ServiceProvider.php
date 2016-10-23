@@ -27,7 +27,7 @@ class ServiceProvider extends BaseServiceProvider
             __DIR__.'/../config/tracy.php' => $this->app->configPath().'/tracy.php',
         ], 'config');
 
-        if ($tracy->enable() === true) {
+        if ($this->app->runningInConsole() === false && $tracy->enable() === true) {
             $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
                 return $app->make(Handler::class, [
                     'exceptionHandler' => $exceptionHandler,
@@ -49,16 +49,21 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->app->singleton(Tracy::class, function ($app) {
             $config = $app['config']->get('tracy', []);
+            $config['enabled'] = $this->isEnabled($app, $config, 'enabled');
 
-            return new Tracy($config, $app);
+            return new Tracy($config);
         });
 
         $this->app->singleton(Debugbar::class, function ($app) {
             $config = $app['config']->get('tracy', []);
-            $debugbar = new Debugbar($config, $app['request'], $app);
+            $config['showBar'] = $this->isEnabled($app, $config, 'showBar');
+
             if (Arr::get($config, 'useLaravelSession', false) === true) {
-                $debugbar->useLaravelSession();
+                $handler = $this->app['session']->driver()->getHandler();
+                session_set_save_handler(new SessionHandlerWrapper($handler), true);
             }
+
+            $debugbar = new Debugbar($config, $app['request'], $app);
 
             return $debugbar;
         });
@@ -68,6 +73,16 @@ class ServiceProvider extends BaseServiceProvider
         if ($this->app['config']->get('tracy.panels.terminal') === true) {
             $this->app->register(TerminalServiceProvider::class);
         }
+    }
+
+    protected function isEnabled($app, $config, $key)
+    {
+        $isEnabled = Arr::get($config, $key);
+        if (is_null($isEnabled) === true) {
+            $isEnabled = $app['config']->get('app.debug') === true;
+        }
+
+        return $isEnabled;
     }
 
     /**

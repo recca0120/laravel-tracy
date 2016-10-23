@@ -39,7 +39,6 @@ class SessionHandlerWrapperTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('read')->with($sessionId)->once()->andReturn('read')
             ->shouldReceive('write')->with($sessionId, 'write')->once();
 
-
         /*
         |------------------------------------------------------------
         | Assertion

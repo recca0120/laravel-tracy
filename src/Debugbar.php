@@ -54,9 +54,9 @@ class Debugbar
     public function __construct($config, Request $request = null, Application $app = null)
     {
         $this->config = $config;
-        $this->app = $app;
         $this->request = is_null($request) === true ? Request::capture() : $request;
         $this->ajax = $this->request->ajax();
+        $this->app = $app;
 
         $panels = Arr::get($this->config, 'panels', []);
         if (isset($panels['user']) === true) {
@@ -204,7 +204,7 @@ class Debugbar
      */
     public function render(Response $response)
     {
-        if (Arr::get($this->config, 'showBar', true) === false) {
+        if (Arr::get($this->config, 'showBar', false) === false) {
             return $response;
         }
 
@@ -271,17 +271,5 @@ class Debugbar
         Debugger::getBar()->dispatchContent();
 
         return ob_get_clean();
-    }
-
-    /**
-     * useLaravelSession.
-     *
-     * @method useLaravelSession
-     */
-    public function useLaravelSession()
-    {
-        if (is_null($this->app) === false && is_null($this->app['session']) === false) {
-            session_set_save_handler(new SessionHandlerWrapper($this->app['session']->driver()->getHandler()), true);
-        }
     }
 }

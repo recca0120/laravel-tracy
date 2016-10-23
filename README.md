@@ -58,28 +58,30 @@ php artisan vendor:publish --provider="Recca0120\LaravelTracy\ServiceProvider"
 ## Config
 ```php
 return [
-    'enabled'      => true,
-    'showBar'      => true,
+    // when set null will follow APP_DEBUG
+    'enabled' => null,
+    // when set null will follow APP_DEBUG
+    'showBar' => null,
     'useLavavelSession' => false,
     'accepts'      => [
         'text/html',
     ],
-    'editor'       => 'subl://open?url=file://%file&line=%line',
-    'maxDepth'     => 4,
-    'maxLength'    => 1000,
-    'scream'       => true,
+    'editor' => 'subl://open?url=file://%file&line=%line',
+    'maxDepth' => 4,
+    'maxLength' => 1000,
+    'scream' => true,
     'showLocation' => true,
-    'strictMode'   => true,
-    'panels'       => [
-        'routing'        => true,
-        'database'       => true,
-        'view'           => true,
-        'event'          => false,
-        'session'        => true,
-        'request'        => true,
-        'auth'           => true,
+    'strictMode' => true,
+    'panels' => [
+        'routing' => true,
+        'database' => true,
+        'view' => true,
+        'event' => false,
+        'session' => true,
+        'request' => true,
+        'auth' => true,
         'html-validator' => true,
-        'terminal'       => true,
+        'terminal' => true,
     ],
 ];
 ```

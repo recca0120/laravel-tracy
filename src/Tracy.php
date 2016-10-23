@@ -2,7 +2,6 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Arr;
 use Tracy\Debugger;
 
@@ -23,10 +22,9 @@ class Tracy
      * @param  array                                        $config
      * @param  \Illuminate\Contracts\Foundation\Application $app
      */
-    public function __construct($config = [], Application $app = null)
+    public function __construct($config = [])
     {
         $this->config = $config;
-        $this->app = $app;
     }
 
     /**
@@ -38,7 +36,7 @@ class Tracy
      */
     public function enable()
     {
-        if ($this->isRunningInConsole() === true || Arr::get($this->config, 'enabled', true) === false) {
+        if ($this->config['enabled'] === false) {
             return false;
         }
 
@@ -95,18 +93,6 @@ class Tracy
     }
 
     /**
-     * isRunningInConsole.
-     *
-     * @method isRunningInConsole
-     *
-     * @return bool
-     */
-    protected function isRunningInConsole()
-    {
-        return is_null($this->app) === false && $this->app->runningInConsole() === true;
-    }
-
-    /**
      * instance.
      *
      * @method instance
@@ -142,8 +128,23 @@ class Tracy
                 'terminal' => false,
             ],
         ], $config);
-        Debugger::enable();
+
+        $config['enabled'] = Arr::get($config, 'enabled', false);
+        $config['showBar'] = Arr::get($config, 'showBar', false);
+
+        $mode = Debugger::DETECT;
+        switch ($config['enabled']) {
+            case true:
+                $mode = Debugger::DEVELOPMENT;
+                break;
+            case false:
+                $mode = Debugger::PRODUCTION;
+                break;
+        }
+        Debugger::enable($mode);
+
         $tracy = new static($config);
+        $tracy->enable();
         $debugbar = new Debugbar($config);
         $debugbar->setupBar();
         $tracy->setDebugbar($debugbar);

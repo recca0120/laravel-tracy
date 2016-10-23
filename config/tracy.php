@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'enabled' => true,
-    'showBar' => true,
+    'enabled' => null,
+    'showBar' => null,
     'useLavavelSession' => false,
     'accepts' => [
         'text/html',
