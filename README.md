@@ -58,10 +58,8 @@ php artisan vendor:publish --provider="Recca0120\LaravelTracy\ServiceProvider"
 ## Config
 ```php
 return [
-    // when set null will follow APP_DEBUG
-    'enabled' => null,
-    // when set null will follow APP_DEBUG
-    'showBar' => null,
+    'enabled' => env('APP_DEBUG') === true,
+    'showBar' => env('APP_ENV') !== 'production',
     'useLavavelSession' => false,
     'accepts'      => [
         'text/html',

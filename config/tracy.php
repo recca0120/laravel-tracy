@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'enabled' => null,
-    'showBar' => null,
+    'enabled' => env('APP_DEBUG') === true,
+    'showBar' => env('APP_ENV') !== 'production',
     'useLavavelSession' => false,
     'accepts' => [
         'text/html',

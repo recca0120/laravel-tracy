@@ -48,15 +48,13 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
 
         $this->app->singleton(Tracy::class, function ($app) {
-            $config = $app['config']->get('tracy', []);
-            $config['enabled'] = $this->isEnabled($app, $config, 'enabled');
+            $config = Arr::get($app['config'], 'tracy', []);
 
             return new Tracy($config);
         });
 
         $this->app->singleton(Debugbar::class, function ($app) {
-            $config = $app['config']->get('tracy', []);
-            $config['showBar'] = $this->isEnabled($app, $config, 'showBar');
+            $config = Arr::get($app['config'], 'tracy', []);
 
             if (Arr::get($config, 'useLaravelSession', false) === true) {
                 $handler = $this->app['session']->driver()->getHandler();
@@ -70,19 +68,9 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->app->singleton(BlueScreen::class, BlueScreen::class);
 
-        if ($this->app['config']->get('tracy.panels.terminal') === true) {
+        if ($this->app['config']['tracy.panels.terminal'] === true) {
             $this->app->register(TerminalServiceProvider::class);
         }
-    }
-
-    protected function isEnabled($app, $config, $key)
-    {
-        $isEnabled = Arr::get($config, $key);
-        if (is_null($isEnabled) === true) {
-            $isEnabled = $app['config']->get('app.debug') === true;
-        }
-
-        return $isEnabled;
     }
 
     /**

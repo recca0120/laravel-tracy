@@ -24,7 +24,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $request = m::mock('Illuminate\Http\Request');
         $session = m::mock('Illuminate\Session\SessionManager');
         $sessionHandler = m::mock('SessionHandlerInterface');
-        $config = m::mock('stdClass');
+        $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess');
 
         /*
         |------------------------------------------------------------
@@ -35,8 +35,11 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $config
             ->shouldReceive('get')->with('tracy', [])->andReturn(['useLaravelSession' => true])
             ->shouldReceive('set')
-            ->shouldReceive('get')->with('app.debug')->andReturn(false)
-            ->shouldReceive('get')->with('tracy.panels.terminal')->andReturn(true);
+            ->shouldReceive('offsetGet')->with('tracy.panels.terminal')->andReturn(true)
+            ->shouldReceive('offsetExists')->with('tracy')->andReturn(true)
+            ->shouldReceive('offsetGet')->with('tracy')->andReturn([
+                'useLaravelSession' => true,
+            ]);
 
         $request->shouldReceive('ajax')->andReturn(false);
 
@@ -150,5 +153,20 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $serviceProvider = new ServiceProvider($app);
         $serviceProvider->boot($tracy, $kernel);
+    }
+}
+
+if (function_exists('env') === false) {
+    function env($env)
+    {
+        switch ($env) {
+            case 'APP_ENV':
+                return 'local';
+                break;
+
+            case 'APP_DEBUG':
+                return true;
+                break;
+        }
     }
 }
