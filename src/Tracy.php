@@ -24,6 +24,15 @@ class Tracy
     public function __construct($config = [])
     {
         $this->config = $config;
+
+        Debugger::$editor = array_get($config, 'editor', Debugger::$editor);
+        Debugger::$maxDepth = array_get($config, 'maxDepth', Debugger::$maxDepth);
+        Debugger::$maxLength = array_get($config, 'maxLength', Debugger::$maxLength);
+        Debugger::$scream = array_get($config, 'scream', true);
+        Debugger::$showLocation = array_get($config, 'showLocation', true);
+        Debugger::$strictMode = array_get($config, 'strictMode', true);
+        Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
+        Debugger::$editorMapping = array_get($config, 'editorMapping', []);
     }
 
     /**
@@ -39,28 +48,9 @@ class Tracy
             return false;
         }
 
-        Debugger::$editor = array_get($this->config, 'editor', Debugger::$editor);
-        Debugger::$maxDepth = array_get($this->config, 'maxDepth', Debugger::$maxDepth);
-        Debugger::$maxLength = array_get($this->config, 'maxLength', Debugger::$maxLength);
-        Debugger::$scream = array_get($this->config, 'scream', true);
-        Debugger::$showLocation = array_get($this->config, 'showLocation', true);
-        Debugger::$strictMode = array_get($this->config, 'strictMode', true);
-        Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
-        Debugger::$editorMapping = array_get($this->config, 'editorMapping', []);
+
 
         return true;
-    }
-
-    /**
-     * getConfig.
-     *
-     * @method getConfig
-     *
-     * @return array
-     */
-    public function getConfig()
-    {
-        return $this->config;
     }
 
     /**

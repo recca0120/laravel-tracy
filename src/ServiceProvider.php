@@ -17,10 +17,9 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @method boot
      *
-     * @param \Recca0120\LaravelTracy\Tracy     $tracy
      * @param \Illuminate\Contracts\Http\Kernel $kernel
      */
-    public function boot(Tracy $tracy, Kernel $kernel)
+    public function boot(Kernel $kernel)
     {
         if ($this->app->runningInConsole() === true) {
             $this->publishes([
@@ -30,7 +29,7 @@ class ServiceProvider extends BaseServiceProvider
             return;
         }
 
-        if ($tracy->enable() === true) {
+        if ($this->app['config']['tracy']['enabled'] === true) {
             $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
                 return $app->make(Handler::class, [
                     'exceptionHandler' => $exceptionHandler,
@@ -50,12 +49,22 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
 
-        $this->app->singleton(Tracy::class, function ($app) {
-            $config = array_get($app['config'], 'tracy', []);
+        $this->registerTracy();
 
-            return new Tracy($config);
-        });
+        $this->registerDebugbar();
 
+        $this->app->singleton(BlueScreen::class, BlueScreen::class);
+
+        if ($this->app['config']['tracy.panels.terminal'] === true) {
+            $this->app->register(TerminalServiceProvider::class);
+        }
+    }
+
+    /**
+     * registerDebugbar.
+     */
+    protected function registerDebugbar()
+    {
         $this->app->singleton(Debugbar::class, function ($app) {
             $config = array_get($app['config'], 'tracy', []);
 
@@ -68,12 +77,18 @@ class ServiceProvider extends BaseServiceProvider
 
             return $debugbar;
         });
+    }
 
-        $this->app->singleton(BlueScreen::class, BlueScreen::class);
+    /**
+     * registTracy.
+     */
+    protected function registerTracy()
+    {
+        $this->app->singleton(Tracy::class, function ($app) {
+            $config = array_get($app['config'], 'tracy', []);
 
-        if ($this->app['config']['tracy.panels.terminal'] === true) {
-            $this->app->register(TerminalServiceProvider::class);
-        }
+            return new Tracy($config);
+        });
     }
 
     /**

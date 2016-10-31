@@ -69,38 +69,6 @@ class TracyTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($tracy->enable());
     }
 
-    public function test_get_config()
-    {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $config = [
-            'enabled' => false,
-        ];
-        $app = m::mock('Illuminate\Contracts\Foundation\Application');
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $app->shouldReceive('runningInConsole')->andReturn(true);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $tracy = new Tracy($config, $app);
-        $this->assertFalse($tracy->enable());
-        $this->assertSame($config, $tracy->getConfig());
-    }
-
     public function test_enabled()
     {
         /*

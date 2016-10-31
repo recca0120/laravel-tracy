@@ -107,7 +107,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         */
 
         $serviceProvider = new ServiceProvider($app);
-        $serviceProvider->boot($tracy, $kernel);
+        $serviceProvider->boot($kernel);
     }
 
     public function test_boot()
@@ -122,6 +122,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
         $kernel = m::mock('Illuminate\Contracts\Http\Kernel');
         $handler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
+        $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess');
 
         /*
         |------------------------------------------------------------
@@ -131,6 +132,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app
             ->shouldReceive('configPath')->andReturn(__DIR__)
+            ->shouldReceive('offsetGet')->with('config')->andReturn($config)
             ->shouldReceive('extend')->with('Illuminate\Contracts\Debug\ExceptionHandler', m::type('Closure'))->andReturnUsing(function ($className, $closure) use ($handler, $app) {
                 return $closure($handler, $app);
             })
@@ -139,7 +141,10 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ])
             ->shouldReceive('runningInConsole')->andReturn(false);
 
-        $tracy->shouldReceive('enable')->andReturn(true);
+        $config
+            ->shouldReceive('offsetGet')->with('tracy')->andReturn([
+                'enabled' => true
+            ]);
 
         $kernel
             ->shouldReceive('prependMiddleware')->with('Recca0120\LaravelTracy\Middleware\Dispatch')->once()
@@ -152,7 +157,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         */
 
         $serviceProvider = new ServiceProvider($app);
-        $serviceProvider->boot($tracy, $kernel);
+        $serviceProvider->boot($kernel);
     }
 }
 
