@@ -69,47 +69,6 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $serviceProvider->provides();
     }
 
-    public function test_running_in_console()
-    {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
-        $kernel = m::mock('Illuminate\Contracts\Http\Kernel');
-        $handler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $app
-            ->shouldReceive('configPath')->andReturn(__DIR__)
-            ->shouldReceive('extend')->with('Illuminate\Contracts\Debug\ExceptionHandler', m::type('Closure'))->andReturnUsing(function ($className, $closure) use ($handler, $app) {
-                return $closure($handler, $app);
-            })
-            ->shouldReceive('make')->with('Recca0120\LaravelTracy\Exceptions\Handler', [
-                'exceptionHandler' => $handler,
-            ])
-            ->shouldReceive('runningInConsole')->andReturn(true);
-
-        $tracy->shouldReceive('enable')->andReturn(false);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $serviceProvider = new ServiceProvider($app);
-        $serviceProvider->boot($kernel);
-    }
-
     public function test_boot()
     {
         /*
@@ -139,11 +98,11 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('make')->with('Recca0120\LaravelTracy\Exceptions\Handler', [
                 'exceptionHandler' => $handler,
             ])
-            ->shouldReceive('runningInConsole')->andReturn(false);
+            ->shouldReceive('runningInConsole')->andReturn(true);
 
         $config
             ->shouldReceive('offsetGet')->with('tracy')->andReturn([
-                'enabled' => true
+                'enabled' => true,
             ]);
 
         $kernel
