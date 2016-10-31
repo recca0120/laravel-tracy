@@ -22,11 +22,15 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot(Tracy $tracy, Kernel $kernel)
     {
-        $this->publishes([
-            __DIR__.'/../config/tracy.php' => $this->app->configPath().'/tracy.php',
-        ], 'config');
+        if ($this->app->runningInConsole() === true) {
+            $this->publishes([
+                __DIR__.'/../config/tracy.php' => $this->app->configPath().'/tracy.php',
+            ], 'config');
 
-        if ($this->app->runningInConsole() === false && $tracy->enable() === true) {
+            return;
+        }
+
+        if ($tracy->enable() === true) {
             $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
                 return $app->make(Handler::class, [
                     'exceptionHandler' => $exceptionHandler,
