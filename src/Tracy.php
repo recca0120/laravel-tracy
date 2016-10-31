@@ -2,7 +2,6 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Illuminate\Support\Arr;
 use Tracy\Debugger;
 
 class Tracy
@@ -40,14 +39,14 @@ class Tracy
             return false;
         }
 
-        Debugger::$editor = Arr::get($this->config, 'editor', Debugger::$editor);
-        Debugger::$maxDepth = Arr::get($this->config, 'maxDepth', Debugger::$maxDepth);
-        Debugger::$maxLength = Arr::get($this->config, 'maxLength', Debugger::$maxLength);
-        Debugger::$scream = Arr::get($this->config, 'scream', true);
-        Debugger::$showLocation = Arr::get($this->config, 'showLocation', true);
-        Debugger::$strictMode = Arr::get($this->config, 'strictMode', true);
-        Debugger::$time = Arr::get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
-        Debugger::$editorMapping = Arr::get($this->config, 'editorMapping', []);
+        Debugger::$editor = array_get($this->config, 'editor', Debugger::$editor);
+        Debugger::$maxDepth = array_get($this->config, 'maxDepth', Debugger::$maxDepth);
+        Debugger::$maxLength = array_get($this->config, 'maxLength', Debugger::$maxLength);
+        Debugger::$scream = array_get($this->config, 'scream', true);
+        Debugger::$showLocation = array_get($this->config, 'showLocation', true);
+        Debugger::$strictMode = array_get($this->config, 'strictMode', true);
+        Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
+        Debugger::$editorMapping = array_get($this->config, 'editorMapping', []);
 
         return true;
     }
@@ -129,8 +128,8 @@ class Tracy
             ],
         ], $config);
 
-        $config['enabled'] = Arr::get($config, 'enabled', false);
-        $config['showBar'] = Arr::get($config, 'showBar', false);
+        $config['enabled'] = array_get($config, 'enabled', false);
+        $config['showBar'] = array_get($config, 'showBar', false);
 
         $mode = Debugger::DETECT;
         switch ($config['enabled']) {

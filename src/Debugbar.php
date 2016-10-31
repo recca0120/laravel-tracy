@@ -4,7 +4,6 @@ namespace Recca0120\LaravelTracy;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,7 +57,7 @@ class Debugbar
         $this->ajax = $this->request->ajax();
         $this->app = $app;
 
-        $panels = Arr::get($this->config, 'panels', []);
+        $panels = array_get($this->config, 'panels', []);
         if (isset($panels['user']) === true) {
             $panels['auth'] = $panels['user'];
             unset($panels['user']);
@@ -178,7 +177,7 @@ class Debugbar
             return false;
         }
 
-        $accepts = Arr::get($this->config, 'accepts', []);
+        $accepts = array_get($this->config, 'accepts', []);
         if (count($accepts) === 0) {
             return false;
         }
@@ -204,7 +203,7 @@ class Debugbar
      */
     public function render(Response $response)
     {
-        if (Arr::get($this->config, 'showBar', false) === false) {
+        if (array_get($this->config, 'showBar', false) === false) {
             return $response;
         }
 

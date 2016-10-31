@@ -4,7 +4,6 @@ namespace Recca0120\LaravelTracy;
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Http\Kernel;
-use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
@@ -48,15 +47,15 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
 
         $this->app->singleton(Tracy::class, function ($app) {
-            $config = Arr::get($app['config'], 'tracy', []);
+            $config = array_get($app['config'], 'tracy', []);
 
             return new Tracy($config);
         });
 
         $this->app->singleton(Debugbar::class, function ($app) {
-            $config = Arr::get($app['config'], 'tracy', []);
+            $config = array_get($app['config'], 'tracy', []);
 
-            if (Arr::get($config, 'useLaravelSession', false) === true) {
+            if (array_get($config, 'useLaravelSession', false) === true) {
                 $handler = $this->app['session']->driver()->getHandler();
                 session_set_save_handler(new SessionHandlerWrapper($handler), true);
             }
