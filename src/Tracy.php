@@ -7,34 +7,6 @@ use Tracy\Debugger;
 class Tracy
 {
     /**
-     * setDebugbar.
-     *
-     * @method setDebugbar
-     *
-     * @param  Debugbar    $debugbar
-     */
-    public function setDebugbar(Debugbar $debugbar)
-    {
-        $this->debugbar = $debugbar;
-
-        return $this;
-    }
-
-    /**
-     * getPanel.
-     *
-     * @method getPanel
-     *
-     * @param  string   $id
-     *
-     * @return \Tracy\IPanelBar
-     */
-    public function getPanel($id)
-    {
-        return $this->debugbar->get($id);
-    }
-
-    /**
      * instance.
      *
      * @method instance
@@ -84,12 +56,9 @@ class Tracy
                 break;
         }
         Debugger::enable($mode);
-
-        $tracy = new static();
         $debugbar = new Debugbar($config);
         $debugbar->setupBar();
-        $tracy->setDebugbar($debugbar);
 
-        return $instance = $tracy;
+        return $instance = $debugbar;
     }
 }

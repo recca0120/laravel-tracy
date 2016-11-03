@@ -315,4 +315,18 @@ class Debugbar
 
         return ob_get_clean();
     }
+
+    /**
+     * getPanel.
+     *
+     * @method getPanel
+     *
+     * @param  string   $id
+     *
+     * @return \Tracy\IPanelBar
+     */
+    public function getPanel($id)
+    {
+        return $this->get($id);
+    }
 }

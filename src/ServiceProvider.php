@@ -47,8 +47,6 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
 
-        $this->registerTracy();
-
         $this->registerDebugbar();
 
         $this->app->singleton(BlueScreen::class, BlueScreen::class);
@@ -74,18 +72,6 @@ class ServiceProvider extends BaseServiceProvider
             $debugbar = new Debugbar($config, $app['request'], $app);
 
             return $debugbar;
-        });
-    }
-
-    /**
-     * registTracy.
-     */
-    protected function registerTracy()
-    {
-        $this->app->singleton(Tracy::class, function ($app) {
-            $config = array_get($app['config'], 'tracy', []);
-
-            return new Tracy($config);
         });
     }
 

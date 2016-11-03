@@ -46,12 +46,9 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $session->shouldReceive('driver->getHandler')->once()->andReturn($sessionHandler);
 
         $app
-            ->shouldReceive('offsetGet')->with('config')->andReturn($config)
-            ->shouldReceive('offsetGet')->with('request')->andReturn($request)
-            ->shouldReceive('offsetGet')->with('session')->andReturn($session)
-            ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\Tracy', m::type('Closure'))->andReturnUsing(function ($className, $closure) use ($app) {
-                return $closure($app);
-            })
+            ->shouldReceive('offsetGet')->with('config')->times(4)->andReturn($config)
+            ->shouldReceive('offsetGet')->with('request')->once()->andReturn($request)
+            ->shouldReceive('offsetGet')->with('session')->once()->andReturn($session)
             ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\Debugbar', m::type('Closure'))->once()->andReturnUsing(function ($className, $closure) use ($app) {
                 return $closure($app);
             })
