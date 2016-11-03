@@ -83,7 +83,8 @@ class Debugbar
      *
      * @param array $config
      */
-    protected function initializeTracyDebuger($config) {
+    protected function initializeTracyDebuger($config)
+    {
         Debugger::$editor = array_get($config, 'editor', Debugger::$editor);
         Debugger::$maxDepth = array_get($config, 'maxDepth', Debugger::$maxDepth);
         Debugger::$maxLength = array_get($config, 'maxLength', Debugger::$maxLength);
@@ -101,7 +102,8 @@ class Debugbar
      *
      * @param  array $config
      */
-    protected function loadPanels($config) {
+    protected function loadPanels($config)
+    {
         $panels = array_get($config, 'panels', []);
         if (isset($panels['user']) === true) {
             $panels['auth'] = $panels['user'];
