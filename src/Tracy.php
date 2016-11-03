@@ -7,53 +7,6 @@ use Tracy\Debugger;
 class Tracy
 {
     /**
-     * $debugbar.
-     *
-     * @var \Recca0120\LaravelTracy\Debugbar
-     */
-    protected $debugbar;
-
-    /**
-     * __construct.
-     *
-     * @method __construct
-     *
-     * @param  array                                        $config
-     * @param  \Illuminate\Contracts\Foundation\Application $app
-     */
-    public function __construct($config = [])
-    {
-        $this->config = $config;
-
-        Debugger::$editor = array_get($config, 'editor', Debugger::$editor);
-        Debugger::$maxDepth = array_get($config, 'maxDepth', Debugger::$maxDepth);
-        Debugger::$maxLength = array_get($config, 'maxLength', Debugger::$maxLength);
-        Debugger::$scream = array_get($config, 'scream', true);
-        Debugger::$showLocation = array_get($config, 'showLocation', true);
-        Debugger::$strictMode = array_get($config, 'strictMode', true);
-        Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
-        Debugger::$editorMapping = array_get($config, 'editorMapping', []);
-    }
-
-    /**
-     * enable.
-     *
-     * @method enable
-     *
-     * @return bool
-     */
-    public function enable()
-    {
-        if ($this->config['enabled'] === false) {
-            return false;
-        }
-
-
-
-        return true;
-    }
-
-    /**
      * setDebugbar.
      *
      * @method setDebugbar
@@ -132,8 +85,7 @@ class Tracy
         }
         Debugger::enable($mode);
 
-        $tracy = new static($config);
-        $tracy->enable();
+        $tracy = new static();
         $debugbar = new Debugbar($config);
         $debugbar->setupBar();
         $tracy->setDebugbar($debugbar);

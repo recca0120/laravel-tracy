@@ -42,6 +42,20 @@ class Debugbar
     protected $app;
 
     /**
+     * $accepts.
+     *
+     * @var array
+     */
+    protected $accepts = [];
+
+    /**
+     * $showBar.
+     *
+     * @var array
+     */
+    protected $showBar = true;
+
+    /**
      * __construct.
      *
      * @method __construct
@@ -52,12 +66,43 @@ class Debugbar
      */
     public function __construct($config, Request $request = null, Application $app = null)
     {
-        $this->config = $config;
         $this->request = is_null($request) === true ? Request::capture() : $request;
         $this->ajax = $this->request->ajax();
         $this->app = $app;
+        $this->accepts = array_get($config, 'accepts', []);
+        $this->showBar = array_get($config, 'showBar', false);
 
-        $panels = array_get($this->config, 'panels', []);
+        $this->initializeTracyDebuger($config);
+        $this->loadPanels($config);
+    }
+
+    /**
+     * initializeTracyDebuger.
+     *
+     * @method initializeTracyDebuger
+     *
+     * @param array $config
+     */
+    protected function initializeTracyDebuger($config) {
+        Debugger::$editor = array_get($config, 'editor', Debugger::$editor);
+        Debugger::$maxDepth = array_get($config, 'maxDepth', Debugger::$maxDepth);
+        Debugger::$maxLength = array_get($config, 'maxLength', Debugger::$maxLength);
+        Debugger::$scream = array_get($config, 'scream', true);
+        Debugger::$showLocation = array_get($config, 'showLocation', true);
+        Debugger::$strictMode = array_get($config, 'strictMode', true);
+        Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
+        Debugger::$editorMapping = array_get($config, 'editorMapping', []);
+    }
+
+    /**
+     * loadPanels.
+     *
+     * @method loadPanels
+     *
+     * @param  array $config
+     */
+    protected function loadPanels($config) {
+        $panels = array_get($config, 'panels', []);
         if (isset($panels['user']) === true) {
             $panels['auth'] = $panels['user'];
             unset($panels['user']);
@@ -177,13 +222,12 @@ class Debugbar
             return false;
         }
 
-        $accepts = array_get($this->config, 'accepts', []);
-        if (count($accepts) === 0) {
+        if (count($this->accepts) === 0) {
             return false;
         }
 
         $contentType = strtolower($contentType);
-        foreach ($accepts as $accept) {
+        foreach ($this->accepts as $accept) {
             if (strpos($contentType, $accept) !== false) {
                 return false;
             }
@@ -203,7 +247,7 @@ class Debugbar
      */
     public function render(Response $response)
     {
-        if (array_get($this->config, 'showBar', false) === false) {
+        if ($this->showBar === false) {
             return $response;
         }
 
