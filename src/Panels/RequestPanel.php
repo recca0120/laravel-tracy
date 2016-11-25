@@ -2,6 +2,8 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
+use Illuminate\Support\Arr;
+
 class RequestPanel extends AbstractPanel
 {
     /**
@@ -30,8 +32,8 @@ class RequestPanel extends AbstractPanel
             ];
         } else {
             $server = $_SERVER;
-            $remoteAddr = array_get($server, 'REMOTE_ADDR');
-            $query = array_get($server, 'QUERY_STRING');
+            $remoteAddr = Arr::get($server, 'REMOTE_ADDR');
+            $query = Arr::get($server, 'QUERY_STRING');
             $data = [
                 'ip' => $remoteAddr,
                 'ips' => $remoteAddr,

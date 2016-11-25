@@ -2,6 +2,8 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
+use Illuminate\Support\Arr;
+
 class RoutingPanel extends AbstractPanel
 {
     /**
@@ -33,8 +35,8 @@ class RoutingPanel extends AbstractPanel
                     'action' => [],
                 ];
             }
-            $http_host = array_get($_SERVER, 'HTTP_HOST');
-            $requestUri = array_get($_SERVER, 'REQUEST_URI');
+            $http_host = Arr::get($_SERVER, 'HTTP_HOST');
+            $requestUri = Arr::get($_SERVER, 'REQUEST_URI');
             $data = [
                 'uri' => $requestUri,
                 'action' => [],

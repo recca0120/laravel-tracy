@@ -4,6 +4,7 @@ namespace Recca0120\LaravelTracy;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,8 +70,8 @@ class Debugbar
         $this->request = is_null($request) === true ? Request::capture() : $request;
         $this->ajax = $this->request->ajax();
         $this->app = $app;
-        $this->accepts = array_get($config, 'accepts', []);
-        $this->showBar = array_get($config, 'showBar', false);
+        $this->accepts = Arr::get($config, 'accepts', []);
+        $this->showBar = Arr::get($config, 'showBar', false);
 
         $this->initializeTracyDebuger($config);
         $this->loadPanels($config);
@@ -85,14 +86,14 @@ class Debugbar
      */
     protected function initializeTracyDebuger($config)
     {
-        Debugger::$editor = array_get($config, 'editor', Debugger::$editor);
-        Debugger::$maxDepth = array_get($config, 'maxDepth', Debugger::$maxDepth);
-        Debugger::$maxLength = array_get($config, 'maxLength', Debugger::$maxLength);
-        Debugger::$scream = array_get($config, 'scream', true);
-        Debugger::$showLocation = array_get($config, 'showLocation', true);
-        Debugger::$strictMode = array_get($config, 'strictMode', true);
-        Debugger::$time = array_get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
-        Debugger::$editorMapping = array_get($config, 'editorMapping', []);
+        Debugger::$editor = Arr::get($config, 'editor', Debugger::$editor);
+        Debugger::$maxDepth = Arr::get($config, 'maxDepth', Debugger::$maxDepth);
+        Debugger::$maxLength = Arr::get($config, 'maxLength', Debugger::$maxLength);
+        Debugger::$scream = Arr::get($config, 'scream', true);
+        Debugger::$showLocation = Arr::get($config, 'showLocation', true);
+        Debugger::$strictMode = Arr::get($config, 'strictMode', true);
+        Debugger::$time = Arr::get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
+        Debugger::$editorMapping = Arr::get($config, 'editorMapping', []);
     }
 
     /**
@@ -104,7 +105,7 @@ class Debugbar
      */
     protected function loadPanels($config)
     {
-        $panels = array_get($config, 'panels', []);
+        $panels = Arr::get($config, 'panels', []);
         if (isset($panels['user']) === true) {
             $panels['auth'] = $panels['user'];
             unset($panels['user']);

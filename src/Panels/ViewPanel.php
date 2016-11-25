@@ -3,6 +3,7 @@
 namespace Recca0120\LaravelTracy\Panels;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Arr;
 
 class ViewPanel extends AbstractPanel
 {
@@ -27,7 +28,7 @@ class ViewPanel extends AbstractPanel
     {
         $this->laravel['events']->listen('composing:*', function ($view) {
             $name = $view->getName();
-            $data = $this->limitCollection(array_except($view->getData(), ['__env', 'app']));
+            $data = $this->limitCollection(Arr::except($view->getData(), ['__env', 'app']));
 
             $path = self::editorLink($view->getPath());
             preg_match('/href=\"(.+)\"/', $path, $m);

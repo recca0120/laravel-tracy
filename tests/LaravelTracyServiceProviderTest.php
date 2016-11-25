@@ -2,7 +2,7 @@
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Mockery as m;
-use Recca0120\LaravelTracy\ServiceProvider;
+use Recca0120\LaravelTracy\LaravelTracyServiceProvider;
 use Recca0120\LaravelTracy\Tracy;
 
 class ServiceProviderTest extends PHPUnit_Framework_TestCase
@@ -53,7 +53,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
                 return $closure($app);
             })
             ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\BlueScreen', 'Recca0120\LaravelTracy\BlueScreen')->once()
-            ->shouldReceive('register')->with('Recca0120\Terminal\ServiceProvider')->once();
+            ->shouldReceive('register')->with('Recca0120\Terminal\TerminalServiceProvider')->once();
 
         /*
         |------------------------------------------------------------
@@ -61,7 +61,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $serviceProvider = new ServiceProvider($app);
+        $serviceProvider = new LaravelTracyServiceProvider($app);
         $serviceProvider->register();
         $serviceProvider->provides();
     }
@@ -96,7 +96,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $serviceProvider = new ServiceProvider($app);
+        $serviceProvider = new LaravelTracyServiceProvider($app);
         $serviceProvider->boot($kernel);
     }
 
@@ -145,7 +145,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $serviceProvider = new ServiceProvider($app);
+        $serviceProvider = new LaravelTracyServiceProvider($app);
         $serviceProvider->boot($kernel);
     }
 }

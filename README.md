@@ -34,7 +34,7 @@ Instead, you may of course manually update your require block and run `composer 
 ```json
 {
     "require": {
-        "recca0120/laravel-tracy": "^1.7.8"
+        "recca0120/laravel-tracy": "^1.7.10"
     }
 }
 ```
@@ -44,7 +44,7 @@ Include the service provider within `config/app.php`. The service povider is nee
 ```php
 'providers' => [
     ...
-    Recca0120\LaravelTracy\ServiceProvider::class,
+    Recca0120\LaravelTracy\LaravelTracyServiceProvider::class,
     ...
 ];
 ```
@@ -52,7 +52,7 @@ Include the service provider within `config/app.php`. The service povider is nee
 publish
 
 ```bash
-php artisan vendor:publish --provider="Recca0120\LaravelTracy\ServiceProvider"
+php artisan vendor:publish --provider="Recca0120\LaravelTracy\LaravelTracyServiceProvider"
 ```
 
 ## Config

@@ -3,6 +3,7 @@
 namespace Recca0120\LaravelTracy;
 
 use Tracy\Debugger;
+use Illuminate\Support\Arr;
 
 class Tracy
 {
@@ -43,8 +44,8 @@ class Tracy
             ],
         ], $config);
 
-        $config['enabled'] = array_get($config, 'enabled', false);
-        $config['showBar'] = array_get($config, 'showBar', false);
+        $config['enabled'] = Arr::get($config, 'enabled', false);
+        $config['showBar'] = Arr::get($config, 'showBar', false);
 
         $mode = Debugger::DETECT;
         switch ($config['enabled']) {
