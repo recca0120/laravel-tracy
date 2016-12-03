@@ -262,7 +262,7 @@ class Debugbar
 
         $content = $response->getContent();
 
-        $htmlValidatorPanel = $this->get('html-validator');
+        $htmlValidatorPanel = $this->getPanel('html-validator');
         if (is_null($htmlValidatorPanel) === false && $statusCode === 200) {
             $htmlValidatorPanel->setHtml($content);
         }

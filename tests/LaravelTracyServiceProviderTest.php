@@ -4,7 +4,6 @@ use Illuminate\Contracts\Debug\ExceptionHandler;
 use Mockery as m;
 use Recca0120\LaravelTracy\LaravelTracyServiceProvider;
 use Recca0120\LaravelTracy\Tracy;
-use Illuminate\Container\Container;
 
 class ServiceProviderTest extends PHPUnit_Framework_TestCase
 {
@@ -32,7 +31,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app
             ->shouldReceive('offsetGet')->with('config')->andReturn($config)
-            ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\Debugbar', m::type('Closure'))->andReturnUsing(function($className, $closure) use ($app) {
+            ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\Debugbar', m::type('Closure'))->andReturnUsing(function ($className, $closure) use ($app) {
                 $closure($app);
             });
 
@@ -84,7 +83,6 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         */
 
         $app->shouldHaveReceived('configPath')->once();
-
     }
 
     public function test_service_provider_boot()

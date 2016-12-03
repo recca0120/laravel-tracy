@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Arr;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\TerminalPanel;
 
@@ -10,73 +11,81 @@ class TerminalPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_render()
+    public function test_render_with_terminal()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $controller = m::mock('Recca0120\Terminal\Http\Controllers\TerminalController');
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $panel = new TerminalPanel();
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $controller = m::spy('Recca0120\Terminal\Http\Controllers\TerminalController');
+        $response = m::spy('Symfony\Component\HttpFoundation\Response');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
-
-        $controller->shouldReceive('getContent');
 
         $app
             ->shouldReceive('make')->with('Recca0120\Terminal\Http\Controllers\TerminalController')->andReturn($controller)
-            ->shouldReceive('call')->with([$controller, 'index'], ['view' => 'panel'])->andReturn($controller);
+            ->shouldReceive('call')->with([$controller, 'index'], ['view' => 'panel'])->andReturn($response);
 
+        $response
+            ->shouldReceive('getContent')->andReturn('foo.content');
+
+        $panel = new TerminalPanel();
         $panel->setLaravel($app);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $panel->getTab();
-        $panel->getPanel();
+        $this->assertSame('foo.content', Arr::get($panel->getAttributes(), 'html'));
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
+
+        $app->shouldHaveReceived('make')->with('Recca0120\Terminal\Http\Controllers\TerminalController')->twice();
+        $app->shouldHaveReceived('call')->with([$controller, 'index'], ['view' => 'panel'])->twice();
+        $response->shouldHaveReceived('getContent')->twice();
     }
 
-    public function test_not_found()
+    public function test_render_throw_exception()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $controller = m::mock('Recca0120\Terminal\Http\Controllers\TerminalController');
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $panel = new TerminalPanel();
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $controller->shouldReceive('getContent');
+        $app
+            ->shouldReceive('make')->with('Recca0120\Terminal\Http\Controllers\TerminalController')->andReturnUsing(function () {
+                throw new Exception();
+            });
 
-        $app->shouldReceive('call')->with([$controller, 'index'], ['view' => 'panel'])->andReturn($controller);
-
+        $panel = new TerminalPanel();
         $panel->setLaravel($app);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $panel->getTab();
-        $panel->getPanel();
+        $this->assertSame(null, Arr::get($panel->getAttributes(), 'html'));
+
+        $app->shouldHaveReceived('make')->with('Recca0120\Terminal\Http\Controllers\TerminalController')->once();
     }
 }

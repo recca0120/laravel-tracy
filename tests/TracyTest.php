@@ -10,6 +10,9 @@ class TracyTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
+    /**
+     * @runTestsInSeparateProcesses
+     */
     public function test_instance()
     {
         /*
@@ -40,5 +43,7 @@ class TracyTest extends PHPUnit_Framework_TestCase
         | Assert
         |------------------------------------------------------------
         */
+
+        $this->assertTrue(is_string($databasePanel->render('panel')));
     }
 }

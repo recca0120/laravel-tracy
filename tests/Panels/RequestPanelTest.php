@@ -15,38 +15,94 @@ class RequestPanelTest extends PHPUnit_Framework_TestCase
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $panel = new RequestPanel();
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $request = m::spy('Illuminate\Http\Request');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $app->shouldReceive('offsetGet')->with('request')->andReturn(Request::capture());
+        $app
+            ->shouldReceive('offsetGet')->with('request')->andReturn($request);
 
+        $request
+            ->shouldReceive('ip')->andReturn('foo.ip')
+            ->shouldReceive('ips')->andReturn('foo.ips')
+            ->shouldReceive('query')->andReturn('foo.query')
+            ->shouldReceive('all')->andReturn('foo.request')
+            ->shouldReceive('file')->andReturn('foo.file')
+            ->shouldReceive('cookie')->andReturn('foo.cookies')
+            ->shouldReceive('format')->andReturn('foo.format')
+            ->shouldReceive('path')->andReturn('foo.path')
+            ->shouldReceive('server')->andReturn('foo.server');
+
+        $panel = new RequestPanel();
         $panel->setLaravel($app);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $panel->getTab();
-        $panel->getPanel();
+        $this->assertSame([
+            'request' => [
+                'ip' => 'foo.ip',
+                'ips' => 'foo.ips',
+                'query' => 'foo.query',
+                'request' => 'foo.request',
+                'file' => 'foo.file',
+                'cookies' => 'foo.cookies',
+                'format' => 'foo.format',
+                'path' => 'foo.path',
+                'server' => 'foo.server',
+            ],
+        ], $panel->getAttributes());
+
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
+
+        $request->shouldHaveReceived('ip')->twice();
+        $request->shouldHaveReceived('ips')->twice();
+        $request->shouldHaveReceived('query')->twice();
+        $request->shouldHaveReceived('all')->twice();
+        $request->shouldHaveReceived('file')->twice();
+        $request->shouldHaveReceived('cookie')->twice();
+        $request->shouldHaveReceived('format')->twice();
+        $request->shouldHaveReceived('path')->twice();
+        $request->shouldHaveReceived('server')->twice();
     }
 
     public function test_render_without_laravel()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        $backupRequest = $_REQUEST;
+        $backupFiles = $_FILES;
+        $backupCookie = $_COOKIE;
+        $backupServer = $_SERVER;
+
+        $_FILES = ['file' => 'file'];
+        $_REQUEST = ['request' => 'request'];
+        $_COOKIE = ['cookie' => 'cookie'];
+        $_SERVER = [
+            'REMOTE_ADDR' => 'foo.ip',
+            'QUERY_STRING' => 'foo.query_string',
+        ];
+
+        /*
+        |------------------------------------------------------------
+        | Act
         |------------------------------------------------------------
         */
 
@@ -54,17 +110,85 @@ class RequestPanelTest extends PHPUnit_Framework_TestCase
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Assert
         |------------------------------------------------------------
         */
 
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
+        $this->assertSame([
+            'request' => [
+                'ip' => 'foo.ip',
+                'ips' => 'foo.ip',
+                'query' => 'foo.query_string',
+                'request' => $_REQUEST,
+                'file' => $_FILES,
+                'cookies' => $_COOKIE,
+                'server' => $_SERVER,
+            ],
+        ], $panel->getAttributes());
 
-        $panel->getTab();
-        $panel->getPanel();
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
+
+        $_REQUEST = $backupRequest;
+        $_FILES = $backupFiles;
+        $_COOKIE = $backupCookie;
+        $_SERVER = $backupServer;
     }
+
+    // public function test_render_with_laravel()
+    // {
+    //     /*
+    //     |------------------------------------------------------------
+    //     | Set
+    //     |------------------------------------------------------------
+    //     */
+
+    //     $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+    //     $panel = new RequestPanel();
+
+    //     /*
+    //     |------------------------------------------------------------
+    //     | Expectation
+    //     |------------------------------------------------------------
+    //     */
+
+    //     $app->shouldReceive('offsetGet')->with('request')->andReturn(Request::capture());
+
+    //     $panel->setLaravel($app);
+
+    //     /*
+    //     |------------------------------------------------------------
+    //     | Assertion
+    //     |------------------------------------------------------------
+    //     */
+
+    //     $panel->getTab();
+    //     $panel->getPanel();
+    // }
+
+    // public function test_render_without_laravel()
+    // {
+    //     /*
+    //     |------------------------------------------------------------
+    //     | Set
+    //     |------------------------------------------------------------
+    //     */
+
+    //     $panel = new RequestPanel();
+
+    //     /*
+    //     |------------------------------------------------------------
+    //     | Expectation
+    //     |------------------------------------------------------------
+    //     */
+
+    //     /*
+    //     |------------------------------------------------------------
+    //     | Assertion
+    //     |------------------------------------------------------------
+    //     */
+
+    //     $panel->getTab();
+    //     $panel->getPanel();
+    // }
 }

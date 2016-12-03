@@ -13,12 +13,11 @@ class RequestPanel extends AbstractPanel
      *
      * @return array
      */
-    protected function getAttributes()
+    public function getAttributes()
     {
         $data = [];
         if ($this->isLaravel() === true) {
             $request = $this->laravel['request'];
-            $server = $request->server();
             $data = [
                 'ip' => $request->ip(),
                 'ips' => $request->ips(),
@@ -28,12 +27,12 @@ class RequestPanel extends AbstractPanel
                 'cookies' => $request->cookie(),
                 'format' => $request->format(),
                 'path' => $request->path(),
+                'server' => $request->server(),
                 // 'headers' => $request->header(),
             ];
         } else {
-            $server = $_SERVER;
-            $remoteAddr = Arr::get($server, 'REMOTE_ADDR');
-            $query = Arr::get($server, 'QUERY_STRING');
+            $remoteAddr = Arr::get($_SERVER, 'REMOTE_ADDR');
+            $query = Arr::get($_SERVER, 'QUERY_STRING');
             $data = [
                 'ip' => $remoteAddr,
                 'ips' => $remoteAddr,
@@ -41,12 +40,11 @@ class RequestPanel extends AbstractPanel
                 'request' => $_REQUEST,
                 'file' => $_FILES,
                 'cookies' => $_COOKIE,
+                'server' => $_SERVER,
                 // 'format'    => $remoteAddr,
-                // 'path' => $server['REMOTE_ADDR'],
+                // 'path' => $_SERVER['REMOTE_ADDR'],
             ];
         }
-
-        $data['server'] = $server;
 
         return [
             'request' => $data,

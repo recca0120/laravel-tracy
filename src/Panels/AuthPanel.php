@@ -58,7 +58,7 @@ class AuthPanel extends AbstractPanel
      *
      * @return array
      */
-    protected function getAttributes()
+    public function getAttributes()
     {
         $this->loadUser();
 

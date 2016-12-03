@@ -13,7 +13,7 @@ class RoutingPanel extends AbstractPanel
      *
      * @return array
      */
-    protected function getAttributes()
+    public function getAttributes()
     {
         $data = [
             'uri' => 404,
@@ -29,18 +29,8 @@ class RoutingPanel extends AbstractPanel
                 ];
             }
         } else {
-            if (empty($_SERVER['HTTP_HOST'])) {
-                return [
-                    'uri' => '404',
-                    'action' => [],
-                ];
-            }
-            $http_host = Arr::get($_SERVER, 'HTTP_HOST');
-            $requestUri = Arr::get($_SERVER, 'REQUEST_URI');
-            $data = [
-                'uri' => $requestUri,
-                'action' => [],
-            ];
+            $httpHost = Arr::get($_SERVER, 'HTTP_HOST');
+            $data['uri'] = empty($httpHost) === true ? 404 : Arr::get($_SERVER, 'REQUEST_URI');
         }
 
         return $data;

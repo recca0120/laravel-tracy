@@ -10,50 +10,67 @@ class RoutingPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_with_laravel()
+    public function test_render_with_laravel()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $route = m::mock('stdClass');
-        $router = m::mock('Illuminate\Contracts\Routing\Registrar');
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $panel = new RoutingPanel();
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $router = m::spy('Illuminate\Contracts\Routing\Registrar');
+        $currentRoute = m::spy('Illuminate\Routing\Route');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $route
-            ->shouldReceive('uri')
-            ->shouldReceive('getAction')->andReturn([]);
+        $app
+            ->shouldReceive('offsetGet')->with('router')->andReturn($router);
+
         $router
-            ->shouldReceive('getCurrentRoute')->andReturn($route);
+            ->shouldReceive('getCurrentRoute')->andReturn($currentRoute);
 
-        $app->shouldReceive('offsetGet')->with('router')->andReturn($router);
+        $currentRoute
+            ->shouldReceive('uri')->andReturn('foo.uri')
+            ->shouldReceive('getAction')->andReturn(['foo.action']);
 
+        $panel = new RoutingPanel();
         $panel->setLaravel($app);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $panel->getTab();
-        $panel->getPanel();
+        $this->assertSame([
+            'uri' => 'foo.uri',
+            'action' => ['foo.action'],
+        ], $panel->getAttributes());
+
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
+
+        $router->shouldHaveReceived('getCurrentRoute')->twice();
+        $currentRoute->shouldHaveReceived('uri')->twice();
+        $currentRoute->shouldHaveReceived('getAction')->twice();
     }
 
-    public function test_without_laravel()
+    public function test_render_without_laravel_not_found()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        /*
+        |------------------------------------------------------------
+        | Act
         |------------------------------------------------------------
         */
 
@@ -61,45 +78,51 @@ class RoutingPanelTest extends PHPUnit_Framework_TestCase
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Assert
         |------------------------------------------------------------
         */
 
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $panel->getTab();
-        $panel->getPanel();
+        $this->assertSame([
+            'uri' => 404,
+            'action' => [],
+        ], $panel->getAttributes());
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
     }
 
-    public function test_without_laravel_but_with_host()
+    public function test_render_without_laravel()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $panel = new RoutingPanel();
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
+        $backupServer = $_SERVER;
         $_SERVER['HTTP_HOST'] = 'http://localhost';
+        $_SERVER['REQUEST_URI'] = 'foo.request_uri';
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Act
         |------------------------------------------------------------
         */
 
-        $panel->getTab();
-        $panel->getPanel();
+        $panel = new RoutingPanel();
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame([
+            'uri' => 'foo.request_uri',
+            'action' => [],
+        ], $panel->getAttributes());
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
+
+        $_SERVER = $backupServer;
     }
 }

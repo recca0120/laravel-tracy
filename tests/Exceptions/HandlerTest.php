@@ -64,7 +64,6 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $handler = new Handler($bluescreen, $exceptionHandler);
 
-
         /*
         |------------------------------------------------------------
         | Assert
@@ -100,7 +99,6 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $handler = new Handler($bluescreen, $exceptionHandler);
 
-
         /*
         |------------------------------------------------------------
         | Assert
@@ -134,7 +132,6 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $bluescreen->shouldReceive('render')->with($exception)->andReturn('bluescreen');
 
         $handler = new Handler($bluescreen, $exceptionHandler);
-
 
         /*
         |------------------------------------------------------------

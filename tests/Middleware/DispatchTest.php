@@ -22,7 +22,9 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
-        $next = function() use ($response){ return $response; };
+        $next = function () use ($response) {
+            return $response;
+        };
 
         /*
         |------------------------------------------------------------
@@ -41,7 +43,6 @@ class DispatchTest extends PHPUnit_Framework_TestCase
 
         $dispatch = new Dispatch($debugbar, $responseFactory);
 
-
         /*
         |------------------------------------------------------------
         | Assert
@@ -53,7 +54,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
             'content-type' => 'text/css; charset=utf-8',
             'cache-control' => 'max-age=86400',
-            'content-length' => strlen('foo.content')
+            'content-length' => strlen('foo.content'),
         ]);
     }
 
@@ -69,7 +70,9 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
-        $next = function() use ($response){ return $response; };
+        $next = function () use ($response) {
+            return $response;
+        };
 
         /*
         |------------------------------------------------------------
@@ -88,7 +91,6 @@ class DispatchTest extends PHPUnit_Framework_TestCase
 
         $dispatch = new Dispatch($debugbar, $responseFactory);
 
-
         /*
         |------------------------------------------------------------
         | Assert
@@ -100,7 +102,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
             'content-type' => 'text/javascript; charset=utf-8',
             'cache-control' => 'max-age=86400',
-            'content-length' => strlen('foo.content')
+            'content-length' => strlen('foo.content'),
         ]);
     }
 
@@ -116,7 +118,9 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
-        $next = function() use ($response){ return $response; };
+        $next = function () use ($response) {
+            return $response;
+        };
 
         /*
         |------------------------------------------------------------
@@ -135,7 +139,6 @@ class DispatchTest extends PHPUnit_Framework_TestCase
 
         $dispatch = new Dispatch($debugbar, $responseFactory);
 
-
         /*
         |------------------------------------------------------------
         | Assert
@@ -147,7 +150,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
             'content-type' => 'text/javascript; charset=utf-8',
             'cache-control' => 'max-age=86400',
-            'content-length' => strlen('foo.content')
+            'content-length' => strlen('foo.content'),
         ]);
     }
 
@@ -163,7 +166,9 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
-        $next = function() use ($response){ return $response; };
+        $next = function () use ($response) {
+            return $response;
+        };
 
         /*
         |------------------------------------------------------------
@@ -182,7 +187,6 @@ class DispatchTest extends PHPUnit_Framework_TestCase
 
         $dispatch = new Dispatch($debugbar, $responseFactory);
 
-
         /*
         |------------------------------------------------------------
         | Assert
@@ -193,7 +197,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $debugbar->shouldHaveReceived('dispatch')->once();
         $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
             'content-type' => 'text/javascript; charset=utf-8',
-            'content-length' => strlen('foo.content')
+            'content-length' => strlen('foo.content'),
         ]);
     }
 
@@ -209,7 +213,9 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
-        $next = function() use ($response){ return $response; };
+        $next = function () use ($response) {
+            return $response;
+        };
 
         /*
         |------------------------------------------------------------
@@ -221,7 +227,6 @@ class DispatchTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('has')->with('_tracy_bar')->andReturn(false);
 
         $dispatch = new Dispatch($debugbar, $responseFactory);
-
 
         /*
         |------------------------------------------------------------

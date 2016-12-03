@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Arr;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\SessionPanel;
 
@@ -10,48 +11,77 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_with_laravel()
+    /**
+     * @runTestsInSeparateProcesses
+     */
+    public function test_render_with_laravel()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $session = m::mock('Illuminate\Session\SessionInterface');
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $panel = new SessionPanel();
+        @session_start();
+        $_SESSION = ['test' => 'test'];
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $session = m::spy('Illuminate\Session\SessionInterface');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $session
-            ->shouldReceive('getId')
-            ->shouldReceive('getSessionConfig')->andReturn([])
-            ->shouldReceive('all')->andReturn([]);
-
         $app->shouldReceive('offsetGet')->with('session')->andReturn($session);
 
+        $session
+            ->shouldReceive('getId')->andReturn('foo.id')
+            ->shouldReceive('getSessionConfig')->andReturn('foo.config')
+            ->shouldReceive('all')->andReturn(['foo.all']);
+
+        $panel = new SessionPanel();
         $panel->setLaravel($app);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $panel->getTab();
-        $panel->getPanel();
+        $this->assertSame([
+            'sessionId' => 'foo.id',
+            'config' => 'foo.config',
+            'laravelSession' => ['foo.all'],
+            'nativeSession' => ['test' => 'test'],
+        ], $panel->getAttributes());
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
+
+        $session->shouldHaveReceived('getId')->twice();
+        $session->shouldHaveReceived('getSessionConfig')->twice();
+        $session->shouldHaveReceived('all')->twice();
+
+        @session_write_close();
     }
 
-    public function test_without_laravel()
+    /**
+     * @runTestsInSeparateProcesses
+     */
+    public function test_render_without_laravel()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        @session_start();
+        $_SESSION = ['test' => 'test'];
+
+        /*
+        |------------------------------------------------------------
+        | Act
         |------------------------------------------------------------
         */
 
@@ -59,44 +89,14 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Assert
         |------------------------------------------------------------
         */
 
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
+        $this->assertSame(['test' => 'test'], Arr::get($panel->getAttributes(), 'nativeSession'));
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
 
-        $panel->getTab();
-        $panel->getPanel();
-    }
-
-    public function test_without_laravel_andession_start()
-    {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        // @session_start();
-        $panel = new SessionPanel();
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $panel->getTab();
-        $panel->getPanel();
+        @session_write_close();
     }
 }

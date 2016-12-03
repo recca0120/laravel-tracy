@@ -4,12 +4,12 @@ namespace Recca0120\LaravelTracy;
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
 use Recca0120\LaravelTracy\Middleware\Dispatch;
 use Recca0120\Terminal\TerminalServiceProvider;
-use Illuminate\Support\Arr;
 
 class LaravelTracyServiceProvider extends ServiceProvider
 {

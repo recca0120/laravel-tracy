@@ -21,7 +21,7 @@ class TerminalPanel extends AbstractPanel
      *
      * @return array
      */
-    protected function getAttributes()
+    public function getAttributes()
     {
         $data = [
             'html' => null,

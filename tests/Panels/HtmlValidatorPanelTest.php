@@ -14,31 +14,38 @@ class HtmlValidatorPanelTest extends PHPUnit_Framework_TestCase
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $html = '<!DOCTYPE html><html><head><title>title</title></head><body></body></html>';
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
-
-        $excepted = '<!DOCTYPE html><html><head><title>title</title></head><body></body></html>';
 
         $panel = new HtmlValidatorPanel();
-        $panel->setLaravel($app);
-        $panel->setHtml($excepted);
+        $panel->setHtml($html);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $panel->getTab();
-        $panel->getPanel();
+        $this->assertSame([
+            'severenity' => [
+                LIBXML_ERR_WARNING => 'Warning',
+                LIBXML_ERR_ERROR => 'Error',
+                LIBXML_ERR_FATAL => 'Fatal error',
+            ],
+            'counter' => 0,
+            'errors' => [],
+            'html' => $html,
+        ], $panel->getAttributes());
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
     }
 }

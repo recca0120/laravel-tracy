@@ -74,8 +74,9 @@ class DatabasePanel extends AbstractPanel
      */
     public function subscribe()
     {
+        $events = $this->laravel['events'];
         if ($this->getEventName() === 'Illuminate\Database\Events\QueryExecuted') {
-            $this->laravel['events']->listen('Illuminate\Database\Events\QueryExecuted', function ($event) {
+            $events->listen('Illuminate\Database\Events\QueryExecuted', function ($event) {
                 $sql = $event->sql;
                 $bindings = $event->bindings;
                 $time = $event->time;
@@ -85,7 +86,7 @@ class DatabasePanel extends AbstractPanel
                 $this->logQuery($sql, $bindings, $time, $name, $pdo);
             });
         } else {
-            $this->laravel['events']->listen('illuminate.query', function ($sql, $bindings, $time, $name) {
+            $events->listen('illuminate.query', function ($sql, $bindings, $time, $name) {
                 $connection = $this->laravel['db']->connection($name);
                 $pdo = $connection->getPdo();
 
@@ -233,7 +234,7 @@ class DatabasePanel extends AbstractPanel
             } elseif (is_string($param)) {
                 $text = htmlspecialchars($connection ? $connection->quote($param) : '\''.$param.'\'', ENT_NOQUOTES, 'UTF-8');
 
-                return '<span title="Length '.$length.' characters">'.$text.'</span>';
+                return '<span title="Length '.strlen($text).' characters">'.$text.'</span>';
             } elseif (is_resource($param)) {
                 $type = get_resource_type($param);
                 if ($type === 'stream') {
@@ -302,7 +303,7 @@ class DatabasePanel extends AbstractPanel
      *
      * @return array
      */
-    protected function getAttributes()
+    public function getAttributes()
     {
         $queries = [];
         foreach ($this->queries as $query) {

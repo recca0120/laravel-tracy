@@ -193,5 +193,5 @@ abstract class AbstractPanel implements IBarPanel
      *
      * @return array
      */
-    abstract protected function getAttributes();
+    abstract public function getAttributes();
 }

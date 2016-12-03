@@ -2,8 +2,8 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 
 class ViewPanel extends AbstractPanel
 {
@@ -71,7 +71,7 @@ class ViewPanel extends AbstractPanel
      *
      * @return array
      */
-    protected function getAttributes()
+    public function getAttributes()
     {
         return [
             'views' => $this->views,

@@ -21,12 +21,11 @@ class AppendDebugbarTest extends PHPUnit_Framework_TestCase
         $debugBar = m::spy('Recca0120\LaravelTracy\Debugbar');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
-        $next = function($request) use ($response) {
+        $next = function ($request) use ($response) {
             $response->setRequest($request);
 
             return $response;
         };
-
 
         /*
         |------------------------------------------------------------

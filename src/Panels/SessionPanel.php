@@ -11,7 +11,7 @@ class SessionPanel extends AbstractPanel
      *
      * @return array
      */
-    protected function getAttributes()
+    public function getAttributes()
     {
         $data = [];
         if ($this->isLaravel() === true) {

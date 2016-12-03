@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Arr;
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\EventPanel;
 
@@ -14,38 +15,42 @@ class EventPanelTest extends PHPUnit_Framework_TestCase
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $events = m::mock('Illuminate\Contracts\Event\Dispatcher');
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $events = m::spy('Illuminate\Contracts\Event\Dispatcher');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $events
-            ->shouldReceive('listen')->with('*', m::any())->andReturnUsing(function ($eventName, $closure) {
-                $closure(['a' => '']);
-            })
-            ->shouldReceive('firing')->andReturn('event');
-
         $app
             ->shouldReceive('offsetGet')->with('events')->andReturn($events);
+
+        $events
+            ->shouldReceive('listen')->with('*', m::type('Closure'))->andReturnUsing(function ($eventName, $closure) {
+                $closure([]);
+            })
+            ->shouldReceive('firing')->andReturn('foo.firing');
 
         $panel = new EventPanel();
         $panel->setLaravel($app);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $panel->getTab();
-        $panel->getPanel();
+        $this->assertSame('foo.firing', Arr::get($panel->getAttributes(), 'events.0.firing'));
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
+
+        $events->shouldHaveReceived('listen')->once();
+        $events->shouldHaveReceived('firing')->once();
     }
 }
