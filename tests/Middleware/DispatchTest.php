@@ -10,201 +10,226 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_handle_dispatch_css()
+    public function test_dispatch_css()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $request = m::mock('Illuminate\Http\Request');
-        $middleware = new Dispatch($debugbar, $responseFactory);
-        $next = function () {
-        };
+        $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
+        $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
+        $request = m::spy('Illuminate\Http\Request');
+        $response = m::spy('Symfony\Component\HttpFoundation\Response');
+        $next = function() use ($response){ return $response; };
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
-
-        $debugbar->shouldReceive('dispatchAssets')->once()->andReturn('testing tracy css');
 
         $request
-            ->shouldReceive('has')->with('_tracy_bar')->once()->andReturn(true)
-            ->shouldReceive('get')->with('_tracy_bar')->once()->andReturn('css');
+            ->shouldReceive('has')->with('_tracy_bar')->andReturn(true)
+            ->shouldReceive('get')->with('_tracy_bar')->andReturn('css');
 
-        $responseFactory->shouldReceive('make')->once()->andReturnUsing(function ($content) {
-            return $content;
-        });
+        $debugbar
+            ->shouldreceive('dispatchAssets')->andReturn('foo.content');
+
+        $responseFactory->shouldReceive('make')->andReturn('foo.response');
+
+        $dispatch = new Dispatch($debugbar, $responseFactory);
+
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $this->assertSame('testing tracy css', $middleware->handle($request, $next));
+        $this->assertSame('foo.response', $dispatch->handle($request, $next));
+        $debugbar->shouldHaveReceived('dispatchAssets')->once();
+        $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
+            'content-type' => 'text/css; charset=utf-8',
+            'cache-control' => 'max-age=86400',
+            'content-length' => strlen('foo.content')
+        ]);
     }
 
-    public function test_handle_dispatch_js()
+    public function test_dispatch_js()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $request = m::mock('Illuminate\Http\Request');
-        $middleware = new Dispatch($debugbar, $responseFactory);
-        $next = function () {
-        };
+        $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
+        $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
+        $request = m::spy('Illuminate\Http\Request');
+        $response = m::spy('Symfony\Component\HttpFoundation\Response');
+        $next = function() use ($response){ return $response; };
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
-
-        $debugbar->shouldReceive('dispatchAssets')->once()->andReturn('testing tracy js');
 
         $request
-            ->shouldReceive('has')->with('_tracy_bar')->once()->andReturn(true)
-            ->shouldReceive('get')->with('_tracy_bar')->once()->andReturn('js');
+            ->shouldReceive('has')->with('_tracy_bar')->andReturn(true)
+            ->shouldReceive('get')->with('_tracy_bar')->andReturn('js');
 
-        $responseFactory->shouldReceive('make')->once()->andReturnUsing(function ($content) {
-            return $content;
-        });
+        $debugbar
+            ->shouldreceive('dispatchAssets')->andReturn('foo.content');
+
+        $responseFactory->shouldReceive('make')->andReturn('foo.response');
+
+        $dispatch = new Dispatch($debugbar, $responseFactory);
+
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $this->assertSame('testing tracy js', $middleware->handle($request, $next));
+        $this->assertSame('foo.response', $dispatch->handle($request, $next));
+        $debugbar->shouldHaveReceived('dispatchAssets')->once();
+        $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
+            'content-type' => 'text/javascript; charset=utf-8',
+            'cache-control' => 'max-age=86400',
+            'content-length' => strlen('foo.content')
+        ]);
     }
 
-    public function test_handle_dispatch_assets()
+    public function test_dispatch_assets()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $request = m::mock('Illuminate\Http\Request');
-        $middleware = new Dispatch($debugbar, $responseFactory);
-        $next = function () {
-        };
+        $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
+        $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
+        $request = m::spy('Illuminate\Http\Request');
+        $response = m::spy('Symfony\Component\HttpFoundation\Response');
+        $next = function() use ($response){ return $response; };
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
-
-        $debugbar->shouldReceive('dispatchAssets')->once()->andReturn('testing tracy assets');
 
         $request
-            ->shouldReceive('has')->with('_tracy_bar')->once()->andReturn(true)
-            ->shouldReceive('get')->with('_tracy_bar')->once()->andReturn('assets');
+            ->shouldReceive('has')->with('_tracy_bar')->andReturn(true)
+            ->shouldReceive('get')->with('_tracy_bar')->andReturn('assets');
 
-        $responseFactory->shouldReceive('make')->once()->andReturnUsing(function ($content) {
-            return $content;
-        });
+        $debugbar
+            ->shouldreceive('dispatchAssets')->andReturn('foo.content');
+
+        $responseFactory->shouldReceive('make')->andReturn('foo.response');
+
+        $dispatch = new Dispatch($debugbar, $responseFactory);
+
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $this->assertSame('testing tracy assets', $middleware->handle($request, $next));
+        $this->assertSame('foo.response', $dispatch->handle($request, $next));
+        $debugbar->shouldHaveReceived('dispatchAssets')->once();
+        $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
+            'content-type' => 'text/javascript; charset=utf-8',
+            'cache-control' => 'max-age=86400',
+            'content-length' => strlen('foo.content')
+        ]);
     }
 
-    public function test_handle_dispatch()
+    public function test_dispatch_default()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $request = m::mock('Illuminate\Http\Request');
-        $response = m::mock('Symfony\Component\HttpFoundation\Response');
-        $next = function ($request) use ($response) {
-            return $response;
-        };
-        $middleware = new Dispatch($debugbar, $responseFactory);
+        $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
+        $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
+        $request = m::spy('Illuminate\Http\Request');
+        $response = m::spy('Symfony\Component\HttpFoundation\Response');
+        $next = function() use ($response){ return $response; };
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
-
-        $debugbar->shouldReceive('dispatch')->once()->andReturn('testing dispatch');
 
         $request
-            ->shouldReceive('has')->with('_tracy_bar')->once()->andReturn(true)
-            ->shouldReceive('get')->with('_tracy_bar')->once()->andReturn('content.abcde');
+            ->shouldReceive('has')->with('_tracy_bar')->andReturn(true)
+            ->shouldReceive('get')->with('_tracy_bar');
 
-        $responseFactory->shouldReceive('make')->once()->andReturnUsing(function ($content) {
-            return $content;
-        });
+        $debugbar
+            ->shouldreceive('dispatch')->andReturn('foo.content');
+
+        $responseFactory->shouldReceive('make')->andReturn('foo.response');
+
+        $dispatch = new Dispatch($debugbar, $responseFactory);
+
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $this->assertSame('testing dispatch', $middleware->handle($request, $next));
+        $this->assertSame('foo.response', $dispatch->handle($request, $next));
+        $debugbar->shouldHaveReceived('dispatch')->once();
+        $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
+            'content-type' => 'text/javascript; charset=utf-8',
+            'content-length' => strlen('foo.content')
+        ]);
     }
 
-    public function test_handle_next()
+    public function test_dispatch_nothing()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $request = m::mock('Illuminate\Http\Request');
-        $response = m::mock('Symfony\Component\HttpFoundation\Response');
-        $next = function ($request) use ($response) {
-            return $response;
-        };
-        $middleware = new Dispatch($debugbar, $responseFactory);
+        $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
+        $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
+        $request = m::spy('Illuminate\Http\Request');
+        $response = m::spy('Symfony\Component\HttpFoundation\Response');
+        $next = function() use ($response){ return $response; };
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $debugbar->shouldReceive('dispatch')->once();
+        $request
+            ->shouldReceive('has')->with('_tracy_bar')->andReturn(false);
 
-        $request->shouldReceive('has')->with('_tracy_bar')->once()->andReturn(false);
+        $dispatch = new Dispatch($debugbar, $responseFactory);
+
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $this->assertSame($response, $middleware->handle($request, $next));
+        $this->assertSame($response, $dispatch->handle($request, $next));
+        $debugbar->shouldHaveReceived('dispatch')->once();
     }
 }

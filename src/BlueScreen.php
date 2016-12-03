@@ -18,9 +18,10 @@ class BlueScreen
      *
      * @return string
      */
-    public function render(Exception $exception)
+    public function render(Exception $exception, $error = null)
     {
-        $exception = $this->fixStack($exception, error_get_last());
+        $error = is_null($error) === true ? error_get_last() : $error;
+        $exception = $this->fixStack($exception, $error);
 
         ob_start();
         Helpers::improveException($exception);
@@ -35,14 +36,14 @@ class BlueScreen
      * @method render
      *
      * @param \Exception $exception
-     * @param array $error
+     * @param array      $error
      *
      * @return \Exception
      */
     protected function fixStack($exception, $error)
     {
         if (in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE, E_RECOVERABLE_ERROR, E_USER_ERROR], true) === true) {
-            return Helpers::fixStack(new ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']));
+            $exception = Helpers::fixStack(new ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']));
         }
 
         return $exception;

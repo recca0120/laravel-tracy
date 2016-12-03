@@ -42,7 +42,7 @@ class ViewPanel extends AbstractPanel
      *
      * @method limitCollection
      *
-     * @param  array $data
+     * @param array $data
      *
      * @return array
      */

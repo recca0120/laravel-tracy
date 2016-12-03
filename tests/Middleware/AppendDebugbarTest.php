@@ -10,72 +10,41 @@ class AppendDebugbarTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_handle()
+    public function test_append_debug_bar_handler()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
-        $request = m::mock('Illuminate\Http\Request');
-        $response = m::mock('Symfony\Component\HttpFoundation\Response');
-        $next = function ($request) use ($response) {
+        $debugBar = m::spy('Recca0120\LaravelTracy\Debugbar');
+        $request = m::spy('Illuminate\Http\Request');
+        $response = m::spy('Symfony\Component\HttpFoundation\Response');
+        $next = function($request) use ($response) {
+            $response->setRequest($request);
+
             return $response;
         };
-        $middleware = new AppendDebugbar($debugbar);
+
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $debugbar->shouldReceive('render')->with($response)->once()->andReturn($response);
+        $debugBar->shouldReceive('render')->with($response)->andReturn('foo');
+
+        $appendDebugbar = new AppendDebugbar($debugBar);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $this->assertSame($response, $middleware->handle($request, $next));
+        $this->assertSame('foo', $appendDebugbar->handle($request, $next));
+        $response->shouldHaveReceived('setRequest')->with($request)->once();
     }
-
-    // public function test_dispatch_assets() {
-    //     /*
-    //     |------------------------------------------------------------
-    //     | Set
-    //     |------------------------------------------------------------
-    //     */
-    //
-    //     $debugbar = m::mock('Recca0120\LaravelTracy\Debugbar');
-    //     $request = m::mock('Illuminate\Http\Request');
-    //     $response = m::mock('Symfony\Component\HttpFoundation\Response');
-    //     $next = function ($request) use ($response) {
-    //         return $response;
-    //     };
-    //     $middleware = new AppendDebugbar($debugbar);
-    //
-    //     /*
-    //     |------------------------------------------------------------
-    //     | Expectation
-    //     |------------------------------------------------------------
-    //     */
-    //
-    //     $debugbar
-    //         ->shouldReceive('dispatchAssets')->once()->andReturn('testing');
-    //
-    //     /*
-    //     |------------------------------------------------------------
-    //     | Assertion
-    //     |------------------------------------------------------------
-    //     */
-    //
-    //     $this->expectOutputString('testing');
-    //     $response = $middleware->handle($request, $next);
-    //     $this->assertInstanceOf(Streamed'Symfony\Component\HttpFoundation\Response', $response);
-    //     $response->send();
-    // }
 }

@@ -31,7 +31,7 @@ class AppendDebugbar
      * @method handle
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
+     * @param \Closure                 $next
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */

@@ -61,9 +61,9 @@ class Debugbar
      *
      * @method __construct
      *
-     * @param  array                                        $config
-     * @param  \Illuminate\Http\Request                     $request
-     * @param  \Illuminate\Contracts\Foundation\Application $app
+     * @param array                                        $config
+     * @param \Illuminate\Http\Request                     $request
+     * @param \Illuminate\Contracts\Foundation\Application $app
      */
     public function __construct($config, Request $request = null, Application $app = null)
     {
@@ -101,7 +101,7 @@ class Debugbar
      *
      * @method loadPanels
      *
-     * @param  array $config
+     * @param array $config
      */
     protected function loadPanels($config)
     {
@@ -131,8 +131,8 @@ class Debugbar
      *
      * @method put
      *
-     * @param  \Tracy\IBarPanel $panel
-     * @param  string           $id
+     * @param \Tracy\IBarPanel $panel
+     * @param string           $id
      *
      * @return static
      */
@@ -149,7 +149,7 @@ class Debugbar
      *
      * @method get
      *
-     * @param  string $id
+     * @param string $id
      *
      * @return \Tracy\IBarPanel
      */
@@ -196,8 +196,8 @@ class Debugbar
      *
      * @method deny
      *
-     * @param  \Symfony\Component\HttpFoundation\Response $response
-     * @param  int                                        $statusCode
+     * @param \Symfony\Component\HttpFoundation\Response $response
+     * @param int                                        $statusCode
      *
      * @return bool
      */
@@ -244,7 +244,7 @@ class Debugbar
      *
      * @method render
      *
-     * @param  \Symfony\Component\HttpFoundation\Response   $response
+     * @param \Symfony\Component\HttpFoundation\Response $response
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -324,7 +324,7 @@ class Debugbar
      *
      * @method getPanel
      *
-     * @param  string   $id
+     * @param string $id
      *
      * @return \Tracy\IPanelBar
      */

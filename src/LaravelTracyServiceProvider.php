@@ -43,39 +43,25 @@ class LaravelTracyServiceProvider extends ServiceProvider
 
     /**
      * Register the service provider.
-     *
-     * @return void
      */
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
 
-        $this->registerDebugbar();
+        $this->app->singleton(Debugbar::class, function ($app) {
+            return new Debugbar(Arr::get($app['config'], 'tracy', []), $app['request'], $app);
+        });
 
         $this->app->singleton(BlueScreen::class, BlueScreen::class);
 
         if ($this->app['config']['tracy.panels.terminal'] === true) {
             $this->app->register(TerminalServiceProvider::class);
         }
-    }
 
-    /**
-     * registerDebugbar.
-     */
-    protected function registerDebugbar()
-    {
-        $this->app->singleton(Debugbar::class, function ($app) {
-            $config = Arr::get($app['config'], 'tracy', []);
-
-            if (Arr::get($config, 'useLaravelSession', false) === true) {
-                $handler = $this->app['session']->driver()->getHandler();
-                session_set_save_handler(new SessionHandlerWrapper($handler), true);
-            }
-
-            $debugbar = new Debugbar($config, $app['request'], $app);
-
-            return $debugbar;
-        });
+        // if (Arr::get($config, 'useLaravelSession', false) === true) {
+        //     $handler = $this->app['session']->driver()->getHandler();
+        //     session_set_save_handler(new SessionHandlerWrapper($handler), true);
+        // }
     }
 
     /**

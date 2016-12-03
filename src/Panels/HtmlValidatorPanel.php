@@ -55,7 +55,9 @@ class HtmlValidatorPanel extends AbstractPanel
 
     /**
      * Removes special controls characters and normalizes line endings and spaces.
+     *
      * @param  string  UTF-8 encoding
+     *
      * @return string
      */
     public static function normalize($s)
@@ -73,7 +75,9 @@ class HtmlValidatorPanel extends AbstractPanel
 
     /**
      * Standardize line endings to unix-like.
+     *
      * @param  string  UTF-8 encoding or 8-bit
+     *
      * @return string
      */
     public static function normalizeNewLines($s)

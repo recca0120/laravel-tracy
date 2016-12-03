@@ -29,8 +29,8 @@ class Handler implements ExceptionHandler
      *
      * @method __construct
      *
-     * @param  \Recca0120\LaravelTracy\BlueScreen            $blueScreen
-     * @param  \Illuminate\Contracts\Debug\ExceptionHandler  $exceptionHandler
+     * @param \Recca0120\LaravelTracy\BlueScreen           $blueScreen
+     * @param \Illuminate\Contracts\Debug\ExceptionHandler $exceptionHandler
      */
     public function __construct(BlueScreen $blueScreen, $exceptionHandler)
     {
@@ -41,8 +41,7 @@ class Handler implements ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param  \Exception  $e
-     * @return void
+     * @param \Exception $e
      */
     public function report(Exception $e)
     {
@@ -54,8 +53,9 @@ class Handler implements ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $e
+     * @param \Illuminate\Http\Request $request
+     * @param \Exception               $e
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $e)
@@ -78,9 +78,8 @@ class Handler implements ExceptionHandler
     /**
      * Render an exception to the console.
      *
-     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
-     * @param  \Exception  $e
-     * @return void
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param \Exception                                        $e
      */
     public function renderForConsole($output, Exception $e)
     {

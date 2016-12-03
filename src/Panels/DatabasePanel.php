@@ -99,18 +99,18 @@ class DatabasePanel extends AbstractPanel
      *
      * @method logQuery
      *
-     * @param string   $sql
-     * @param array    $bindings
-     * @param int      $time
-     * @param string   $name
-     * @param PDO      $pdo
-     * @param string   $driver
+     * @param string $sql
+     * @param array  $bindings
+     * @param int    $time
+     * @param string $name
+     * @param PDO    $pdo
+     * @param string $driver
      *
      * @return self
      */
     public function logQuery($sql, $bindings = [], $time = 0, $name = null, PDO $pdo = null, $driver = 'mysql')
     {
-        $this->counter++;
+        ++$this->counter;
         $this->totalTime += $time;
         $source = self::findSource();
         $editorLink = self::editorLink($source);
@@ -134,7 +134,7 @@ class DatabasePanel extends AbstractPanel
      * prepare sql.
      *
      * @param string $sql
-     * @param array $bindings
+     * @param array  $bindings
      *
      * @return string
      */
@@ -165,9 +165,9 @@ class DatabasePanel extends AbstractPanel
     /**
      * explain sql.
      *
-     * @param  |PDO $pdo
-     * @param  string $sql
-     * @param  array $bindings
+     * @param |PDO   $pdo
+     * @param string $sql
+     * @param array  $bindings
      *
      * @return array
      */
@@ -187,8 +187,8 @@ class DatabasePanel extends AbstractPanel
      * Returns syntax highlighted SQL command.
      *
      * @param string $sql
-     * @param array $params
-     * @param \PDO $connection
+     * @param array  $params
+     * @param \PDO   $connection
      *
      * @return string
      */
@@ -210,13 +210,13 @@ class DatabasePanel extends AbstractPanel
         // syntax highlight
         $sql = htmlspecialchars($sql, ENT_IGNORE, 'UTF-8');
         $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is", function ($matches) {
-            if (! empty($matches[1])) { // comment
+            if (!empty($matches[1])) { // comment
                 return '<em style="color:gray">'.$matches[1].'</em>';
-            } elseif (! empty($matches[2])) { // error
+            } elseif (!empty($matches[2])) { // error
                 return '<strong style="color:red">'.$matches[2].'</strong>';
-            } elseif (! empty($matches[3])) { // most important keywords
+            } elseif (!empty($matches[3])) { // most important keywords
                 return '<strong style="color:blue; text-transform: uppercase;">'.$matches[3].'</strong>';
-            } elseif (! empty($matches[4])) { // other keywords
+            } elseif (!empty($matches[4])) { // other keywords
                 return '<strong style="color:green">'.$matches[4].'</strong>';
             }
         }, $sql);
@@ -224,7 +224,7 @@ class DatabasePanel extends AbstractPanel
         // parameters
         $sql = preg_replace_callback('#\?#', function () use ($params, $connection) {
             static $i = 0;
-            if (! isset($params[$i])) {
+            if (!isset($params[$i])) {
                 return '?';
             }
             $param = $params[$i++];
@@ -257,7 +257,7 @@ class DatabasePanel extends AbstractPanel
      *
      * @param string $sql
      * @param string $version
-     * @param float $driver
+     * @param float  $driver
      *
      * @return array
      */

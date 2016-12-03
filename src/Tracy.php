@@ -13,6 +13,7 @@ class Tracy
      * @method instance
      *
      * @param  array$config
+     *
      * @return static
      */
     public static function instance($config = [])

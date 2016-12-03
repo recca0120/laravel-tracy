@@ -4,6 +4,7 @@ use Illuminate\Contracts\Debug\ExceptionHandler;
 use Mockery as m;
 use Recca0120\LaravelTracy\LaravelTracyServiceProvider;
 use Recca0120\LaravelTracy\Tracy;
+use Illuminate\Container\Container;
 
 class ServiceProviderTest extends PHPUnit_Framework_TestCase
 {
@@ -12,141 +13,117 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_register()
+    public function test_service_provider_register()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $request = m::mock('Illuminate\Http\Request');
-        $session = m::mock('Illuminate\Session\SessionManager');
-        $sessionHandler = m::mock('SessionHandlerInterface');
-        $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess');
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $config = m::spy('Illuminate\Contracts\Config\Repository, ArrayAccess');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
-
-        $config
-            ->shouldReceive('get')->with('tracy', [])->andReturn(['useLaravelSession' => true])
-            ->shouldReceive('set')
-            ->shouldReceive('offsetGet')->with('tracy.panels.terminal')->andReturn(true)
-            ->shouldReceive('offsetExists')->with('tracy')->andReturn(true)
-            ->shouldReceive('offsetGet')->with('tracy')->andReturn([
-                'useLaravelSession' => true,
-            ]);
-
-        $request->shouldReceive('ajax')->andReturn(false);
-
-        $session->shouldReceive('driver->getHandler')->once()->andReturn($sessionHandler);
 
         $app
-            ->shouldReceive('offsetGet')->with('config')->times(4)->andReturn($config)
-            ->shouldReceive('offsetGet')->with('request')->once()->andReturn($request)
-            ->shouldReceive('offsetGet')->with('session')->once()->andReturn($session)
-            ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\Debugbar', m::type('Closure'))->once()->andReturnUsing(function ($className, $closure) use ($app) {
-                return $closure($app);
-            })
-            ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\BlueScreen', 'Recca0120\LaravelTracy\BlueScreen')->once()
-            ->shouldReceive('register')->with('Recca0120\Terminal\TerminalServiceProvider')->once();
+            ->shouldReceive('offsetGet')->with('config')->andReturn($config)
+            ->shouldReceive('singleton')->with('Recca0120\LaravelTracy\Debugbar', m::type('Closure'))->andReturnUsing(function($className, $closure) use ($app) {
+                $closure($app);
+            });
 
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
+        $config
+            ->shouldReceive('get')->with('tracy', [])->andReturn([])
+            ->shouldReceive('offsetGet')->with('tracy.panels.terminal')->andReturn(true);
 
         $serviceProvider = new LaravelTracyServiceProvider($app);
         $serviceProvider->register();
-        $serviceProvider->provides();
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame(['Illuminate\Contracts\Debug\ExceptionHandler'], $serviceProvider->provides());
+        $app->shouldHaveReceived('singleton')->with('Recca0120\LaravelTracy\BlueScreen', 'Recca0120\LaravelTracy\BlueScreen')->once();
+        $app->shouldHaveReceived('singleton')->with('Recca0120\LaravelTracy\Debugbar', m::type('Closure'))->once();
+        $app->shouldHaveReceived('register')->with('Recca0120\Terminal\TerminalServiceProvider')->once();
     }
 
-    public function test_boot_running_in_console()
+    public function test_service_provider_boot_when_running_in_console()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
-        $kernel = m::mock('Illuminate\Contracts\Http\Kernel');
-        $handler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
-        $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess');
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $kernel = m::spy('Illuminate\Contracts\Http\Kernel');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $app
-            ->shouldReceive('configPath')->once()->andReturn(__DIR__)
-            ->shouldReceive('runningInConsole')->once()->andReturn(true);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
+        $app->shouldReceive('runningInConsole')->andReturn(true);
 
         $serviceProvider = new LaravelTracyServiceProvider($app);
         $serviceProvider->boot($kernel);
-    }
 
-    public function test_boot()
-    {
         /*
         |------------------------------------------------------------
-        | Set
+        | Assert
         |------------------------------------------------------------
         */
 
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $tracy = m::mock('Recca0120\LaravelTracy\Tracy');
-        $kernel = m::mock('Illuminate\Contracts\Http\Kernel');
-        $handler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
-        $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess');
+        $app->shouldHaveReceived('configPath')->once();
+
+    }
+
+    public function test_service_provider_boot()
+    {
+        /*
+        |------------------------------------------------------------
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $kernel = m::spy('Illuminate\Contracts\Http\Kernel');
+        $config = ['tracy' => ['enabled' => true]];
+        $handler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
         $app
-            ->shouldReceive('offsetGet')->with('config')->once()->andReturn($config)
+            ->shouldReceive('offsetGet')->with('config')->andReturn($config)
             ->shouldReceive('extend')->with('Illuminate\Contracts\Debug\ExceptionHandler', m::type('Closure'))->once()->andReturnUsing(function ($className, $closure) use ($handler, $app) {
                 return $closure($handler, $app);
-            })
-            ->shouldReceive('make')->with('Recca0120\LaravelTracy\Exceptions\Handler', [
-                'exceptionHandler' => $handler,
-            ])->once()
-            ->shouldReceive('runningInConsole')->once()->andReturn(false);
-
-        $config
-            ->shouldReceive('offsetGet')->with('tracy')->once()->andReturn([
-                'enabled' => true,
-            ]);
-
-        $kernel
-            ->shouldReceive('prependMiddleware')->with('Recca0120\LaravelTracy\Middleware\Dispatch')->once()
-            ->shouldReceive('pushMiddleware')->with('Recca0120\LaravelTracy\Middleware\AppendDebugbar')->once();
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
+            });
 
         $serviceProvider = new LaravelTracyServiceProvider($app);
         $serviceProvider->boot($kernel);
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $app->shouldHaveReceived('make')->with('Recca0120\LaravelTracy\Exceptions\Handler', ['exceptionHandler' => $handler])->once();
+        $kernel->shouldHaveReceived('prependMiddleware')->with('Recca0120\LaravelTracy\Middleware\Dispatch')->once();
+        $kernel->shouldHaveReceived('pushMiddleware')->with('Recca0120\LaravelTracy\Middleware\AppendDebugbar')->once();
     }
 }
 
