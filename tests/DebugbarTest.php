@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Mockery as m;
+use Illuminate\Http\Request;
 use Recca0120\LaravelTracy\Debugbar;
 
 class DebugbarTest extends PHPUnit_Framework_TestCase

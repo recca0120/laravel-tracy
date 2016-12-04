@@ -1,8 +1,8 @@
 <?php
 
+use Mockery as m;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Mockery as m;
 use Recca0120\LaravelTracy\Panels\ViewPanel;
 
 class ViewPanelTest extends PHPUnit_Framework_TestCase

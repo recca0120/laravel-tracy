@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Arr;
 use Mockery as m;
+use Illuminate\Support\Arr;
 use Recca0120\LaravelTracy\Panels\EventPanel;
 
 class EventPanelTest extends PHPUnit_Framework_TestCase

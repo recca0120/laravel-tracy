@@ -2,8 +2,8 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Illuminate\Support\Arr;
 use Tracy\Debugger;
+use Illuminate\Support\Arr;
 
 class Tracy
 {

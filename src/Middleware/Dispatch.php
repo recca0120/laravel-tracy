@@ -2,8 +2,8 @@
 
 namespace Recca0120\LaravelTracy\Middleware;
 
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Recca0120\LaravelTracy\Debugbar;
+use Illuminate\Contracts\Routing\ResponseFactory;
 
 class Dispatch
 {

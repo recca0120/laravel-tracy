@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Contracts\Debug\ExceptionHandler;
 use Mockery as m;
-use Recca0120\LaravelTracy\LaravelTracyServiceProvider;
 use Recca0120\LaravelTracy\Tracy;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Recca0120\LaravelTracy\LaravelTracyServiceProvider;
 
 class ServiceProviderTest extends PHPUnit_Framework_TestCase
 {

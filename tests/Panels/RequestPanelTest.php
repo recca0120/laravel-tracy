@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Mockery as m;
+use Illuminate\Http\Request;
 use Recca0120\LaravelTracy\Panels\RequestPanel;
 
 class RequestPanelTest extends PHPUnit_Framework_TestCase

@@ -2,9 +2,9 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use Illuminate\Contracts\Foundation\Application;
 use Tracy\Helpers;
 use Tracy\IBarPanel;
+use Illuminate\Contracts\Foundation\Application;
 
 abstract class AbstractPanel implements IBarPanel
 {

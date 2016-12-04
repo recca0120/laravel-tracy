@@ -2,9 +2,9 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
+use PDO;
 use DateTime;
 use Exception;
-use PDO;
 
 class DatabasePanel extends AbstractPanel
 {

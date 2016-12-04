@@ -2,10 +2,10 @@
 
 namespace Recca0120\LaravelTracy;
 
-use ErrorException;
 use Exception;
-use Tracy\Debugger;
 use Tracy\Helpers;
+use ErrorException;
+use Tracy\Debugger;
 
 class BlueScreen
 {
