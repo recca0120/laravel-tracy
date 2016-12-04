@@ -14,12 +14,11 @@ class SessionHandlerWrapperTest extends PHPUnit_Framework_TestCase
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $sessionHandler = m::mock('SessionHandlerInterface');
-        $sessionHandlerWrapper = new SessionHandlerWrapper($sessionHandler);
+        $sessionHandler = m::spy('SessionHandlerInterface');
         $sessionId = uniqid();
         $maxLifeTime = 86400;
         $savePath = __DIR__;
@@ -27,21 +26,23 @@ class SessionHandlerWrapperTest extends PHPUnit_Framework_TestCase
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
         $sessionHandler
-            ->shouldReceive('close')->once()
-            ->shouldReceive('destroy')->with($sessionId)->once()
-            ->shouldReceive('gc')->with($maxLifeTime)->once()
-            ->shouldReceive('open')->with($savePath, $name)->once()
-            ->shouldReceive('read')->with($sessionId)->once()->andReturn('read')
-            ->shouldReceive('write')->with($sessionId, 'write')->once();
+            ->shouldReceive('close')
+            ->shouldReceive('destroy')->with($sessionId)
+            ->shouldReceive('gc')->with($maxLifeTime)
+            ->shouldReceive('open')->with($savePath, $name)
+            ->shouldReceive('read')->with($sessionId)->andReturn('read')
+            ->shouldReceive('write')->with($sessionId, 'write');
+
+        $sessionHandlerWrapper = new SessionHandlerWrapper($sessionHandler);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
@@ -51,5 +52,12 @@ class SessionHandlerWrapperTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($sessionHandlerWrapper->open($savePath, $name));
         $this->assertSame('read', $sessionHandlerWrapper->read($sessionId));
         $this->assertTrue($sessionHandlerWrapper->write($sessionId, 'write'));
+
+        $sessionHandler->shouldHaveReceived('close')->once();
+        $sessionHandler->shouldHaveReceived('destroy')->with($sessionId)->once();
+        $sessionHandler->shouldHaveReceived('gc')->with($maxLifeTime)->once();
+        $sessionHandler->shouldHaveReceived('open')->with($savePath, $name)->once();
+        $sessionHandler->shouldHaveReceived('read')->with($sessionId)->once();
+        $sessionHandler->shouldHaveReceived('write')->with($sessionId, 'write')->once();
     }
 }

@@ -49,7 +49,13 @@ class LaravelTracyServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
 
         $this->app->singleton(Debugbar::class, function ($app) {
-            return new Debugbar(Arr::get($app['config'], 'tracy', []), $app['request'], $app);
+            $config = Arr::get($app['config'], 'tracy', []);
+            // if (Arr::get($config, 'useLaravelSession', false) === true) {
+            //     $handler = $this->app['session']->driver()->getHandler();
+            //     session_set_save_handler(new SessionHandlerWrapper($handler), true);
+            // }
+
+            return new Debugbar($config, $app['request'], $app);
         });
 
         $this->app->singleton(BlueScreen::class, BlueScreen::class);
@@ -57,11 +63,6 @@ class LaravelTracyServiceProvider extends ServiceProvider
         if ($this->app['config']['tracy.panels.terminal'] === true) {
             $this->app->register(TerminalServiceProvider::class);
         }
-
-        // if (Arr::get($config, 'useLaravelSession', false) === true) {
-        //     $handler = $this->app['session']->driver()->getHandler();
-        //     session_set_save_handler(new SessionHandlerWrapper($handler), true);
-        // }
     }
 
     /**

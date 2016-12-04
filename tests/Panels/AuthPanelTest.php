@@ -10,20 +10,23 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_session_not_exists()
+    public function test_render_session_isnt_exists()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $user = m::mock('stdClass');
-        $user->username = 'username';
-        $session = m::mock('stdClass');
-        $auth = m::mock('Illuminate\Contracts\Auth\Guard');
-        $events = m::mock('Illuminate\Contracts\Event\Dispatcher');
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $session = m::spy('Illuminate\Session\SessionManager');
+        $auth = m::spy('Illuminate\Contracts\Auth\Guard');
+        $authName = 'foo.auth.name';
+        $user = m::spy('stdClass');
+
+        $user->name = 'foo.name';
+        $user->username = 'foo.username';
+        $user->email = 'foo.email';
 
         /*
         |------------------------------------------------------------
@@ -31,168 +34,293 @@ class AuthPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $auth->shouldReceive('getName')->once()->andReturn('foo');
-
-        $session->shouldReceive('has')->with('foo')->once()->andReturn(false);
-
         $app
-            ->shouldReceive('offsetGet')->once()->with('auth')->andReturn($auth)
-            ->shouldReceive('offsetGet')->once()->with('session')->andReturn($session);
+            ->shouldReceive('offsetGet')->with('session')->andReturn($session)
+            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
+
+        $auth
+            ->shouldReceive('getName')->andReturn($authName)
+            ->shouldReceive('user')->andReturn($user);
+
+        $session
+            ->shouldReceive('has')->with($authName)->andReturn(false);
 
         $panel = new AuthPanel();
         $panel->setLaravel($app);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $panel->getTab();
-        $panel->getPanel();
+        $this->assertSame([
+            'name' => 'Guest',
+            'user' => null,
+        ], $panel->getAttributes());
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
+
+        $auth->shouldHaveReceived('getName')->twice();
+
+        $session->shouldHaveReceived('has')->with($authName)->twice();
     }
 
-    public function test_username()
+    public function test_render()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $user = m::mock('stdClass');
-        $user->username = 'username';
-        $session = m::mock('stdClass');
-        $auth = m::mock('Illuminate\Contracts\Auth\Guard');
-        $events = m::mock('Illuminate\Contracts\Event\Dispatcher');
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $session = m::spy('Illuminate\Session\SessionManager');
+        $auth = m::spy('Illuminate\Contracts\Auth\Guard');
+        $authName = 'foo.auth.name';
+        $user = m::spy('stdClass');
+
+        $user->name = 'foo.name';
+        $user->username = 'foo.username';
+        $user->email = 'foo.email';
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $user
-            ->shouldReceive('getAuthIdentifier')->once()->andReturn(0)
-            ->shouldReceive('toArray')->once()->andReturn([]);
+        $app
+            ->shouldReceive('offsetGet')->with('session')->andReturn($session)
+            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
 
         $auth
-            ->shouldReceive('user')->once()->andReturn($user)
-            ->shouldReceive('getName')->once()->andReturn('foo');
+            ->shouldReceive('getName')->andReturn($authName)
+            ->shouldReceive('user')->andReturn($user);
 
-        $session->shouldReceive('has')->with('foo')->once()->andReturn(true);
+        $session
+            ->shouldReceive('has')->with($authName)->andReturn(true);
 
-        $app
-            ->shouldReceive('offsetGet')->once()->with('auth')->andReturn($auth)
-            ->shouldReceive('offsetGet')->once()->with('session')->andReturn($session);
+        $user
+            ->shouldReceive('getAuthIdentifier')->andReturn($user->email)
+            ->shouldReceive('toArray')->andReturn(['foo.user.array']);
 
         $panel = new AuthPanel();
         $panel->setLaravel($app);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $panel->getTab();
-        $panel->getPanel();
+        $this->assertSame([
+            'name' => $user->email,
+            'user' => [
+                'foo.user.array',
+            ],
+        ], $panel->getAttributes());
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
+
+        $auth->shouldHaveReceived('getName')->twice();
+        $auth->shouldHaveReceived('user')->twice();
+
+        $session->shouldHaveReceived('has')->with($authName)->twice();
+
+        $user->shouldHaveReceived('getAuthIdentifier')->twice();
+        $user->shouldHaveReceived('toArray')->twice();
     }
 
-    public function test_email()
+    public function test_render_username()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $user = m::mock('stdClass');
-        $user->email = 'email';
-        $session = m::mock('stdClass');
-        $auth = m::mock('Illuminate\Contracts\Auth\Guard');
-        $events = m::mock('Illuminate\Contracts\Event\Dispatcher');
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $session = m::spy('Illuminate\Session\SessionManager');
+        $auth = m::spy('Illuminate\Contracts\Auth\Guard');
+        $authName = 'foo.auth.name';
+        $user = m::spy('stdClass');
+
+        $user->username = 'foo.username';
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $user
-            ->shouldReceive('getAuthIdentifier')->once()->andReturn(0)
-            ->shouldReceive('toArray')->once()->andReturn([]);
+        $app
+            ->shouldReceive('offsetGet')->with('session')->andReturn($session)
+            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
 
         $auth
-            ->shouldReceive('user')->once()->andReturn($user)
-            ->shouldReceive('getName')->once()->andReturn('foo');
+            ->shouldReceive('getName')->andReturn($authName)
+            ->shouldReceive('user')->andReturn($user);
 
-        $session->shouldReceive('has')->with('foo')->once()->andReturn(true);
+        $session
+            ->shouldReceive('has')->with($authName)->andReturn(true);
 
-        $app
-            ->shouldReceive('offsetGet')->with('auth')->once()->andReturn($auth)
-            ->shouldReceive('offsetGet')->with('session')->once()->andReturn($session);
+        $user
+            ->shouldReceive('getAuthIdentifier')->andReturn(0)
+            ->shouldReceive('toArray')->andReturn(['foo.user.array']);
 
         $panel = new AuthPanel();
         $panel->setLaravel($app);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $panel->getTab();
-        $panel->getPanel();
+        $this->assertSame([
+            'name' => $user->username,
+            'user' => [
+                'foo.user.array',
+            ],
+        ], $panel->getAttributes());
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
+
+        $auth->shouldHaveReceived('getName')->twice();
+        $auth->shouldHaveReceived('user')->twice();
+
+        $session->shouldHaveReceived('has')->with($authName)->twice();
+
+        $user->shouldHaveReceived('getAuthIdentifier')->twice();
+        $user->shouldHaveReceived('toArray')->twice();
     }
 
-    public function test_name()
+    public function test_render_email()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $user = m::mock('stdClass');
-        $user->name = 'name';
-        $session = m::mock('stdClass');
-        $auth = m::mock('Illuminate\Contracts\Auth\Guard');
-        $events = m::mock('Illuminate\Contracts\Event\Dispatcher');
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $session = m::spy('Illuminate\Session\SessionManager');
+        $auth = m::spy('Illuminate\Contracts\Auth\Guard');
+        $authName = 'foo.auth.name';
+        $user = m::spy('stdClass');
+
+        $user->email = 'foo.email';
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $user
-            ->shouldReceive('getAuthIdentifier')->once()->andReturn(0)
-            ->shouldReceive('toArray')->once()->andReturn([]);
+        $app
+            ->shouldReceive('offsetGet')->with('session')->andReturn($session)
+            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
 
         $auth
-            ->shouldReceive('user')->once()->andReturn($user)
-            ->shouldReceive('getName')->once()->andReturn('foo');
+            ->shouldReceive('getName')->andReturn($authName)
+            ->shouldReceive('user')->andReturn($user);
 
-        $session->shouldReceive('has')->with('foo')->once()->andReturn(true);
+        $session
+            ->shouldReceive('has')->with($authName)->andReturn(true);
 
-        $app
-            ->shouldReceive('offsetGet')->with('auth')->once()->andReturn($auth)
-            ->shouldReceive('offsetGet')->with('session')->once()->andReturn($session);
+        $user
+            ->shouldReceive('getAuthIdentifier')->andReturn(0)
+            ->shouldReceive('toArray')->andReturn(['foo.user.array']);
 
         $panel = new AuthPanel();
         $panel->setLaravel($app);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $panel->getTab();
-        $panel->getPanel();
+        $this->assertSame([
+            'name' => $user->email,
+            'user' => [
+                'foo.user.array',
+            ],
+        ], $panel->getAttributes());
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
+
+        $auth->shouldHaveReceived('getName')->twice();
+        $auth->shouldHaveReceived('user')->twice();
+
+        $session->shouldHaveReceived('has')->with($authName)->twice();
+
+        $user->shouldHaveReceived('getAuthIdentifier')->twice();
+        $user->shouldHaveReceived('toArray')->twice();
+    }
+
+    public function test_render_name()
+    {
+        /*
+        |------------------------------------------------------------
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $session = m::spy('Illuminate\Session\SessionManager');
+        $auth = m::spy('Illuminate\Contracts\Auth\Guard');
+        $authName = 'foo.auth.name';
+        $user = m::spy('stdClass');
+
+        $user->name = 'foo.name';
+
+        /*
+        |------------------------------------------------------------
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $app
+            ->shouldReceive('offsetGet')->with('session')->andReturn($session)
+            ->shouldReceive('offsetGet')->with('auth')->andReturn($auth);
+
+        $auth
+            ->shouldReceive('getName')->andReturn($authName)
+            ->shouldReceive('user')->andReturn($user);
+
+        $session
+            ->shouldReceive('has')->with($authName)->andReturn(true);
+
+        $user
+            ->shouldReceive('getAuthIdentifier')->andReturn(0)
+            ->shouldReceive('toArray')->andReturn(['foo.user.array']);
+
+        $panel = new AuthPanel();
+        $panel->setLaravel($app);
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame([
+            'name' => $user->name,
+            'user' => [
+                'foo.user.array',
+            ],
+        ], $panel->getAttributes());
+        $this->assertTrue(is_string($panel->getTab()));
+        $this->assertTrue(is_string($panel->getPanel()));
+
+        $auth->shouldHaveReceived('getName')->twice();
+        $auth->shouldHaveReceived('user')->twice();
+
+        $session->shouldHaveReceived('has')->with($authName)->twice();
+
+        $user->shouldHaveReceived('getAuthIdentifier')->twice();
+        $user->shouldHaveReceived('toArray')->twice();
     }
 }

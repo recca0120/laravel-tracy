@@ -22,7 +22,6 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        @session_start();
         $_SESSION = ['test' => 'test'];
         $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $session = m::spy('Illuminate\Session\SessionInterface');
@@ -61,8 +60,6 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
         $session->shouldHaveReceived('getId')->twice();
         $session->shouldHaveReceived('getSessionConfig')->twice();
         $session->shouldHaveReceived('all')->twice();
-
-        @session_write_close();
     }
 
     /**
@@ -76,7 +73,6 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        @session_start();
         $_SESSION = ['test' => 'test'];
 
         /*
@@ -96,7 +92,5 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
         $this->assertSame(['test' => 'test'], Arr::get($panel->getAttributes(), 'nativeSession'));
         $this->assertTrue(is_string($panel->getTab()));
         $this->assertTrue(is_string($panel->getPanel()));
-
-        @session_write_close();
     }
 }
