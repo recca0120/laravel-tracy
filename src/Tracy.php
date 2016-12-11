@@ -54,7 +54,7 @@ class Tracy
 
         Debugger::enable($mode);
         $debugbar = new Debugbar($config);
-        $debugbar->setupBar();
+        $debugbar->setup();
 
         return $instance = $debugbar;
     }

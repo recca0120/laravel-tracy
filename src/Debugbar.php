@@ -29,6 +29,13 @@ class Debugbar
     protected $request;
 
     /**
+     * $bar.
+     *
+     * @var \Tracy\Bar
+     */
+    protected $bar;
+
+    /**
      * $ajax.
      *
      * @var bool
@@ -72,6 +79,7 @@ class Debugbar
         $this->app = $app;
         $this->accepts = Arr::get($config, 'accepts', []);
         $this->showBar = Arr::get($config, 'showBar', false);
+        $this->bar = Debugger::getBar();
 
         $this->initializeTracyDebuger($config);
         $this->loadPanels($config);
@@ -159,20 +167,19 @@ class Debugbar
     }
 
     /**
-     * setupBar.
+     * setup.
      *
-     * @method setupBar
+     * @method setup
      *
      * @return \Tracy\Bar
      */
-    public function setupBar()
+    public function setup()
     {
-        $bar = Debugger::getBar();
         foreach ($this->panels as $panel) {
-            $bar->addPanel($panel);
+            $this->bar->addPanel($panel);
         }
 
-        return $bar;
+        return $this->bar;
     }
 
     /**
@@ -184,9 +191,9 @@ class Debugbar
      */
     protected function getBar()
     {
-        $bar = $this->setupBar();
+        $this->setup();
         ob_start();
-        $bar->render();
+        $this->bar->render();
 
         return ob_get_clean();
     }
@@ -290,7 +297,7 @@ class Debugbar
     public function dispatchAssets()
     {
         ob_start();
-        Debugger::getBar()->dispatchAssets();
+        $this->bar->dispatchAssets();
 
         return ob_get_clean();
     }
@@ -314,7 +321,9 @@ class Debugbar
         }
 
         ob_start();
-        Debugger::getBar()->dispatchContent();
+            method_exists($this->bar, 'dispatchContent') === true ?
+                $this->bar->dispatchContent() :
+                $this->bar->dispatchAssets();
 
         return ob_get_clean();
     }
