@@ -119,7 +119,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $this->assertInstanceOf('Tracy\Bar', $debugbar->setupBar());
+        $this->assertInstanceOf('Tracy\Bar', $debugbar->setup());
         $request->shouldHaveReceived('ajax')->once();
     }
 
