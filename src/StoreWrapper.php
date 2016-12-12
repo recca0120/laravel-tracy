@@ -57,7 +57,8 @@ class StoreWrapper
     /**
      * restore.
      */
-    protected function restore() {
+    protected function restore()
+    {
         $_SESSION['_tracy'] = $this->session->get('_tracy', []);
     }
 

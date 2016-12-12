@@ -6,10 +6,10 @@ use Illuminate\Support\Arr;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 use Recca0120\LaravelTracy\Exceptions\Handler;
+use Illuminate\Session\Middleware\StartSession;
 use Recca0120\LaravelTracy\Middleware\Dispatch;
 use Recca0120\Terminal\TerminalServiceProvider;
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Session\Middleware\StartSession;
 
 class LaravelTracyServiceProvider extends ServiceProvider
 {
