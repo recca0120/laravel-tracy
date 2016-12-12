@@ -50,22 +50,27 @@ class Dispatch
      */
     public function handle($request, $next)
     {
+        $response = $next($request);
+
         $this->storeWrapper->start();
 
-        return $response = $request->has('_tracy_bar') === true ?
-            $this->dispatchAssets($request->get('_tracy_bar')) :
-            $this->dispatchContent($request, $next);
+        return $request->has('_tracy_bar') === true ?
+             $this->dispatchAssets($request->get('_tracy_bar'), $response) :
+             $this->dispatchContent($response);
     }
 
     /**
      * dispatchAssets.
      *
      * @param  string $assets
+     * @param  \Symfony\Component\HttpFoundation\Response $response
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function dispatchAssets($assets)
+    protected function dispatchAssets($assets, $response)
     {
+        $this->storeWrapper->restore();
+
         switch ($assets) {
             case 'css':
                 $content = $this->debugbar->dispatchAssets();
@@ -87,10 +92,12 @@ class Dispatch
                 $headers = [
                     'content-type' => 'text/javascript; charset=utf-8',
                 ];
+
+                $this->storeWrapper->clean($assets);
                 break;
         }
 
-        return $this->sendStreamedResponse($content, array_merge($headers, [
+        return $response = $this->sendStreamedResponse($content, array_merge($headers, [
             'content-length' => strlen($content),
         ]));
     }
@@ -100,15 +107,18 @@ class Dispatch
      *
      * @method dispatchContent
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure                 $next
+     * @param \Symfony\Component\HttpFoundation\Response $response
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function dispatchContent($request, $next)
+    protected function dispatchContent($response)
     {
-        $this->debugbar->dispatchContent();
-        $response = $this->debugbar->render($next($request));
+        if ($response->getStatusCode() === 200) {
+            $this->debugbar->dispatchContent();
+        }
+
+        $response = $this->debugbar->render($response);
+
         $this->storeWrapper->store();
 
         return $response;

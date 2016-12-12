@@ -313,8 +313,7 @@ class Debugbar
     {
         ob_start();
         method_exists($this->bar, 'dispatchContent') === true ?
-            $this->bar->dispatchContent() :
-            $this->bar->dispatchAssets();
+            $this->bar->dispatchContent() : $this->bar->dispatchAssets();
 
         return ob_get_clean();
     }

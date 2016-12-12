@@ -21,8 +21,7 @@ class StoreWrapperTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $request = m::spy('Illuminate\Http\Request');
-        $session = m::spy('Illuminate\Session\SessionInterface');
+        $sessionManager = m::spy('Illuminate\Session\SessionManager');
 
         /*
         |------------------------------------------------------------
@@ -30,10 +29,10 @@ class StoreWrapperTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $request
-            ->shouldReceive('session')->andReturn($session);
+        $sessionManager
+            ->shouldReceive('isStarted')->andReturn(true);
 
-        $storeWrapper = new StoreWrapper($request);
+        $storeWrapper = new StoreWrapper($sessionManager);
 
         /*
         |------------------------------------------------------------
@@ -43,9 +42,10 @@ class StoreWrapperTest extends PHPUnit_Framework_TestCase
 
         $this->assertFalse($storeWrapper->isStarted());
         $this->assertTrue($storeWrapper->start());
+        $storeWrapper->restore();
 
-        $request->shouldHaveReceived('session')->once();
-        $session->shouldHaveReceived('get')->with('_tracy', []);
+        $sessionManager->shouldHaveReceived('isStarted')->once();
+        $sessionManager->shouldHaveReceived('get')->once();
     }
 
     /**
@@ -59,8 +59,7 @@ class StoreWrapperTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $request = m::spy('Illuminate\Http\Request');
-        $session = m::spy('Illuminate\Session\SessionInterface');
+        $sessionManager = m::spy('Illuminate\Session\SessionManager');
 
         /*
         |------------------------------------------------------------
@@ -68,10 +67,10 @@ class StoreWrapperTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $request
-            ->shouldReceive('session')->andReturn($session);
+        $sessionManager
+            ->shouldReceive('isStarted')->andReturn(true);
 
-        $storeWrapper = new StoreWrapper($request);
+        $storeWrapper = new StoreWrapper($sessionManager);
         $storeWrapper->start();
         $_SESSION['_tracy'] = ['foo'];
         $storeWrapper->store();
@@ -82,7 +81,7 @@ class StoreWrapperTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $request->shouldHaveReceived('session')->once();
-        $session->shouldHaveReceived('set')->with('_tracy', ['foo']);
+        $sessionManager->shouldHaveReceived('isStarted')->once();
+        $sessionManager->shouldHaveReceived('set')->once();
     }
 }

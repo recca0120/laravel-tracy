@@ -122,7 +122,6 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app->shouldHaveReceived('make')->with('Recca0120\LaravelTracy\Exceptions\Handler', ['exceptionHandler' => $handler])->once();
         $kernel->shouldHaveReceived('prependMiddleware')->with('Recca0120\LaravelTracy\Middleware\Dispatch')->once();
-        $kernel->shouldHaveReceived('prependMiddleware')->with('Illuminate\Session\Middleware\StartSession')->once();
     }
 }
 
