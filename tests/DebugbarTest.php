@@ -42,9 +42,6 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         $request->shouldHaveReceived('ajax')->once();
     }
 
-    /**
-     * @runTestsInSeparateProcesses
-     */
     public function test_dispatch()
     {
         /*
@@ -72,7 +69,7 @@ class DebugbarTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $this->assertEmpty($debugbar->dispatch());
+        $this->assertEmpty($debugbar->dispatchContent());
         $request->shouldHaveReceived('ajax')->once();
     }
 

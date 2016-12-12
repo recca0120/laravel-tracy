@@ -9,7 +9,7 @@ use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\LaravelTracy\Middleware\Dispatch;
 use Recca0120\Terminal\TerminalServiceProvider;
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Recca0120\LaravelTracy\Middleware\AppendDebugbar;
+use Illuminate\Session\Middleware\StartSession;
 
 class LaravelTracyServiceProvider extends ServiceProvider
 {
@@ -36,8 +36,9 @@ class LaravelTracyServiceProvider extends ServiceProvider
                     'exceptionHandler' => $exceptionHandler,
                 ]);
             });
+
             $kernel->prependMiddleware(Dispatch::class);
-            $kernel->pushMiddleware(AppendDebugbar::class);
+            $kernel->prependMiddleware(StartSession::class);
         }
     }
 
@@ -50,14 +51,11 @@ class LaravelTracyServiceProvider extends ServiceProvider
 
         $this->app->singleton(Debugbar::class, function ($app) {
             $config = Arr::get($app['config'], 'tracy', []);
-            // if (Arr::get($config, 'useLaravelSession', false) === true) {
-            //     $handler = $this->app['session']->driver()->getHandler();
-            //     session_set_save_handler(new SessionHandlerWrapper($handler), true);
-            // }
 
             return new Debugbar($config, $app['request'], $app);
         });
 
+        $this->app->singleton(StoreWrapper::class, StoreWrapper::class);
         $this->app->singleton(BlueScreen::class, BlueScreen::class);
 
         if ($this->app['config']['tracy.panels.terminal'] === true) {

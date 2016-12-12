@@ -309,17 +309,8 @@ class Debugbar
      *
      * @return string
      */
-    public function dispatch()
+    public function dispatchContent()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            ini_set('session.use_cookies', '1');
-            ini_set('session.use_only_cookies', '1');
-            ini_set('session.use_trans_sid', '0');
-            ini_set('session.cookie_path', '/');
-            ini_set('session.cookie_httponly', '1');
-            @session_start();
-        }
-
         ob_start();
         method_exists($this->bar, 'dispatchContent') === true ?
             $this->bar->dispatchContent() :

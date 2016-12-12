@@ -4,6 +4,7 @@ namespace Recca0120\LaravelTracy\Middleware;
 
 use Recca0120\LaravelTracy\Debugbar;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Recca0120\LaravelTracy\StoreWrapper;
 
 class Dispatch
 {
@@ -27,11 +28,13 @@ class Dispatch
      * @method __construct
      *
      * @param \Recca0120\LaravelTracy\Debugbar              $debugbar
+     * @param \Recca0120\LaravelTracy\StoreWrapper          $storeWrapper
      * @param \Illuminate\Contracts\Routing\ResponseFactory $responseFactory
      */
-    public function __construct(Debugbar $debugbar, ResponseFactory $responseFactory)
+    public function __construct(Debugbar $debugbar, StoreWrapper $storeWrapper, ResponseFactory $responseFactory)
     {
         $this->debugbar = $debugbar;
+        $this->storeWrapper = $storeWrapper;
         $this->responseFactory = $responseFactory;
     }
 
@@ -47,6 +50,8 @@ class Dispatch
      */
     public function handle($request, $next)
     {
+        $this->storeWrapper->start();
+
         if ($request->has('_tracy_bar') === true) {
             $tracyBar = $request->get('_tracy_bar');
 
@@ -67,7 +72,7 @@ class Dispatch
                     ];
                     break;
                 default:
-                    $content = $this->debugbar->dispatch();
+                    $content = $this->debugbar->dispatchContent();
                     $headers = [
                         'content-type' => 'text/javascript; charset=utf-8',
                     ];
@@ -78,9 +83,14 @@ class Dispatch
                 'content-length' => strlen($content),
             ]));
         }
-        $this->debugbar->dispatch();
 
-        return $next($request);
+        $this->debugbar->dispatchContent();
+
+        $response = $this->debugbar->render($next($request));
+
+        $this->storeWrapper->store();
+
+        return $response;
     }
 
     /**

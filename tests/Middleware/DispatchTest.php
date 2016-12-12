@@ -19,6 +19,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
+        $storeWrapper = m::spy('Recca0120\LaravelTracy\StoreWrapper');
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
@@ -39,9 +40,10 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $debugbar
             ->shouldreceive('dispatchAssets')->andReturn('foo.content');
 
-        $responseFactory->shouldReceive('make')->andReturn('foo.response');
+        $responseFactory
+            ->shouldReceive('make')->andReturn('foo.response');
 
-        $dispatch = new Dispatch($debugbar, $responseFactory);
+        $dispatch = new Dispatch($debugbar, $storeWrapper, $responseFactory);
 
         /*
         |------------------------------------------------------------
@@ -50,6 +52,8 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $this->assertSame('foo.response', $dispatch->handle($request, $next));
+
+        $storeWrapper->shouldHaveReceived('start')->once();
         $debugbar->shouldHaveReceived('dispatchAssets')->once();
         $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
             'content-type' => 'text/css; charset=utf-8',
@@ -67,6 +71,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
+        $storeWrapper = m::spy('Recca0120\LaravelTracy\StoreWrapper');
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
@@ -87,9 +92,10 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $debugbar
             ->shouldreceive('dispatchAssets')->andReturn('foo.content');
 
-        $responseFactory->shouldReceive('make')->andReturn('foo.response');
+        $responseFactory
+            ->shouldReceive('make')->andReturn('foo.response');
 
-        $dispatch = new Dispatch($debugbar, $responseFactory);
+        $dispatch = new Dispatch($debugbar, $storeWrapper, $responseFactory);
 
         /*
         |------------------------------------------------------------
@@ -98,6 +104,8 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $this->assertSame('foo.response', $dispatch->handle($request, $next));
+
+        $storeWrapper->shouldHaveReceived('start')->once();
         $debugbar->shouldHaveReceived('dispatchAssets')->once();
         $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
             'content-type' => 'text/javascript; charset=utf-8',
@@ -115,6 +123,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
+        $storeWrapper = m::spy('Recca0120\LaravelTracy\StoreWrapper');
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
@@ -135,9 +144,10 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $debugbar
             ->shouldreceive('dispatchAssets')->andReturn('foo.content');
 
-        $responseFactory->shouldReceive('make')->andReturn('foo.response');
+        $responseFactory
+            ->shouldReceive('make')->andReturn('foo.response');
 
-        $dispatch = new Dispatch($debugbar, $responseFactory);
+        $dispatch = new Dispatch($debugbar, $storeWrapper, $responseFactory);
 
         /*
         |------------------------------------------------------------
@@ -146,6 +156,8 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $this->assertSame('foo.response', $dispatch->handle($request, $next));
+
+        $storeWrapper->shouldHaveReceived('start')->once();
         $debugbar->shouldHaveReceived('dispatchAssets')->once();
         $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
             'content-type' => 'text/javascript; charset=utf-8',
@@ -154,7 +166,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         ]);
     }
 
-    public function test_dispatch_default()
+    public function test_dispatch_asset_content()
     {
         /*
         |------------------------------------------------------------
@@ -163,6 +175,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
+        $storeWrapper = m::spy('Recca0120\LaravelTracy\StoreWrapper');
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
@@ -181,11 +194,12 @@ class DispatchTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('get')->with('_tracy_bar');
 
         $debugbar
-            ->shouldreceive('dispatch')->andReturn('foo.content');
+            ->shouldreceive('dispatchContent')->andReturn('foo.content');
 
-        $responseFactory->shouldReceive('make')->andReturn('foo.response');
+        $responseFactory
+            ->shouldReceive('make')->andReturn('foo.response');
 
-        $dispatch = new Dispatch($debugbar, $responseFactory);
+        $dispatch = new Dispatch($debugbar, $storeWrapper, $responseFactory);
 
         /*
         |------------------------------------------------------------
@@ -194,14 +208,16 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $this->assertSame('foo.response', $dispatch->handle($request, $next));
-        $debugbar->shouldHaveReceived('dispatch')->once();
+
+        $storeWrapper->shouldHaveReceived('start')->once();
+        $debugbar->shouldHaveReceived('dispatchContent')->once();
         $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
             'content-type' => 'text/javascript; charset=utf-8',
             'content-length' => strlen('foo.content'),
         ]);
     }
 
-    public function test_dispatch_nothing()
+    public function test_dispatch_content()
     {
         /*
         |------------------------------------------------------------
@@ -210,6 +226,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
+        $storeWrapper = m::spy('Recca0120\LaravelTracy\StoreWrapper');
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
@@ -226,7 +243,12 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $request
             ->shouldReceive('has')->with('_tracy_bar')->andReturn(false);
 
-        $dispatch = new Dispatch($debugbar, $responseFactory);
+        $debugbar
+            ->shouldReceive('render')->with($response)->andReturnUsing(function ($response) {
+                return $response;
+            });
+
+        $dispatch = new Dispatch($debugbar, $storeWrapper, $responseFactory);
 
         /*
         |------------------------------------------------------------
@@ -235,6 +257,10 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $this->assertSame($response, $dispatch->handle($request, $next));
-        $debugbar->shouldHaveReceived('dispatch')->once();
+
+        $storeWrapper->shouldHaveReceived('start')->once();
+        $debugbar->shouldHaveReceived('dispatchContent')->once();
+        $debugbar->shouldHaveReceived('render')->with($response)->once();
+        $storeWrapper->shouldHaveReceived('store')->once();
     }
 }
