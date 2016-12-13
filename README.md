@@ -34,7 +34,7 @@ Instead, you may of course manually update your require block and run `composer 
 ```json
 {
     "require": {
-        "recca0120/laravel-tracy": "^1.7.10"
+        "recca0120/laravel-tracy": "^1.7.13"
     }
 }
 ```
@@ -60,7 +60,6 @@ php artisan vendor:publish --provider="Recca0120\LaravelTracy\LaravelTracyServic
 return [
     'enabled' => env('APP_DEBUG') === true,
     'showBar' => env('APP_ENV') !== 'production',
-    'useLavavelSession' => false,
     'accepts'      => [
         'text/html',
     ],
@@ -103,6 +102,9 @@ Prefer PhpStorm, you can edit `config/tracy.php`'s key of `editor` like this:
 ```
 
 ## Debugger Bar
+
+### Directive bdump
+![Ajax](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/bdump.png)
 
 ### Ajax Debugger Bar
 ![Ajax](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/ajax.png)
