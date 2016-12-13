@@ -53,10 +53,10 @@ class DispatchTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame('foo.response', $dispatch->handle($request, $next));
 
-        $storeWrapper->shouldHaveReceived('start')->once();
         $request->shouldHaveReceived('has')->with('_tracy_bar')->once();
         $request->shouldHaveReceived('get')->with('_tracy_bar')->once();
-        $storeWrapper->shouldHaveReceived('restore')->once();
+        // $storeWrapper->shouldHaveReceived('start')->once();
+        // $storeWrapper->shouldHaveReceived('restore')->once();
         $debugbar->shouldHaveReceived('dispatchAssets')->once();
         $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
             'content-type' => 'text/css; charset=utf-8',
@@ -108,10 +108,10 @@ class DispatchTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame('foo.response', $dispatch->handle($request, $next));
 
-        $storeWrapper->shouldHaveReceived('start')->once();
         $request->shouldHaveReceived('has')->with('_tracy_bar')->once();
         $request->shouldHaveReceived('get')->with('_tracy_bar')->once();
-        $storeWrapper->shouldHaveReceived('restore')->once();
+        // $storeWrapper->shouldHaveReceived('start')->once();
+        // $storeWrapper->shouldHaveReceived('restore')->once();
         $debugbar->shouldHaveReceived('dispatchAssets')->once();
         $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
             'content-type' => 'text/javascript; charset=utf-8',
@@ -163,10 +163,10 @@ class DispatchTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame('foo.response', $dispatch->handle($request, $next));
 
-        $storeWrapper->shouldHaveReceived('start')->once();
         $request->shouldHaveReceived('has')->with('_tracy_bar')->once();
         $request->shouldHaveReceived('get')->with('_tracy_bar')->once();
-        $storeWrapper->shouldHaveReceived('restore')->once();
+        // $storeWrapper->shouldHaveReceived('start')->once();
+        // $storeWrapper->shouldHaveReceived('restore')->once();
         $debugbar->shouldHaveReceived('dispatchAssets')->once();
         $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
             'content-type' => 'text/javascript; charset=utf-8',
@@ -191,6 +191,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $next = function () use ($response) {
             return $response;
         };
+        $contentId = 'content.'.uniqid();
 
         /*
         |------------------------------------------------------------
@@ -200,13 +201,16 @@ class DispatchTest extends PHPUnit_Framework_TestCase
 
         $request
             ->shouldReceive('has')->with('_tracy_bar')->andReturn(true)
-            ->shouldReceive('get')->with('_tracy_bar');
+            ->shouldReceive('get')->with('_tracy_bar')->andReturn($contentId);
 
         $debugbar
             ->shouldreceive('dispatchContent')->andReturn('foo.content');
 
         $responseFactory
             ->shouldReceive('make')->andReturn('foo.response');
+
+        $storeWrapper
+            ->shouldReceive('clean')->with($contentId)->andReturnSelf();
 
         $dispatch = new Dispatch($debugbar, $storeWrapper, $responseFactory);
 
@@ -218,11 +222,13 @@ class DispatchTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame('foo.response', $dispatch->handle($request, $next));
 
-        $storeWrapper->shouldHaveReceived('start')->once();
         $request->shouldHaveReceived('has')->with('_tracy_bar')->once();
         $request->shouldHaveReceived('get')->with('_tracy_bar')->once();
+        $storeWrapper->shouldHaveReceived('start')->once();
         $storeWrapper->shouldHaveReceived('restore')->once();
         $debugbar->shouldHaveReceived('dispatchContent')->once();
+        $storeWrapper->shouldHaveReceived('clean')->with($contentId)->once();
+        $storeWrapper->shouldHaveReceived('close')->once();
         $responseFactory->shouldHaveReceived('make')->with('foo.content', 200, [
             'content-type' => 'text/javascript; charset=utf-8',
             'content-length' => strlen('foo.content'),
@@ -260,6 +266,9 @@ class DispatchTest extends PHPUnit_Framework_TestCase
                 return $response;
             });
 
+        $storeWrapper
+            ->shouldReceive('store')->andReturnSelf();
+
         $dispatch = new Dispatch($debugbar, $storeWrapper, $responseFactory);
 
         /*
@@ -270,10 +279,11 @@ class DispatchTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame($response, $dispatch->handle($request, $next));
 
-        $storeWrapper->shouldHaveReceived('start')->once();
         $request->shouldHaveReceived('has')->with('_tracy_bar')->once();
+        $storeWrapper->shouldHaveReceived('start')->once();
         $debugbar->shouldHaveReceived('dispatchContent')->once();
         $debugbar->shouldHaveReceived('render')->with($response)->once();
         $storeWrapper->shouldHaveReceived('store')->once();
+        $storeWrapper->shouldHaveReceived('close')->once();
     }
 }

@@ -50,8 +50,6 @@ class Dispatch
      */
     public function handle($request, $next)
     {
-        $this->storeWrapper->start();
-
         return $request->has('_tracy_bar') === true ?
              $this->dispatchAssets($request, $next) :
              $this->dispatchContent($request, $next);
@@ -67,7 +65,6 @@ class Dispatch
      */
     protected function dispatchAssets($request, $next)
     {
-        $this->storeWrapper->restore();
         $assets = $request->get('_tracy_bar');
 
         switch ($assets) {
@@ -87,12 +84,17 @@ class Dispatch
                 ];
                 break;
             default:
+                $this->storeWrapper->start();
+                $this->storeWrapper->restore();
+
                 $content = $this->debugbar->dispatchContent();
                 $headers = [
                     'content-type' => 'text/javascript; charset=utf-8',
                 ];
 
-                $this->storeWrapper->clean($assets);
+                $this->storeWrapper
+                    ->clean($assets)
+                    ->close();
                 break;
         }
 
@@ -113,10 +115,15 @@ class Dispatch
      */
     protected function dispatchContent($request, $next)
     {
-        $response = $next($request);
+        $this->storeWrapper->start();
+
         $this->debugbar->dispatchContent();
-        $response = $this->debugbar->render($response);
-        $this->storeWrapper->store();
+
+        $response = $this->debugbar->render($next($request));
+
+        $this->storeWrapper
+            ->store()
+            ->close();
 
         return $response;
     }

@@ -14,6 +14,13 @@ class StoreWrapper
     protected $sessionManager;
 
     /**
+     * closable.
+     *
+     * @var bool
+     */
+    protected $closable;
+
+    /**
      * __construct.
      *
      * @param \Illuminate\Session\SessionManager  $sessionManager
@@ -22,25 +29,6 @@ class StoreWrapper
     {
         $this->sessionManager = $sessionManager;
         $this->compressor = $compressor;
-    }
-
-    /**
-     * start.
-     *
-     * @return bool
-     */
-    public function start()
-    {
-        if ($this->isStarted() === false) {
-            ini_set('session.use_cookies', '1');
-            ini_set('session.use_only_cookies', '1');
-            ini_set('session.use_trans_sid', '0');
-            ini_set('session.cookie_path', '/');
-            ini_set('session.cookie_httponly', '1');
-            @session_start();
-        }
-
-        return $this->isStarted();
     }
 
     /**
@@ -64,36 +52,82 @@ class StoreWrapper
     }
 
     /**
+     * start.
+     *
+     * @return bool
+     */
+    public function start()
+    {
+        $this->closable = $this->isStarted() === false;
+
+        if ($this->closable === true) {
+            ini_set('session.use_cookies', '1');
+            ini_set('session.use_only_cookies', '1');
+            ini_set('session.use_trans_sid', '0');
+            ini_set('session.cookie_path', '/');
+            ini_set('session.cookie_httponly', '1');
+            @session_start();
+        }
+
+        return $this->isStarted();
+    }
+
+    /**
+     * close.
+     *
+     * @return bool
+     */
+    public function close()
+    {
+        if ($this->closable === true) {
+            @session_write_close();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * restore.
+     *
+     * @return static
      */
     public function restore()
     {
         if ($this->isLaravelSessionStart() === false) {
-            return;
+            return $this;
         }
 
         // $_SESSION['_tracy'] = $this->compressor->decompress($this->sessionManager->get('_tracy', []));
+        return $this;
     }
 
     /**
      * store.
+     *
+     * @return static
      */
     public function store()
     {
         if ($this->isLaravelSessionStart() === false) {
-            return;
+            return $this;
         }
 
         // if (isset($_SESSION['_tracy']) === true) {
         //     $this->sessionManager->set('_tracy', $this->compressor->compress($_SESSION['_tracy']));
         //     unset($_SESSION['_tracy']);
         // }
+
+        return $this;
     }
 
     /**
      * clean.
      *
      * @param  string $contentId
+     *
+     * @return static
      */
     public function clean($contentId)
     {
@@ -106,6 +140,6 @@ class StoreWrapper
             unset($_SESSION['_tracy']['bar'][$id]);
         }
 
-        $this->store();
+        return $this->store();
     }
 }
