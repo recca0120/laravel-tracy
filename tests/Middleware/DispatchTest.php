@@ -255,9 +255,6 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         $request
             ->shouldReceive('has')->with('_tracy_bar')->andReturn(false);
 
-        $response
-            ->shouldReceive('getStatusCode')->andReturn(200);
-
         $debugbar
             ->shouldReceive('render')->with($response)->andReturnUsing(function ($response) {
                 return $response;
@@ -275,7 +272,6 @@ class DispatchTest extends PHPUnit_Framework_TestCase
 
         $storeWrapper->shouldHaveReceived('start')->once();
         $request->shouldHaveReceived('has')->with('_tracy_bar')->once();
-        $response->shouldHaveReceived('getStatusCode')->once();
         $debugbar->shouldHaveReceived('dispatchContent')->once();
         $debugbar->shouldHaveReceived('render')->with($response)->once();
         $storeWrapper->shouldHaveReceived('store')->once();

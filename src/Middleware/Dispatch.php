@@ -50,26 +50,25 @@ class Dispatch
      */
     public function handle($request, $next)
     {
-        $response = $next($request);
-
         $this->storeWrapper->start();
 
         return $request->has('_tracy_bar') === true ?
-             $this->dispatchAssets($request->get('_tracy_bar'), $response) :
-             $this->dispatchContent($response);
+             $this->dispatchAssets($request, $next) :
+             $this->dispatchContent($request, $next);
     }
 
     /**
      * dispatchAssets.
      *
-     * @param  string $assets
-     * @param  \Symfony\Component\HttpFoundation\Response $response
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function dispatchAssets($assets, $response)
+    protected function dispatchAssets($request, $next)
     {
         $this->storeWrapper->restore();
+        $assets = $request->get('_tracy_bar');
 
         switch ($assets) {
             case 'css':
@@ -97,7 +96,7 @@ class Dispatch
                 break;
         }
 
-        return $response = $this->responseFactory->make($content, 200, array_merge($headers, [
+        return $this->responseFactory->make($content, 200, array_merge($headers, [
             'content-length' => strlen($content),
         ]));
     }
@@ -107,18 +106,16 @@ class Dispatch
      *
      * @method dispatchContent
      *
-     * @param \Symfony\Component\HttpFoundation\Response $response
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function dispatchContent($response)
+    protected function dispatchContent($request, $next)
     {
-        if ($response->getStatusCode() === 200) {
-            $this->debugbar->dispatchContent();
-        }
-
+        $response = $next($request);
+        $this->debugbar->dispatchContent();
         $response = $this->debugbar->render($response);
-
         $this->storeWrapper->store();
 
         return $response;

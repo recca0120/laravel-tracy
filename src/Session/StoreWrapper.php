@@ -14,13 +14,6 @@ class StoreWrapper
     protected $sessionManager;
 
     /**
-     * $isStarted.
-     *
-     * @var bool
-     */
-    protected $isStarted = false;
-
-    /**
      * __construct.
      *
      * @param \Illuminate\Session\SessionManager  $sessionManager
@@ -29,16 +22,6 @@ class StoreWrapper
     {
         $this->sessionManager = $sessionManager;
         $this->compressor = $compressor;
-    }
-
-    /**
-     * isStarted.
-     *
-     * @return bool
-     */
-    public function isStarted()
-    {
-        return session_status() === PHP_SESSION_ACTIVE;
     }
 
     /**
@@ -57,9 +40,27 @@ class StoreWrapper
             @session_start();
         }
 
-        $this->isStarted = $this->sessionManager->isStarted();
-
         return $this->isStarted();
+    }
+
+    /**
+     * isStarted.
+     *
+     * @return bool
+     */
+    public function isStarted()
+    {
+        return session_status() === PHP_SESSION_ACTIVE;
+    }
+
+    /**
+     * isLaravelSessionStart.
+     *
+     * @return bool
+     */
+    public function isLaravelSessionStart()
+    {
+        return $this->sessionManager->isStarted();
     }
 
     /**
@@ -67,11 +68,11 @@ class StoreWrapper
      */
     public function restore()
     {
-        if ($this->isStarted === false) {
+        if ($this->isLaravelSessionStart() === false) {
             return;
         }
 
-        $_SESSION['_tracy'] = $this->compressor->decompress($this->sessionManager->get('_tracy', []));
+        // $_SESSION['_tracy'] = $this->compressor->decompress($this->sessionManager->get('_tracy', []));
     }
 
     /**
@@ -79,14 +80,14 @@ class StoreWrapper
      */
     public function store()
     {
-        if ($this->isStarted === false) {
+        if ($this->isLaravelSessionStart() === false) {
             return;
         }
 
-        if (isset($_SESSION['_tracy']) === true) {
-            $this->sessionManager->set('_tracy', $this->compressor->compress($_SESSION['_tracy']));
-            unset($_SESSION['_tracy']);
-        }
+        // if (isset($_SESSION['_tracy']) === true) {
+        //     $this->sessionManager->set('_tracy', $this->compressor->compress($_SESSION['_tracy']));
+        //     unset($_SESSION['_tracy']);
+        // }
     }
 
     /**
@@ -96,10 +97,6 @@ class StoreWrapper
      */
     public function clean($contentId)
     {
-        if ($this->isStarted === false) {
-            return;
-        }
-
         $id = str_replace('content.', '', $contentId);
         if (
             isset($_SESSION['_tracy']) === true &&
