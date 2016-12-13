@@ -19,7 +19,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
-        $storeWrapper = m::spy('Recca0120\LaravelTracy\StoreWrapper');
+        $storeWrapper = m::spy('Recca0120\LaravelTracy\Session\StoreWrapper');
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
@@ -74,7 +74,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
-        $storeWrapper = m::spy('Recca0120\LaravelTracy\StoreWrapper');
+        $storeWrapper = m::spy('Recca0120\LaravelTracy\Session\StoreWrapper');
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
@@ -129,7 +129,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
-        $storeWrapper = m::spy('Recca0120\LaravelTracy\StoreWrapper');
+        $storeWrapper = m::spy('Recca0120\LaravelTracy\Session\StoreWrapper');
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
@@ -184,7 +184,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
-        $storeWrapper = m::spy('Recca0120\LaravelTracy\StoreWrapper');
+        $storeWrapper = m::spy('Recca0120\LaravelTracy\Session\StoreWrapper');
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
@@ -238,7 +238,7 @@ class DispatchTest extends PHPUnit_Framework_TestCase
         */
 
         $debugbar = m::spy('Recca0120\LaravelTracy\Debugbar');
-        $storeWrapper = m::spy('Recca0120\LaravelTracy\StoreWrapper');
+        $storeWrapper = m::spy('Recca0120\LaravelTracy\Session\StoreWrapper');
         $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
         $request = m::spy('Illuminate\Http\Request');
         $response = m::spy('Symfony\Component\HttpFoundation\Response');

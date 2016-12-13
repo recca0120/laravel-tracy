@@ -49,7 +49,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         */
 
         $this->assertSame(['Illuminate\Contracts\Debug\ExceptionHandler'], $serviceProvider->provides());
-        $app->shouldHaveReceived('singleton')->with('Recca0120\LaravelTracy\StoreWrapper', 'Recca0120\LaravelTracy\StoreWrapper')->once();
+        $app->shouldHaveReceived('singleton')->with('Recca0120\LaravelTracy\Session\StoreWrapper', 'Recca0120\LaravelTracy\Session\StoreWrapper')->once();
         $app->shouldHaveReceived('singleton')->with('Recca0120\LaravelTracy\BlueScreen', 'Recca0120\LaravelTracy\BlueScreen')->once();
         $app->shouldHaveReceived('singleton')->with('Recca0120\LaravelTracy\Debugbar', m::type('Closure'))->once();
         $app->shouldHaveReceived('register')->with('Recca0120\Terminal\TerminalServiceProvider')->once();

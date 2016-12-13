@@ -1,6 +1,6 @@
 <?php
 
-namespace Recca0120\LaravelTracy;
+namespace Recca0120\LaravelTracy\Session;
 
 use Illuminate\Session\SessionManager;
 
@@ -25,9 +25,10 @@ class StoreWrapper
      *
      * @param \Illuminate\Session\SessionManager  $sessionManager
      */
-    public function __construct(SessionManager $sessionManager)
+    public function __construct(SessionManager $sessionManager, Compressor $compressor)
     {
         $this->sessionManager = $sessionManager;
+        $this->compressor = $compressor;
     }
 
     /**
@@ -70,7 +71,7 @@ class StoreWrapper
             return;
         }
 
-        $_SESSION['_tracy'] = $this->decode($this->sessionManager->get('_tracy', []));
+        $_SESSION['_tracy'] = $this->compressor->decompress($this->sessionManager->get('_tracy', []));
     }
 
     /**
@@ -83,8 +84,8 @@ class StoreWrapper
         }
 
         if (isset($_SESSION['_tracy']) === true) {
-            $this->sessionManager->set('_tracy', $this->encode($_SESSION['_tracy']));
-            $_SESSION['_tracy'] = [];
+            $this->sessionManager->set('_tracy', $this->compressor->compress($_SESSION['_tracy']));
+            unset($_SESSION['_tracy']);
         }
     }
 
@@ -109,58 +110,5 @@ class StoreWrapper
         }
 
         $this->store();
-    }
-
-    /**
-     * encode.
-     *
-     * @param  mix $data
-     *
-     * @return string
-     */
-    protected function encode($data)
-    {
-        if (empty($data) === true || function_exists('gzdeflate') === false) {
-            return $data;
-        }
-
-        $steps = ['serialize', 'gzdeflate', 'base64_encode'];
-
-        return $this->steps($steps, $data);
-    }
-
-    /**
-     * decode.
-     *
-     * @param  string $data
-     *
-     * @return mix
-     */
-    protected function decode($data)
-    {
-        if (empty($data) === true || function_exists('gzinflate') === false) {
-            return $data;
-        }
-
-        $steps = ['base64_decode', 'gzinflate', 'unserialize'];
-
-        return $this->steps($steps, $data);
-    }
-
-    /**
-     * steps.
-     *
-     * @param  array $steps
-     * @param  mix $data
-     *
-     * @return mix
-     */
-    protected function steps($steps, $data)
-    {
-        foreach ($steps as $step) {
-            $data = $step($data);
-        }
-
-        return $data;
     }
 }

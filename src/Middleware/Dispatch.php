@@ -3,7 +3,7 @@
 namespace Recca0120\LaravelTracy\Middleware;
 
 use Recca0120\LaravelTracy\Debugbar;
-use Recca0120\LaravelTracy\StoreWrapper;
+use Recca0120\LaravelTracy\Session\StoreWrapper;
 use Illuminate\Contracts\Routing\ResponseFactory;
 
 class Dispatch
@@ -97,7 +97,7 @@ class Dispatch
                 break;
         }
 
-        return $response = $this->sendStreamedResponse($content, array_merge($headers, [
+        return $response = $this->responseFactory->make($content, 200, array_merge($headers, [
             'content-length' => strlen($content),
         ]));
     }
@@ -122,19 +122,5 @@ class Dispatch
         $this->storeWrapper->store();
 
         return $response;
-    }
-
-    /**
-     * sendStreamedResponse.
-     *
-     * @method sendStreamedResponse
-     *
-     * @param string $content
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    protected function sendStreamedResponse($content, $headers)
-    {
-        return $this->responseFactory->make($content, 200, $headers);
     }
 }
