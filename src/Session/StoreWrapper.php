@@ -23,7 +23,8 @@ class StoreWrapper
     /**
      * __construct.
      *
-     * @param \Illuminate\Session\SessionManager  $sessionManager
+     * @param \Illuminate\Session\SessionManager $sessionManager
+     * @param \Recca0120\LaravelTracy\Session    $compressor
      */
     public function __construct(SessionManager $sessionManager, Compressor $compressor)
     {
