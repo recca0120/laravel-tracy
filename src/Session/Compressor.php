@@ -2,8 +2,6 @@
 
 namespace Recca0120\LaravelTracy\Session;
 
-use Illuminate\Session\SessionManager;
-
 class Compressor
 {
     /**
@@ -70,7 +68,8 @@ class Compressor
      *
      * @return string
      */
-    protected function getCompressor($type = 'compress') {
+    protected function getCompressor($type = 'compress')
+    {
         $map = [
             'compress' => [
                 'gzdeflate',
@@ -78,16 +77,19 @@ class Compressor
             ],
             'decompress' => [
                 'gzinflate',
-                'gzuncompress'
-            ]
+                'gzuncompress',
+            ],
         ];
 
+        $compressor = null;
         foreach ($map[$type] as $func) {
             if (function_exists($func) === true) {
-                return $func;
+                $compressor = $func;
+
+                break;
             }
         }
 
-        return null;
+        return $compressor;
     }
 }

@@ -117,11 +117,10 @@ class StoreWrapperTest extends PHPUnit_Framework_TestCase
         $storeWrapper->start();
         $_SESSION['_tracy'] = [
             'bar' => [
-                $contentId => '123'
-            ]
+                $contentId => '123',
+            ],
         ];
         $storeWrapper->clean('content.'.$contentId);
-
 
         /*
         |------------------------------------------------------------
