@@ -18,8 +18,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
         $exceptionHandler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
+        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
         $exception = new Exception();
 
         /*
@@ -28,7 +28,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $handler = new Handler($bluescreen, $exceptionHandler);
+        $handler = new Handler($exceptionHandler, $bluescreen);
         $handler->report($exception);
 
         /*
@@ -48,8 +48,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
         $exceptionHandler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
+        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
         $request = m::spy('Illuminate\Http\Request');
         $exception = new Exception();
         $response = m::spy('Symfony\Component\HttpFoundation\RedirectResponse');
@@ -62,7 +62,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $exceptionHandler->shouldReceive('render')->andReturn($response);
 
-        $handler = new Handler($bluescreen, $exceptionHandler);
+        $handler = new Handler($exceptionHandler, $bluescreen);
 
         /*
         |------------------------------------------------------------
@@ -81,8 +81,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
         $exceptionHandler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
+        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
         $request = m::spy('Illuminate\Http\Request');
         $exception = new Exception();
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
@@ -97,7 +97,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $exceptionHandler->shouldReceive('render')->andReturn($response);
         $response->shouldReceive('getContent')->andReturn($view);
 
-        $handler = new Handler($bluescreen, $exceptionHandler);
+        $handler = new Handler($exceptionHandler, $bluescreen);
 
         /*
         |------------------------------------------------------------
@@ -116,8 +116,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
         $exceptionHandler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
+        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
         $request = m::spy('Illuminate\Http\Request');
         $exception = new Exception();
         $response = m::spy('Symfony\Component\HttpFoundation\Response');
@@ -131,7 +131,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $exceptionHandler->shouldReceive('render')->andReturn($response);
         $bluescreen->shouldReceive('render')->with($exception)->andReturn('bluescreen');
 
-        $handler = new Handler($bluescreen, $exceptionHandler);
+        $handler = new Handler($exceptionHandler, $bluescreen);
 
         /*
         |------------------------------------------------------------
@@ -154,8 +154,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
         $exceptionHandler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
+        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
         $exception = new Exception();
         $output = m::spy('\Symfony\Component\Console\Output\OutputInterface');
 
@@ -165,7 +165,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $handler = new Handler($bluescreen, $exceptionHandler);
+        $handler = new Handler($exceptionHandler, $bluescreen);
         $handler->renderForConsole($output, $exception);
 
         /*

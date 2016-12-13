@@ -65,6 +65,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $kernel = m::spy('Illuminate\Contracts\Http\Kernel');
+        $bladeCompiler = m::spy('Illuminate\View\Compilers\BladeCompiler');
 
         /*
         |------------------------------------------------------------
@@ -75,7 +76,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $app->shouldReceive('runningInConsole')->andReturn(true);
 
         $serviceProvider = new LaravelTracyServiceProvider($app);
-        $serviceProvider->boot($kernel);
+        $serviceProvider->boot($kernel, $bladeCompiler);
 
         /*
         |------------------------------------------------------------
@@ -96,6 +97,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $kernel = m::spy('Illuminate\Contracts\Http\Kernel');
+        $bladeCompiler = m::spy('Illuminate\View\Compilers\BladeCompiler');
         $config = ['tracy' => ['enabled' => true]];
         $handler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
 
@@ -112,7 +114,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             });
 
         $serviceProvider = new LaravelTracyServiceProvider($app);
-        $serviceProvider->boot($kernel);
+        $serviceProvider->boot($kernel, $bladeCompiler);
 
         /*
         |------------------------------------------------------------
@@ -122,6 +124,11 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app->shouldHaveReceived('make')->with('Recca0120\LaravelTracy\Exceptions\Handler', ['exceptionHandler' => $handler])->once();
         $kernel->shouldHaveReceived('prependMiddleware')->with('Recca0120\LaravelTracy\Middleware\Dispatch')->once();
+        $bladeCompiler->shouldHaveReceived('directive')->with('bdump', m::on(function ($closure) {
+            $expression = '123';
+
+            return "<?php \Tracy\Debugger::barDump({$expression}); ?>" === $closure($expression);
+        }))->once();
     }
 }
 

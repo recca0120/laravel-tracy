@@ -11,13 +11,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class Handler implements ExceptionHandler
 {
     /**
-     * $blueScreen.
-     *
-     * @var \Recca0120\LaravelTracy\BlueScreen
-     */
-    protected $blueScreen;
-
-    /**
      * app exception handler.
      *
      * @var \Illuminate\Contracts\Debug\ExceptionHandler
@@ -25,17 +18,24 @@ class Handler implements ExceptionHandler
     protected $exceptionHandler;
 
     /**
+     * $blueScreen.
+     *
+     * @var \Recca0120\LaravelTracy\BlueScreen
+     */
+    protected $blueScreen;
+
+    /**
      * __construct.
      *
      * @method __construct
      *
-     * @param \Recca0120\LaravelTracy\BlueScreen           $blueScreen
      * @param \Illuminate\Contracts\Debug\ExceptionHandler $exceptionHandler
+     * @param \Recca0120\LaravelTracy\BlueScreen           $blueScreen
      */
-    public function __construct(BlueScreen $blueScreen, $exceptionHandler)
+    public function __construct(ExceptionHandler $exceptionHandler, BlueScreen $blueScreen)
     {
-        $this->blueScreen = $blueScreen;
         $this->exceptionHandler = $exceptionHandler;
+        $this->blueScreen = $blueScreen;
     }
 
     /**
