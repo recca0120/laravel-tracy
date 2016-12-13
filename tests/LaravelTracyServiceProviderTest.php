@@ -65,7 +65,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $kernel = m::spy('Illuminate\Contracts\Http\Kernel');
-        $bladeCompiler = m::spy('Illuminate\View\Compilers\BladeCompiler');
+        $view = m::spy('Illuminate\Contracts\View\Factory');
 
         /*
         |------------------------------------------------------------
@@ -76,7 +76,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $app->shouldReceive('runningInConsole')->andReturn(true);
 
         $serviceProvider = new LaravelTracyServiceProvider($app);
-        $serviceProvider->boot($kernel, $bladeCompiler);
+        $serviceProvider->boot($kernel, $view);
 
         /*
         |------------------------------------------------------------
@@ -97,7 +97,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $kernel = m::spy('Illuminate\Contracts\Http\Kernel');
-        $bladeCompiler = m::spy('Illuminate\View\Compilers\BladeCompiler');
+        $view = m::spy('Illuminate\Contracts\View\Factory');
         $config = ['tracy' => ['enabled' => true]];
         $handler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
 
@@ -113,8 +113,13 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
                 return $closure($handler, $app);
             });
 
+        $view
+            ->shouldReceive('getEngineResolver')->andReturnSelf()
+            ->shouldReceive('resolve')->andReturnSelf()
+            ->shouldReceive('getCompiler')->andReturnSelf();
+
         $serviceProvider = new LaravelTracyServiceProvider($app);
-        $serviceProvider->boot($kernel, $bladeCompiler);
+        $serviceProvider->boot($kernel, $view);
 
         /*
         |------------------------------------------------------------
@@ -124,7 +129,11 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app->shouldHaveReceived('make')->with('Recca0120\LaravelTracy\Exceptions\Handler', ['exceptionHandler' => $handler])->once();
         $kernel->shouldHaveReceived('prependMiddleware')->with('Recca0120\LaravelTracy\Middleware\Dispatch')->once();
-        $bladeCompiler->shouldHaveReceived('directive')->with('bdump', m::on(function ($closure) {
+
+        $view->shouldHaveReceived('getEngineResolver')->once();
+        $view->shouldHaveReceived('resolve')->with('blade')->once();
+        $view->shouldHaveReceived('getCompiler')->once();
+        $view->shouldHaveReceived('directive')->with('bdump', m::on(function ($closure) {
             $expression = '123';
 
             return "<?php \Tracy\Debugger::barDump({$expression}); ?>" === $closure($expression);

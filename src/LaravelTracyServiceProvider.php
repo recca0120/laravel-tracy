@@ -5,7 +5,7 @@ namespace Recca0120\LaravelTracy;
 use Illuminate\Support\Arr;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\View\Compilers\BladeCompiler;
+use Illuminate\Contracts\View\Factory as View;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\LaravelTracy\Middleware\Dispatch;
 use Recca0120\Terminal\TerminalServiceProvider;
@@ -20,9 +20,9 @@ class LaravelTracyServiceProvider extends ServiceProvider
      * @method boot
      *
      * @param \Illuminate\Contracts\Http\Kernel $kernel
-     * @param \Illuminate\View\Compilers\BladeCompiler $bladeCompiler
+     * @param \Illuminate\Contracts\View\Factory $view
      */
-    public function boot(Kernel $kernel, BladeCompiler $bladeCompiler)
+    public function boot(Kernel $kernel, View $view)
     {
         if ($this->app->runningInConsole() === true) {
             $this->publishes([
@@ -42,9 +42,13 @@ class LaravelTracyServiceProvider extends ServiceProvider
             $kernel->prependMiddleware(Dispatch::class);
         }
 
-        $bladeCompiler->directive('bdump', function ($expression) {
-            return "<?php \Tracy\Debugger::barDump({$expression}); ?>";
-        });
+        $view
+            ->getEngineResolver()
+            ->resolve('blade')
+            ->getCompiler()
+            ->directive('bdump', function ($expression) {
+                return "<?php \Tracy\Debugger::barDump({$expression}); ?>";
+            });
     }
 
     /**
