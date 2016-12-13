@@ -41,8 +41,7 @@ class StoreWrapperTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $this->assertFalse($storeWrapper->isStarted());
-        $this->assertTrue($storeWrapper->start());
+        $storeWrapper->start();
         $storeWrapper->restore();
 
         $sessionManager->shouldHaveReceived('isStarted')->once();

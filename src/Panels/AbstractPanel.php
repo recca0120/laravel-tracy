@@ -139,7 +139,7 @@ abstract class AbstractPanel implements IBarPanel
                 continue;
             }
 
-            return $source = [$row['file'], (int) $row['line']];
+            $source = [$row['file'], (int) $row['line']];
         }
 
         return $source;
