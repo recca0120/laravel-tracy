@@ -174,7 +174,7 @@ class DatabasePanel extends AbstractPanel
      */
     public static function explain(PDO $pdo, $sql, $bindings = [])
     {
-        if (preg_match('#\s*\(?\s*SELECT\s#iA', $sql) == true) {
+        if (preg_match('#\s*\(?\s*SELECT\s#iA', $sql)) {
             $statement = $pdo->prepare('EXPLAIN '.$sql);
             $statement->execute($bindings);
 
