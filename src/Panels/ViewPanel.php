@@ -26,7 +26,9 @@ class ViewPanel extends AbstractPanel
      */
     public function subscribe()
     {
-        $this->laravel['events']->listen('composing:*', function ($view) {
+        $this->laravel['events']->listen('composing:*', function () {
+            $params = func_get_args();
+            $view = count($params) === 1 ? $params[0] : $params[1][0];
             $name = $view->getName();
             $data = $this->limitCollection(Arr::except($view->getData(), ['__env', 'app']));
 
