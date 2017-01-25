@@ -1,8 +1,6 @@
 <?php
 
 use Mockery as m;
-use Recca0120\LaravelTracy\Tracy;
-use Illuminate\Contracts\Debug\ExceptionHandler;
 use Recca0120\LaravelTracy\LaravelTracyServiceProvider;
 
 class ServiceProviderTest extends PHPUnit_Framework_TestCase
@@ -100,6 +98,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $view = m::spy('Illuminate\Contracts\View\Factory');
         $config = ['tracy' => ['enabled' => true]];
         $handler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
+        $blueScreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
 
         /*
         |------------------------------------------------------------
@@ -109,6 +108,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app
             ->shouldReceive('offsetGet')->with('config')->andReturn($config)
+            ->shouldReceive('make')->with('Recca0120\LaravelTracy\BlueScreen')->andReturn($blueScreen)
             ->shouldReceive('extend')->with('Illuminate\Contracts\Debug\ExceptionHandler', m::type('Closure'))->once()->andReturnUsing(function ($className, $closure) use ($handler, $app) {
                 return $closure($handler, $app);
             });
@@ -127,7 +127,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app->shouldHaveReceived('make')->with('Recca0120\LaravelTracy\Exceptions\Handler', ['exceptionHandler' => $handler])->once();
+        $app->shouldHaveReceived('make')->with('Recca0120\LaravelTracy\BlueScreen')->once();
         $kernel->shouldHaveReceived('prependMiddleware')->with('Recca0120\LaravelTracy\Middleware\Dispatch')->once();
 
         $view->shouldHaveReceived('getEngineResolver')->once();

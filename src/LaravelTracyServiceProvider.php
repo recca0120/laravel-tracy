@@ -34,9 +34,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
 
         if ($this->app['config']['tracy']['enabled'] === true) {
             $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
-                return $app->make(Handler::class, [
-                    'exceptionHandler' => $exceptionHandler,
-                ]);
+                return new Handler($exceptionHandler, $this->app->make(BlueScreen::class));
             });
 
             $kernel->prependMiddleware(Dispatch::class);
