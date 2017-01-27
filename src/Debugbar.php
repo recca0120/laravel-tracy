@@ -74,7 +74,7 @@ class Debugbar
      */
     public function __construct($config, Request $request = null, Application $app = null)
     {
-        $this->request = is_null($request) === true ? Request::capture() : $request;
+        $this->request = $request ?: Request::capture();
         $this->ajax = $this->request->ajax();
         $this->app = $app;
         $this->accepts = Arr::get($config, 'accepts', []);

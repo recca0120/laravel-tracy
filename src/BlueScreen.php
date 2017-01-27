@@ -20,7 +20,7 @@ class BlueScreen
      */
     public function render(Exception $exception, $error = null)
     {
-        $error = is_null($error) === true ? error_get_last() : $error;
+        $error = $error ?: error_get_last();
         $exception = $this->fixStack($exception, $error);
 
         ob_start();
