@@ -7,6 +7,7 @@ use Illuminate\Contracts\View\View;
 use Recca0120\LaravelTracy\BlueScreen;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class Handler implements ExceptionHandler
 {
@@ -61,7 +62,7 @@ class Handler implements ExceptionHandler
     public function render($request, Exception $e)
     {
         $response = $this->exceptionHandler->render($request, $e);
-        if ($response instanceof RedirectResponse) {
+        if ($response instanceof RedirectResponse || $response instanceof JsonResponse) {
             return $response;
         }
 
