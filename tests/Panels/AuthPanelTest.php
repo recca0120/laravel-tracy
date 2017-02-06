@@ -8,7 +8,7 @@ use Recca0120\LaravelTracy\Panels\AuthPanel;
 
 class AuthPanelTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

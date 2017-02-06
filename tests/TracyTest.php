@@ -8,7 +8,7 @@ use Recca0120\LaravelTracy\Tracy;
 
 class TracyTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

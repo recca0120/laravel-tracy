@@ -8,7 +8,7 @@ use Recca0120\LaravelTracy\Session\Compressor;
 
 class CompressorTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

@@ -8,7 +8,7 @@ use Recca0120\LaravelTracy\Panels\EventPanel;
 
 class EventPanelTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

@@ -8,7 +8,7 @@ use Recca0120\LaravelTracy\Panels\RoutingPanel;
 
 class RoutingPanelTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

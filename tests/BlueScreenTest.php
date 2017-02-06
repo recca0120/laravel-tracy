@@ -9,7 +9,7 @@ use Recca0120\LaravelTracy\BlueScreen;
 
 class BlueScreenTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }
