@@ -3,9 +3,10 @@
 namespace Recca0120\LaravelTracy\Tests\Middleware;
 
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Middleware\Dispatch;
 
-class DispatchTest extends \PHPUnit_Framework_TestCase
+class DispatchTest extends TestCase
 {
     public function tearDown()
     {

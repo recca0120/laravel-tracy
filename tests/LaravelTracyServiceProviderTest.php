@@ -3,9 +3,10 @@
 namespace Recca0120\LaravelTracy\Tests;
 
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\LaravelTracyServiceProvider;
 
-class LaravelTracyServiceProviderTest extends \PHPUnit_Framework_TestCase
+class LaravelTracyServiceProviderTest extends TestCase
 {
     public function tearDown()
     {

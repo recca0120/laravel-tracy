@@ -3,9 +3,10 @@
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\HtmlValidatorPanel;
 
-class HtmlValidatorPanelTest extends \PHPUnit_Framework_TestCase
+class HtmlValidatorPanelTest extends TestCase
 {
     public function tearDown()
     {

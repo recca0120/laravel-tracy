@@ -4,9 +4,10 @@ namespace Recca0120\LaravelTracy\Tests\Panels;
 
 use Mockery as m;
 use Illuminate\Http\Request;
+use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\RequestPanel;
 
-class RequestPanelTest extends \PHPUnit_Framework_TestCase
+class RequestPanelTest extends TestCase
 {
     public function tearDown()
     {

@@ -6,10 +6,11 @@ use PDO;
 use DateTime;
 use stdClass;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Illuminate\Database\Connection;
 use Recca0120\LaravelTracy\Panels\DatabasePanel;
 
-class DatabasePanelTest extends \PHPUnit_Framework_TestCase
+class DatabasePanelTest extends TestCase
 {
     public function tearDown()
     {

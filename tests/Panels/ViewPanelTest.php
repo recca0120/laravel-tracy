@@ -4,9 +4,10 @@ namespace Recca0120\LaravelTracy\Tests\Panels;
 
 use stdClass;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\ViewPanel;
 
-class ViewPanelTest extends \PHPUnit_Framework_TestCase
+class ViewPanelTest extends TestCase
 {
     public function tearDown()
     {

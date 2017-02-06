@@ -3,9 +3,10 @@
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\SessionPanel;
 
-class SessionPanelTest extends \PHPUnit_Framework_TestCase
+class SessionPanelTest extends TestCase
 {
     public function tearDown()
     {

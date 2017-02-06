@@ -3,9 +3,10 @@
 namespace Recca0120\LaravelTracy\Tests\Session;
 
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Session\StoreWrapper;
 
-class StoreWrapperTest extends \PHPUnit_Framework_TestCase
+class StoreWrapperTest extends TestCase
 {
     public function tearDown()
     {

@@ -4,9 +4,10 @@ namespace Recca0120\LaravelTracy\Tests\Exceptions;
 
 use Exception;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 
-class HandlerTest extends \PHPUnit_Framework_TestCase
+class HandlerTest extends TestCase
 {
     public function tearDown()
     {
