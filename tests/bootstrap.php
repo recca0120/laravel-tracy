@@ -25,3 +25,18 @@ use Carbon\Carbon;
 */
 date_default_timezone_set('UTC');
 Carbon::setTestNow(Carbon::now());
+
+if (function_exists('env') === false) {
+    function env($env)
+    {
+        switch ($env) {
+            case 'APP_ENV':
+                return 'local';
+                break;
+
+            case 'APP_DEBUG':
+                return true;
+                break;
+        }
+    }
+}

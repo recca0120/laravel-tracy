@@ -6,7 +6,7 @@ use PDO;
 use DateTime;
 use Exception;
 
-class DatabasePanel extends AbstractPanel
+class DatabasePanel extends AbstractSubscribePanel
 {
     /**
      * $queries.
@@ -30,67 +30,32 @@ class DatabasePanel extends AbstractPanel
     protected $counter = 0;
 
     /**
-     * $eventName.
-     *
-     * @var string
-     */
-    protected $eventName = null;
-
-    /**
-     * setEventName.
-     *
-     * @method setEventName
-     *
-     * @param  static
-     */
-    public function setEventName($eventName)
-    {
-        $this->eventName = $eventName;
-
-        return $this;
-    }
-
-    /**
-     * getEventName.
-     *
-     * @method getEventName
-     *
-     * @return string
-     */
-    public function getEventName()
-    {
-        if (is_null($this->eventName) === true) {
-            $this->setEventName(class_exists('Illuminate\Database\Events\QueryExecuted') === true ?
-                'Illuminate\Database\Events\QueryExecuted' : 'illuminate.query');
-        }
-
-        return $this->eventName;
-    }
-
-    /**
      * subscribe.
      *
      * @method subscribe
      */
-    public function subscribe()
+    protected function subscribe()
     {
         $events = $this->laravel['events'];
-        if ($this->getEventName() === 'Illuminate\Database\Events\QueryExecuted') {
+        if (version_compare($this->laravel->version(), 5.2, '>=') === true) {
             $events->listen('Illuminate\Database\Events\QueryExecuted', function ($event) {
-                $sql = $event->sql;
-                $bindings = $event->bindings;
-                $time = $event->time;
-                $name = $event->connectionName;
-                $pdo = $event->connection->getPdo();
-
-                $this->logQuery($sql, $bindings, $time, $name, $pdo);
+                $this->logQuery(
+                    $event->sql,
+                    $event->bindings,
+                    $event->time,
+                    $event->connectionName,
+                    $event->connection->getPdo()
+                );
             });
         } else {
-            $events->listen('illuminate.query', function ($sql, $bindings, $time, $name) {
-                $connection = $this->laravel['db']->connection($name);
-                $pdo = $connection->getPdo();
-
-                $this->logQuery($sql, $bindings, $time, $name, $pdo);
+            $events->listen('illuminate.query', function ($sql, $bindings, $time, $connectionName) {
+                $this->logQuery(
+                    $sql,
+                    $bindings,
+                    $time,
+                    $connectionName,
+                    $this->laravel['db']->connection($connectionName)->getPdo()
+                );
             });
         }
     }
@@ -107,7 +72,7 @@ class DatabasePanel extends AbstractPanel
      * @param PDO    $pdo
      * @param string $driver
      *
-     * @return self
+     * @return static
      */
     public function logQuery($sql, $bindings = [], $time = 0, $name = null, PDO $pdo = null, $driver = 'mysql')
     {
@@ -174,14 +139,14 @@ class DatabasePanel extends AbstractPanel
      */
     public static function explain(PDO $pdo, $sql, $bindings = [])
     {
+        $explains = [];
         if (preg_match('#\s*\(?\s*SELECT\s#iA', $sql)) {
             $statement = $pdo->prepare('EXPLAIN '.$sql);
             $statement->execute($bindings);
-
-            return $statement->fetchAll(PDO::FETCH_CLASS);
+            $explains = $statement->fetchAll(PDO::FETCH_CLASS);
         }
 
-        return [];
+        return $explains;
     }
 
     /**
@@ -303,7 +268,7 @@ class DatabasePanel extends AbstractPanel
      *
      * @return array
      */
-    public function getAttributes()
+    protected function getAttributes()
     {
         $queries = [];
         foreach ($this->queries as $query) {

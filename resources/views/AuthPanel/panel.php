@@ -1,11 +1,12 @@
-<div class="Laravel-AuthPanel">
-    <h1><?php echo is_null($user) === false ? 'Logged in' : 'Unlogged' ?></h1>
-    <?php if (is_null($user) === true): ?>
+<h1><?php echo is_null($rows) === false ? 'Logged in' : 'Unlogged' ?></h1>
+
+<div class="tracy-inner Laravel-AuthPanel">
+    <?php if (is_null($rows) === true): ?>
         <p>No identity</p>
     <?php else: ?>
         <table>
             <tbody>
-                <?php foreach ($user as $key => $value): ?>
+                <?php foreach ($rows as $key => $value): ?>
                     <tr>
                         <th><?php echo $key  ?></th>
                         <td>

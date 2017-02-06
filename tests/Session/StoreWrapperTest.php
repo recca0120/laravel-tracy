@@ -1,9 +1,11 @@
 <?php
 
+namespace Recca0120\LaravelTracy\Tests\Session;
+
 use Mockery as m;
 use Recca0120\LaravelTracy\Session\StoreWrapper;
 
-class StoreWrapperTest extends PHPUnit_Framework_TestCase
+class StoreWrapperTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
@@ -13,152 +15,70 @@ class StoreWrapperTest extends PHPUnit_Framework_TestCase
     /**
      * @runTestsInSeparateProcesses
      */
-    public function test_is_started()
+    public function testStart()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $sessionManager = m::spy('Illuminate\Session\SessionManager');
-        $compressor = m::spy('Recca0120\LaravelTracy\Session\Compressor');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $sessionManager
-            ->shouldReceive('isStarted')->andReturn(true);
-
-        $storeWrapper = new StoreWrapper($sessionManager, $compressor);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $storeWrapper->start();
-        $storeWrapper->restore();
-
-        $sessionManager->shouldHaveReceived('isStarted')->once();
-        // $compressor->shouldHaveReceived('decompress')->once();
-        // $sessionManager->shouldHaveReceived('get')->once();
+        $storeWrapper = new StoreWrapper(
+            $sessionManager = m::mock('Illuminate\Session\SessionManager'),
+            $compressor = m::mock('Recca0120\LaravelTracy\Session\Compressor')
+        );
+        $this->assertTrue($storeWrapper->start());
     }
 
     /**
      * @runTestsInSeparateProcesses
      */
-    public function test_store()
+    public function testClose()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
+        $storeWrapper = new StoreWrapper(
+            $sessionManager = m::mock('Illuminate\Session\SessionManager'),
+            $compressor = m::mock('Recca0120\LaravelTracy\Session\Compressor')
+        );
+        $this->assertTrue($storeWrapper->start());
+        $this->assertTrue($storeWrapper->close());
+    }
 
-        $sessionManager = m::spy('Illuminate\Session\SessionManager');
-        $compressor = m::spy('Recca0120\LaravelTracy\Session\Compressor');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $sessionManager
-            ->shouldReceive('isStarted')->andReturn(true);
-
-        $storeWrapper = new StoreWrapper($sessionManager, $compressor);
-        $storeWrapper->start();
-        $_SESSION['_tracy'] = ['foo'];
+    /**
+     * @runTestsInSeparateProcesses
+     */
+    public function testStore()
+    {
+        $storeWrapper = new StoreWrapper(
+            $sessionManager = m::mock('Illuminate\Session\SessionManager'),
+            $compressor = m::mock('Recca0120\LaravelTracy\Session\Compressor')
+        );
+        $sessionManager->shouldReceive('isStarted')->once()->andReturn(true);
         $storeWrapper->store();
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $sessionManager->shouldHaveReceived('isStarted')->once();
-        // $compressor->shouldHaveReceived('compress')->once();
-        // $sessionManager->shouldHaveReceived('set')->once();
     }
 
     /**
      * @runTestsInSeparateProcesses
      */
-    public function test_clean()
+    public function testRestore()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
+        $storeWrapper = new StoreWrapper(
+            $sessionManager = m::mock('Illuminate\Session\SessionManager'),
+            $compressor = m::mock('Recca0120\LaravelTracy\Session\Compressor')
+        );
+        $sessionManager->shouldReceive('isStarted')->once()->andReturn(true);
+        $storeWrapper->restore();
+    }
 
-        $sessionManager = m::spy('Illuminate\Session\SessionManager');
-        $compressor = m::spy('Recca0120\LaravelTracy\Session\Compressor');
-        $contentId = '123456';
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $sessionManager
-            ->shouldReceive('isStarted')->andReturn(true);
-
-        $storeWrapper = new StoreWrapper($sessionManager, $compressor);
+    /**
+     * @runTestsInSeparateProcesses
+     */
+    public function testClean()
+    {
+        $storeWrapper = new StoreWrapper(
+            $sessionManager = m::mock('Illuminate\Session\SessionManager'),
+            $compressor = m::mock('Recca0120\LaravelTracy\Session\Compressor')
+        );
+        $id = uniqid();
         $storeWrapper->start();
         $_SESSION['_tracy'] = [
-            'bar' => [
-                $contentId => '123',
-            ],
+            'bar' => [$id => 'foo'],
         ];
-        $storeWrapper->clean('content.'.$contentId);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $this->assertTrue(empty($_SESSION['_tracy']['bar']));
-        $sessionManager->shouldHaveReceived('isStarted')->once();
-        // $compressor->shouldHaveReceived('compress')->once();
-        // $sessionManager->shouldHaveReceived('set')->once();
-    }
-
-    public function test_session_start_is_false()
-    {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $sessionManager = m::spy('Illuminate\Session\SessionManager');
-        $compressor = m::spy('Recca0120\LaravelTracy\Session\Compressor');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $storeWrapper = new StoreWrapper($sessionManager, $compressor);
-        $storeWrapper->restore();
-        $storeWrapper->store();
-        $storeWrapper->clean('test');
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
+        $sessionManager->shouldReceive('isStarted')->once()->andReturn(true);
+        $storeWrapper->clean('content.'.$id);
+        $this->assertTrue(empty($_SESSION['_tracy']['bar'][$id]));
     }
 }

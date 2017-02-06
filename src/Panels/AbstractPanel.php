@@ -23,11 +23,11 @@ abstract class AbstractPanel implements IBarPanel
     protected $laravel;
 
     /**
-     * $cached.
+     * $attributes.
      *
      * @var mixed
      */
-    protected $cached;
+    protected $attributes;
 
     /**
      * $viewPath.
@@ -65,13 +65,13 @@ abstract class AbstractPanel implements IBarPanel
      *
      * @return string
      */
-    public function render($view)
+    protected function render($view)
     {
         $view = $this->getViewPath().$view.'.php';
-        if (empty($this->cached) === true) {
-            $this->cached = $this->getAttributes();
+        if (empty($this->attributes) === true) {
+            $this->attributes = $this->getAttributes();
         }
-        extract($this->cached);
+        extract($this->attributes);
 
         ob_start();
         require $view;
@@ -87,16 +87,12 @@ abstract class AbstractPanel implements IBarPanel
      *
      * @param \Illuminate\Contracts\Foundation\Application $laravel
      *
-     * @return self;
+     * @return static
      */
     public function setLaravel(Application $laravel = null)
     {
         if (is_null($laravel) === false) {
             $this->laravel = $laravel;
-
-            if (method_exists($this, 'subscribe') === true) {
-                $this->subscribe();
-            }
         }
 
         return $this;
@@ -119,7 +115,7 @@ abstract class AbstractPanel implements IBarPanel
      *
      * @return array|null;
      */
-    public static function findSource()
+    protected static function findSource()
     {
         $source = null;
         $trace = debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : false);
@@ -152,7 +148,7 @@ abstract class AbstractPanel implements IBarPanel
      *
      * @return string
      */
-    public static function editorLink($source)
+    protected static function editorLink($source)
     {
         $link = null;
 
@@ -193,5 +189,5 @@ abstract class AbstractPanel implements IBarPanel
      *
      * @return array
      */
-    abstract public function getAttributes();
+    abstract protected function getAttributes();
 }

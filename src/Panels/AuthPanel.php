@@ -5,66 +5,37 @@ namespace Recca0120\LaravelTracy\Panels;
 class AuthPanel extends AbstractPanel
 {
     /**
-     * $name.
-     *
-     * @var string
-     */
-    protected $name = 'Guest';
-
-    /**
-     * $user.
-     *
-     * @var array
-     */
-    protected $user = null;
-
-    /**
-     * loadUser.
-     *
-     * @method loadUser
-     */
-    protected function loadUser()
-    {
-        $name = 'Guest';
-        $user = null;
-        $session = $this->laravel['session'];
-        $auth = $this->laravel['auth'];
-        if ($session->has($auth->getName()) === false) {
-            return;
-        }
-        $userObject = $auth->user();
-        if (is_null($userObject) === false) {
-            $name = $userObject->getAuthIdentifier();
-            if (is_numeric($name)) {
-                if (isset($userObject->username) === true) {
-                    $name = $userObject->username;
-                } elseif (isset($userObject->email) === true) {
-                    $name = $userObject->email;
-                } elseif (isset($userObject->name) === true) {
-                    $name = $userObject->name;
-                }
-            }
-            $user = $userObject->toArray();
-        }
-
-        $this->name = $name;
-        $this->user = $user;
-    }
-
-    /**
      * getAttributes.
      *
      * @method getAttributes
      *
      * @return array
      */
-    public function getAttributes()
+    protected function getAttributes()
     {
-        $this->loadUser();
+        $rows = [];
+        $id = 'Guest';
+        if ($this->isLaravel() === true) {
+            $session = $this->laravel['session'];
+            $auth = $this->laravel['auth'];
 
-        return [
-            'name' => $this->name,
-            'user' => $this->user,
-        ];
+            if ($session->has($auth->getName()) === true) {
+                $userObject = $auth->user();
+                if (is_null($userObject) === false) {
+                    $rows = $userObject->toArray();
+                    $id = $userObject->getAuthIdentifier();
+                    if (is_numeric($id)) {
+                        foreach (['username', 'email', 'name'] as $key) {
+                            if (isset($rows[$key]) === true) {
+                                $id = $rows[$key];
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return compact('id', 'rows');
     }
 }

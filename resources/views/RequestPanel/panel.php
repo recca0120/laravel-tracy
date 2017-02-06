@@ -1,8 +1,8 @@
 <h1>Request</h1>
 
-<div class="tracy-inner">
+<div class="tracy-inner Laravel-RequestPanel">
     <table>
-        <?php foreach ($request as $key => $value): ?>
+        <?php foreach ($rows as $key => $value): ?>
             <tr>
                 <th>
                     <?php echo ucfirst($key) ?>

@@ -1,66 +1,28 @@
 <?php
 
+namespace Recca0120\LaravelTracy\Tests\Session;
+
 use Mockery as m;
 use Recca0120\LaravelTracy\Session\Compressor;
 
-class CompressorTest extends PHPUnit_Framework_TestCase
+class CompressorTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
         m::close();
     }
 
-    public function test_compress_decompress()
+    public function testCompress()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $input = 'foo';
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
         $compressor = new Compressor();
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame($input, $compressor->decompress($compressor->compress($input)));
+        $compress = $compressor->compress($input = 'foo');
+        $this->assertSame($input, $compressor->decompress($compress));
     }
 
-    public function test_empty_data()
+    public function testCompressInputIsEmpty()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $input = '';
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
         $compressor = new Compressor();
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame($input, $compressor->decompress($compressor->compress($input)));
+        $compress = $compressor->compress($input = '');
+        $this->assertSame($input, $compressor->decompress($compress));
     }
 }

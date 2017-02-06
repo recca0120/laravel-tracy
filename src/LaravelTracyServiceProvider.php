@@ -28,15 +28,12 @@ class LaravelTracyServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../config/tracy.php' => $this->app->configPath().'/tracy.php',
             ], 'config');
-
-            return;
         }
 
-        if ($this->app['config']['tracy']['enabled'] === true) {
+        if (Arr::get($this->app['config'], 'tracy.enabled') === true) {
             $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
                 return new Handler($exceptionHandler, $this->app->make(BlueScreen::class));
             });
-
             $kernel->prependMiddleware(Dispatch::class);
         }
 
@@ -54,20 +51,23 @@ class LaravelTracyServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/tracy.php', 'tracy'
+        );
 
-        $this->app->singleton(Debugbar::class, function ($app) {
-            $config = Arr::get($app['config'], 'tracy', []);
-
-            return new Debugbar($config, $app['request'], $app);
-        });
+        if (Arr::get($this->app['config'], 'tracy.panels.terminal') === true) {
+            $this->app->register(TerminalServiceProvider::class);
+        }
 
         $this->app->singleton(StoreWrapper::class, StoreWrapper::class);
         $this->app->singleton(BlueScreen::class, BlueScreen::class);
-
-        if ($this->app['config']['tracy.panels.terminal'] === true) {
-            $this->app->register(TerminalServiceProvider::class);
-        }
+        $this->app->singleton(Debugbar::class, function ($app) {
+            return (new Debugbar(
+                Arr::get($app['config'], 'tracy', []),
+                $app['request'],
+                $app
+            ))->loadPanels();
+        });
     }
 
     /**

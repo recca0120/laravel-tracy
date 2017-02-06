@@ -2,13 +2,14 @@
 
 namespace Recca0120\LaravelTracy;
 
+use Tracy\Bar;
 use Tracy\Debugger;
 use Tracy\IBarPanel;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Contracts\Foundation\Application;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -36,32 +37,11 @@ class Debugbar
     protected $bar;
 
     /**
-     * $ajax.
-     *
-     * @var bool
-     */
-    protected $ajax;
-
-    /**
      * $app.
      *
      * @var \Illuminate\Contracts\Foundation\Application
      */
     protected $app;
-
-    /**
-     * $accepts.
-     *
-     * @var array
-     */
-    protected $accepts = [];
-
-    /**
-     * $showBar.
-     *
-     * @var array
-     */
-    protected $showBar = true;
 
     /**
      * __construct.
@@ -72,17 +52,25 @@ class Debugbar
      * @param \Illuminate\Http\Request                     $request
      * @param \Illuminate\Contracts\Foundation\Application $app
      */
-    public function __construct($config, Request $request = null, Application $app = null)
+    public function __construct($config, Request $request = null, $app = null)
     {
-        $this->request = $request ?: Request::capture();
-        $this->ajax = $this->request->ajax();
-        $this->app = $app;
-        $this->accepts = Arr::get($config, 'accepts', []);
-        $this->showBar = Arr::get($config, 'showBar', false);
-        $this->bar = Debugger::getBar();
+        $this->config = array_merge([
+            'accepts' => [],
+            'showBar' => false,
+            'editor' => Debugger::$editor,
+            'maxDepth' => Debugger::$maxDepth,
+            'maxLength' => Debugger::$maxLength,
+            'scream' => true,
+            'showLocation' => true,
+            'strictMode' => true,
+            'currentTime' => $_SERVER['REQUEST_TIME_FLOAT'] ?: microtime(true),
+            'editorMapping' => property_exists('Debugger', 'editorMapping') ? Debugger::$editorMapping : [],
+        ], $config);
 
-        $this->initializeTracyDebuger($config);
-        $this->loadPanels($config);
+        $this->request = $request ?: Request::capture();
+        $this->app = $app;
+        $this->bar = Debugger::getBar();
+        $this->initializeTracyDebuger();
     }
 
     /**
@@ -91,33 +79,38 @@ class Debugbar
      * @method initializeTracyDebuger
      *
      * @param array $config
+     *
+     * @return static
      */
-    protected function initializeTracyDebuger($config)
+    protected function initializeTracyDebuger()
     {
-        Debugger::$editor = Arr::get($config, 'editor', Debugger::$editor);
-        Debugger::$maxDepth = Arr::get($config, 'maxDepth', Debugger::$maxDepth);
-        Debugger::$maxLength = Arr::get($config, 'maxLength', Debugger::$maxLength);
-        Debugger::$scream = Arr::get($config, 'scream', true);
-        Debugger::$showLocation = Arr::get($config, 'showLocation', true);
-        Debugger::$strictMode = Arr::get($config, 'strictMode', true);
-        Debugger::$time = Arr::get($_SERVER, 'REQUEST_TIME_FLOAT', microtime(true));
-        Debugger::$editorMapping = Arr::get($config, 'editorMapping', []);
+        Debugger::$editor = $this->config['editor'];
+        Debugger::$maxDepth = $this->config['maxDepth'];
+        Debugger::$maxLength = $this->config['maxLength'];
+        Debugger::$scream = $this->config['scream'];
+        Debugger::$showLocation = $this->config['showLocation'];
+        Debugger::$strictMode = $this->config['strictMode'];
+        Debugger::$time = $this->config['currentTime'];
+        Debugger::$editorMapping = $this->config['editorMapping'];
+
+        return $this;
     }
 
     /**
      * loadPanels.
      *
      * @method loadPanels
-     *
-     * @param array $config
      */
-    protected function loadPanels($config)
+    public function loadPanels()
     {
-        $panels = Arr::get($config, 'panels', []);
+        $panels = Arr::get($this->config, 'panels', []);
         if (isset($panels['user']) === true) {
             $panels['auth'] = $panels['user'];
             unset($panels['user']);
         }
+
+        $ajax = $this->request->ajax();
+
         foreach ($panels as $name => $enabled) {
             if ($enabled === false) {
                 continue;
@@ -126,12 +119,26 @@ class Debugbar
             $class = '\\'.__NAMESPACE__.'\Panels\\'.Str::studly($name).'Panel';
             $panel = new $class();
 
-            if ($this->ajax === true && $panel->supportAjax === false) {
+            if ($ajax === true && $panel->supportAjax === false) {
                 continue;
             }
 
             $this->put($panel, $name);
         }
+
+        return $this;
+    }
+
+    /**
+     * setBar.
+     *
+     * @param \Tracy\Bar $bar
+     */
+    public function setBar(Bar $bar)
+    {
+        $this->bar = $bar;
+
+        return $this;
     }
 
     /**
@@ -148,6 +155,7 @@ class Debugbar
     {
         $panel->setLaravel($this->app);
         $this->panels[$id] = $panel;
+        $this->bar->addPanel($panel);
 
         return $this;
     }
@@ -167,31 +175,14 @@ class Debugbar
     }
 
     /**
-     * setup.
+     * renderBar.
      *
-     * @method setup
-     *
-     * @return \Tracy\Bar
-     */
-    public function setup()
-    {
-        foreach ($this->panels as $panel) {
-            $this->bar->addPanel($panel);
-        }
-
-        return $this->bar;
-    }
-
-    /**
-     * getBar.
-     *
-     * @method getBar
+     * @method renderBar
      *
      * @return string
      */
-    protected function getBar()
+    protected function renderBar()
     {
-        $this->setup();
         ob_start();
         $this->bar->render();
 
@@ -199,45 +190,37 @@ class Debugbar
     }
 
     /**
-     * deny.
+     * rejectRender.
      *
-     * @method deny
+     * @method rejectRender
      *
      * @param \Symfony\Component\HttpFoundation\Response $response
      * @param int                                        $statusCode
      *
      * @return bool
      */
-    protected function deny(Response $response, $statusCode)
+    protected function rejectRender(Response $response)
     {
-        if ($response instanceof BinaryFileResponse) {
+        if ($this->config['showBar'] === false ||
+            $response instanceof BinaryFileResponse ||
+            $response instanceof StreamedResponse ||
+            $response instanceof RedirectResponse
+        ) {
             return true;
         }
 
-        if ($response instanceof StreamedResponse) {
-            return true;
-        }
-
-        if ($response->isRedirection() === true) {
-            return true;
-        }
-
-        if ($this->ajax === true) {
+        if ($this->request->ajax() === true) {
             return false;
         }
 
-        $contentType = $response->headers->get('Content-Type');
-
-        if (empty($contentType) === true && $statusCode >= 400) {
+        $contentType = strtolower($response->headers->get('Content-Type'));
+        if (empty($contentType) === true && $response->getStatusCode() >= 400 ||
+            count($this->config['accepts']) === 0
+        ) {
             return false;
         }
 
-        if (count($this->accepts) === 0) {
-            return false;
-        }
-
-        $contentType = strtolower($contentType);
-        foreach ($this->accepts as $accept) {
+        foreach ($this->config['accepts'] as $accept) {
             if (strpos($contentType, $accept) !== false) {
                 return false;
             }
@@ -257,32 +240,23 @@ class Debugbar
      */
     public function render(Response $response)
     {
-        if ($this->showBar === false) {
-            return $response;
-        }
-
-        $statusCode = $response->getStatusCode();
-
-        if ($this->deny($response, $statusCode) === true) {
+        if ($this->rejectRender($response) === true) {
             return $response;
         }
 
         $content = $response->getContent();
-
         $htmlValidatorPanel = $this->getPanel('html-validator');
-        if (is_null($htmlValidatorPanel) === false && $statusCode === 200) {
+        if (is_null($htmlValidatorPanel) === false && $response->getStatusCode() === 200) {
             $htmlValidatorPanel->setHtml($content);
         }
 
-        $bar = $this->getBar();
+        $bar = $this->renderBar();
         $pos = strripos($content, '</body>');
-        if ($pos !== false) {
-            $content = substr($content, 0, $pos).$bar.substr($content, $pos);
-        } else {
-            $content .= $bar;
-        }
-
-        $response->setContent($content);
+        $response->setContent(
+            $pos !== false ?
+                substr($content, 0, $pos).$bar.substr($content, $pos) :
+                $content.$bar
+        );
 
         return $response;
     }

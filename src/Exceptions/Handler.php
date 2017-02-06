@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Contracts\View\View;
 use Recca0120\LaravelTracy\BlueScreen;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class Handler implements ExceptionHandler
@@ -45,9 +46,7 @@ class Handler implements ExceptionHandler
      */
     public function report(Exception $e)
     {
-        if (is_null($this->exceptionHandler) === false) {
-            $this->exceptionHandler->report($e);
-        }
+        $this->exceptionHandler->report($e);
     }
 
     /**
@@ -61,12 +60,10 @@ class Handler implements ExceptionHandler
     public function render($request, Exception $e)
     {
         $response = $this->exceptionHandler->render($request, $e);
-        if ($response instanceof RedirectResponse) {
-            return $response;
-        }
-
-        $content = $response->getContent();
-        if ($content instanceof View) {
+        if ($response instanceof RedirectResponse ||
+            $response instanceof JsonResponse ||
+            $response->getContent() instanceof View
+        ) {
             return $response;
         }
 
@@ -83,8 +80,6 @@ class Handler implements ExceptionHandler
      */
     public function renderForConsole($output, Exception $e)
     {
-        if (is_null($this->exceptionHandler) === false) {
-            $this->exceptionHandler->renderForConsole($output, $e);
-        }
+        $this->exceptionHandler->renderForConsole($output, $e);
     }
 }

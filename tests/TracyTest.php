@@ -1,9 +1,11 @@
 <?php
 
+namespace Recca0120\LaravelTracy\Tests;
+
 use Mockery as m;
 use Recca0120\LaravelTracy\Tracy;
 
-class TracyTest extends PHPUnit_Framework_TestCase
+class TracyTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
@@ -13,37 +15,14 @@ class TracyTest extends PHPUnit_Framework_TestCase
     /**
      * @runTestsInSeparateProcesses
      */
-    public function test_instance()
+    public function testInstance()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $tracy = Tracy::instance([
-            'enabled' => null,
-        ]);
+        $tracy = Tracy::instance(['enabled' => null]);
         $tracy = Tracy::instance();
-
         $databasePanel = $tracy->getPanel('database');
-
         $databasePanel->logQuery('select * from users');
         $databasePanel->logQuery('select * from news');
         $databasePanel->logQuery('select * from products');
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $this->assertTrue(is_string($databasePanel->render('panel')));
+        $this->assertTrue(is_string($databasePanel->getPanel()));
     }
 }

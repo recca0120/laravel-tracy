@@ -14,13 +14,6 @@ class StoreWrapper
     protected $sessionManager;
 
     /**
-     * closable.
-     *
-     * @var bool
-     */
-    protected $closable;
-
-    /**
      * __construct.
      *
      * @param \Illuminate\Session\SessionManager $sessionManager
@@ -59,9 +52,7 @@ class StoreWrapper
      */
     public function start()
     {
-        $this->closable = $this->isStarted() === false;
-
-        if ($this->closable === true) {
+        if ($this->isStarted() === false) {
             ini_set('session.use_cookies', '1');
             ini_set('session.use_only_cookies', '1');
             ini_set('session.use_trans_sid', '0');
@@ -80,28 +71,11 @@ class StoreWrapper
      */
     public function close()
     {
-        if ($this->closable === true) {
+        if ($this->isStarted() === true) {
             @session_write_close();
-
-            return true;
         }
 
-        return false;
-    }
-
-    /**
-     * restore.
-     *
-     * @return static
-     */
-    public function restore()
-    {
-        if ($this->isLaravelSessionStart() === false) {
-            return $this;
-        }
-
-        // $_SESSION['_tracy'] = $this->compressor->decompress($this->sessionManager->get('_tracy', []));
-        return $this;
+        return $this->isStarted() === false;
     }
 
     /**
@@ -112,7 +86,7 @@ class StoreWrapper
     public function store()
     {
         if ($this->isLaravelSessionStart() === false) {
-            return $this;
+            // return $this;
         }
 
         // if (isset($_SESSION['_tracy']) === true) {
@@ -120,6 +94,21 @@ class StoreWrapper
         //     unset($_SESSION['_tracy']);
         // }
 
+        return $this;
+    }
+
+    /**
+     * restore.
+     *
+     * @return static
+     */
+    public function restore()
+    {
+        if ($this->isLaravelSessionStart() === false) {
+            // return $this;
+        }
+
+        // $_SESSION['_tracy'] = $this->compressor->decompress($this->sessionManager->get('_tracy', []));
         return $this;
     }
 

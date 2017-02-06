@@ -1,516 +1,247 @@
 <?php
 
+namespace Recca0120\LaravelTracy\Tests;
+
 use Mockery as m;
-use Illuminate\Http\Request;
 use Recca0120\LaravelTracy\Debugbar;
 
-class DebugbarTest extends PHPUnit_Framework_TestCase
+class DebugbarTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
         m::close();
     }
 
-    public function test_dispatch_assets()
+    public function testDispatchAssets()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $config = ['showBar' => false];
-        $request = m::spy('Illuminate\Http\Request');
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-        $response = m::spy('Symfony\Component\HttpFoundation\Response');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $debugbar = new Debugbar($config, $request, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $this->assertEmpty($debugbar->dispatchAssets());
-        $request->shouldHaveReceived('ajax')->once();
+        $debugbar = new Debugbar(
+            $config = [],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $debugbar->setBar($bar = m::mock('Tracy\Bar')->makePartial());
+        $bar->shouldReceive('dispatchAssets')->once();
+        $debugbar->dispatchAssets();
     }
 
-    public function test_dispatch()
+    public function testDispatchContent()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $config = ['showBar' => false];
-        $request = m::spy('Illuminate\Http\Request');
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-        $response = m::spy('Symfony\Component\HttpFoundation\Response');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $debugbar = new Debugbar($config, $request, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $this->assertEmpty($debugbar->dispatchContent());
-        $request->shouldHaveReceived('ajax')->once();
+        $debugbar = new Debugbar(
+            $config = [],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $debugbar->setBar($bar = m::mock('Tracy\Bar'));
+        $bar->shouldReceive('dispatchAssets')->once();
+        $debugbar->dispatchContent();
     }
 
-    public function test_setup_bar()
+    public function testDispatchContentAndBarHasDispatchContentMethod()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $config = [
-            'showBar' => false,
-            'panels' => [
-                'routing' => false,
-                'database' => false,
-                'view' => false,
-                'event' => false,
-                'session' => false,
-                'request' => false,
-                'user' => true,
-                'terminal' => true,
-                'html-validator' => true,
-            ],
-        ];
-        $request = m::spy('Illuminate\Http\Request');
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-        $response = m::spy('Symfony\Component\HttpFoundation\Response');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $request
-            ->shouldReceive('ajax')->andReturn(true);
-
-        $debugbar = new Debugbar($config, $request, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $this->assertInstanceOf('Tracy\Bar', $debugbar->setup());
-        $request->shouldHaveReceived('ajax')->once();
+        $debugbar = new Debugbar(
+            $config = [],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $bar->shouldReceive('dispatchContent')->once();
+        $debugbar->dispatchContent();
     }
 
-    public function test_render_when_showbar_is_false()
+    public function testRenderAndShowBarIsFalse()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $config = ['showBar' => false];
-        $request = m::spy('Illuminate\Http\Request');
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-        $response = m::spy('Symfony\Component\HttpFoundation\Response');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $debugbar = new Debugbar($config, $request, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
+        $debugbar = new Debugbar(
+            $config = ['showBar' => false],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $this->assertSame($response, $debugbar->render($response));
-        $request->shouldHaveReceived('ajax')->once();
     }
 
-    public function test_render_when_response_is_binary_file_response()
+    public function testRenderAndResponseIsBinaryFileResponse()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $config = ['showBar' => true];
-        $request = m::spy('Illuminate\Http\Request');
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-        $response = m::spy('Symfony\Component\HttpFoundation\BinaryFileResponse');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $response
-            ->shouldReceive('getStatusCode')->andReturn(200);
-
-        $debugbar = new Debugbar($config, $request, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
+        $debugbar = new Debugbar(
+            $config = ['showBar' => true],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $response = m::mock('Symfony\Component\HttpFoundation\BinaryFileResponse');
         $this->assertSame($response, $debugbar->render($response));
-        $request->shouldHaveReceived('ajax')->once();
-        $response->shouldHaveReceived('getStatusCode')->once();
     }
 
-    public function test_render_when_response_is_streamed_response()
+    public function testRenderAndResponseIsStreamedResponse()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $config = ['showBar' => true];
-        $request = m::spy('Illuminate\Http\Request');
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-        $response = m::spy('Symfony\Component\HttpFoundation\StreamedResponse');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $response
-            ->shouldReceive('getStatusCode')->andReturn(200);
-
-        $debugbar = new Debugbar($config, $request, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
+        $debugbar = new Debugbar(
+            $config = ['showBar' => true],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $response = m::mock('Symfony\Component\HttpFoundation\StreamedResponse');
         $this->assertSame($response, $debugbar->render($response));
-        $request->shouldHaveReceived('ajax')->once();
-        $response->shouldHaveReceived('getStatusCode')->once();
     }
 
-    public function test_render_when_response_is_redirection()
+    public function testRenderAndResponseIsRedirectResponse()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $config = ['showBar' => true];
-        $request = m::spy('Illuminate\Http\Request');
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-        $response = m::spy('Symfony\Component\HttpFoundation\Response');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $response
-            ->shouldReceive('getStatusCode')->andReturn(200)
-            ->shouldReceive('isRedirection')->andReturn(true);
-
-        $debugbar = new Debugbar($config, $request, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
+        $debugbar = new Debugbar(
+            $config = ['showBar' => true],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $response = m::mock('Symfony\Component\HttpFoundation\RedirectResponse');
         $this->assertSame($response, $debugbar->render($response));
-        $request->shouldHaveReceived('ajax')->once();
-        $response->shouldHaveReceived('getStatusCode')->once();
-        $response->shouldHaveReceived('isRedirection')->once();
     }
 
-    public function test_render_when_response_is_ajax()
+    public function testRenderAndRequestIsAjax()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $config = ['showBar' => true];
-        $request = m::spy('Illuminate\Http\Request');
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-        $response = m::spy('Symfony\Component\HttpFoundation\Response');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $response
-            ->shouldReceive('getStatusCode')->andReturn(200)
-            ->shouldReceive('getContent')->andReturn('foo.content');
-
-        $request
-            ->shouldReceive('ajax')->andReturn(true);
-
-        $debugbar = new Debugbar($config, $request, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
+        $debugbar = new Debugbar(
+            $config = ['showBar' => true],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $request->shouldReceive('ajax')->once()->andReturn(true);
+        $response->shouldReceive('getContent')->once()->andReturn($content = '<body>foo</body>');
+        $bar->shouldReceive('render')->once()->andReturnUsing(function () {
+            echo 'bar';
+        });
+        $response->shouldReceive('setContent')->once()->with('<body>foobar</body>');
         $this->assertSame($response, $debugbar->render($response));
-        $request->shouldHaveReceived('ajax')->once();
-        $response->shouldHaveReceived('getStatusCode')->once();
-        $response->shouldHaveReceived('getContent')->once();
-        $response->shouldHaveReceived('setContent')->with('foo.content')->once();
     }
 
-    public function test_render_when_status_code_bigger_then_400()
+    public function testRenderAndResponseStatusCodeBiggerThen400()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $config = ['showBar' => true];
-        $request = m::spy('Illuminate\Http\Request');
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-        $response = m::spy('Symfony\Component\HttpFoundation\Response');
-        $headers = m::mock('stdClass');
-        $response->headers = $headers;
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $response
-            ->shouldReceive('getStatusCode')->andReturn(400)
-            ->shouldReceive('getContent')->andReturn('foo.content');
-
-        $headers
-            ->shouldReceive('get')->with('Content-Type')->andReturn('');
-
-        $debugbar = new Debugbar($config, $request, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
+        $debugbar = new Debugbar(
+            $config = ['showBar' => true],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $request->shouldReceive('ajax')->once()->andReturn(false);
+        $response->headers = $headers = m::mock('stdClass');
+        $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn('');
+        $response->shouldReceive('getStatusCode')->once()->andReturn(400);
+        $response->shouldReceive('getContent')->once()->andReturn($content = '<body>foo</body>');
+        $bar->shouldReceive('render')->once()->andReturnUsing(function () {
+            echo 'bar';
+        });
+        $response->shouldReceive('setContent')->once()->with('<body>foobar</body>');
         $this->assertSame($response, $debugbar->render($response));
-        $request->shouldHaveReceived('ajax')->once();
-        $response->shouldHaveReceived('getStatusCode')->once();
-        $headers->shouldHaveReceived('get')->with('Content-Type')->once();
-        $response->shouldHaveReceived('getContent')->once();
-        $response->shouldHaveReceived('setContent')->with('foo.content')->once();
     }
 
-    public function test_render_when_accept_is_empty()
+    public function testRenderAndAcceptsIsEmpty()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $config = ['showBar' => true, 'accepts' => []];
-        $request = m::spy('Illuminate\Http\Request');
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-        $response = m::spy('Symfony\Component\HttpFoundation\Response');
-        $headers = m::mock('stdClass');
-        $response->headers = $headers;
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $response
-            ->shouldReceive('getStatusCode')->andReturn(200)
-            ->shouldReceive('getContent')->andReturn('foo.content');
-
-        $headers
-            ->shouldReceive('get')->with('Content-Type')->andReturn('text/html; charset=utf-8');
-
-        $debugbar = new Debugbar($config, $request, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
+        $debugbar = new Debugbar(
+            $config = ['showBar' => true],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $request->shouldReceive('ajax')->once()->andReturn(false);
+        $response->headers = $headers = m::mock('stdClass');
+        $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn('');
+        $response->shouldReceive('getStatusCode')->once()->andReturn(200);
+        $response->shouldReceive('getContent')->once()->andReturn($content = '<body>foo</body>');
+        $bar->shouldReceive('render')->once()->andReturnUsing(function () {
+            echo 'bar';
+        });
+        $response->shouldReceive('setContent')->once()->with('<body>foobar</body>');
         $this->assertSame($response, $debugbar->render($response));
-        $request->shouldHaveReceived('ajax')->once();
-        $response->shouldHaveReceived('getStatusCode')->once();
-        $headers->shouldHaveReceived('get')->with('Content-Type')->once();
-        $response->shouldHaveReceived('getContent')->once();
-        $response->shouldHaveReceived('setContent')->with('foo.content')->once();
     }
 
-    public function test_render_when_accept_is_text_html()
+    public function testRenderAndAcceptsIsAllow()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $config = ['showBar' => true, 'accepts' => ['text/html']];
-        $request = m::spy('Illuminate\Http\Request');
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-        $response = m::spy('Symfony\Component\HttpFoundation\Response');
-        $headers = m::mock('stdClass');
-        $response->headers = $headers;
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $response
-            ->shouldReceive('getStatusCode')->andReturn(200)
-            ->shouldReceive('getContent')->andReturn('foo.content');
-
-        $headers
-            ->shouldReceive('get')->with('Content-Type')->andReturn('text/html; charset=utf-8');
-
-        $debugbar = new Debugbar($config, $request, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
+        $debugbar = new Debugbar(
+            $config = ['showBar' => true, 'accepts' => ['text/html']],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $request->shouldReceive('ajax')->once()->andReturn(false);
+        $response->headers = $headers = m::mock('stdClass');
+        $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn('text/html; charset=utf-8');
+        $response->shouldReceive('getContent')->once()->andReturn($content = '<body>foo</body>');
+        $bar->shouldReceive('render')->once()->andReturnUsing(function () {
+            echo 'bar';
+        });
+        $response->shouldReceive('setContent')->once()->with('<body>foobar</body>');
         $this->assertSame($response, $debugbar->render($response));
-        $request->shouldHaveReceived('ajax')->once();
-        $response->shouldHaveReceived('getStatusCode')->once();
-        $headers->shouldHaveReceived('get')->with('Content-Type')->once();
-        $response->shouldHaveReceived('getContent')->once();
-        $response->shouldHaveReceived('setContent')->with('foo.content')->once();
     }
 
-    public function test_render_when_deny_all()
+    public function testRenderAndAcceptsIsNotAllow()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $config = ['showBar' => true, 'accepts' => ['text/css']];
-        $request = m::spy('Illuminate\Http\Request');
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-        $response = m::spy('Symfony\Component\HttpFoundation\Response');
-        $headers = m::mock('stdClass');
-        $response->headers = $headers;
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $response
-            ->shouldReceive('getStatusCode')->andReturn(200);
-
-        $headers
-            ->shouldReceive('get')->with('Content-Type')->andReturn('text/html; charset=utf-8');
-
-        $debugbar = new Debugbar($config, $request, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
+        $debugbar = new Debugbar(
+            $config = ['showBar' => true, 'accepts' => ['application/json']],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $request->shouldReceive('ajax')->once()->andReturn(false);
+        $response->headers = $headers = m::mock('stdClass');
+        $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn('text/html; charset=utf-8');
         $this->assertSame($response, $debugbar->render($response));
-        $request->shouldHaveReceived('ajax')->once();
     }
 
-    public function test_render_with_body_and_html_validator_panel()
+    public function testRender()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $config = ['showBar' => true, 'accepts' => ['text/html'], 'panels' => ['html-validator' => true]];
-        $request = m::spy('Illuminate\Http\Request');
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-        $response = m::spy('Symfony\Component\HttpFoundation\Response');
-        $headers = m::mock('stdClass');
-        $response->headers = $headers;
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $response
-            ->shouldReceive('getStatusCode')->andReturn(200)
-            ->shouldReceive('getContent')->andReturn('<body>foo.content</body>');
-
-        $headers
-            ->shouldReceive('get')->with('Content-Type')->andReturn('text/html; charset=utf-8');
-
-        $debugbar = new Debugbar($config, $request, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
+        $debugbar = new Debugbar(
+            $config = ['showBar' => true, 'accepts' => ['application/json']],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $request->shouldReceive('ajax')->once()->andReturn(false);
+        $response->headers = $headers = m::mock('stdClass');
+        $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn('text/html; charset=utf-8');
         $this->assertSame($response, $debugbar->render($response));
-        $request->shouldHaveReceived('ajax')->once();
-        $response->shouldHaveReceived('getStatusCode')->once();
-        $headers->shouldHaveReceived('get')->with('Content-Type')->once();
-        $response->shouldHaveReceived('getContent')->once();
-        $response->shouldHaveReceived('setContent')->with('<body>foo.content</body>')->once();
+    }
+
+    public function testRenderWithHtmlValidatorPanel()
+    {
+        $debugbar = new Debugbar(
+            $config = ['showBar' => true, 'accepts' => ['text/html']],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $htmlValidatorPanel = m::mock('Tracy\IBarPanel');
+        $htmlValidatorPanel->shouldReceive('setLaravel')->once()->with($app);
+        $debugbar->put($htmlValidatorPanel, 'html-validator');
+        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $request->shouldReceive('ajax')->once()->andReturn(false);
+        $response->headers = $headers = m::mock('stdClass');
+        $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn('text/html; charset=utf-8');
+        $response->shouldReceive('getContent')->once()->andReturn($content = '<body>foo</body>');
+        $response->shouldReceive('getStatusCode')->once()->andReturn(200);
+        $htmlValidatorPanel->shouldReceive('setHtml')->once()->with($content);
+        $bar->shouldReceive('render')->once()->andReturnUsing(function () {
+            echo 'bar';
+        });
+        $response->shouldReceive('setContent')->once()->with('<body>foobar</body>');
+        $this->assertSame($response, $debugbar->render($response));
+    }
+
+    public function testLoadPanelsl()
+    {
+        $debugbar = new Debugbar(
+            $config = ['showBar' => true, 'panels' => ['user' => true, 'terminal' => true]],
+            $request = m::mock('Illuminate\Http\Request'),
+            $app = m::mock('Illuminate\Contracts\Foundation\Application')
+        );
+        $request->shouldReceive('ajax')->once()->andReturn(true);
+        $debugbar->loadPanels();
+    }
+}
+
+class Bar extends \Tracy\Bar
+{
+    public function dispatchContent()
+    {
     }
 }

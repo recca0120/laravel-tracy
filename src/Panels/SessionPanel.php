@@ -11,24 +11,23 @@ class SessionPanel extends AbstractPanel
      *
      * @return array
      */
-    public function getAttributes()
+    protected function getAttributes()
     {
-        $data = [];
+        $rows = [];
         if ($this->isLaravel() === true) {
             $session = $this->laravel['session'];
-            $data = [
+            $rows = [
                 'sessionId' => $session->getId(),
-                'config' => $session->getSessionConfig(),
+                'sessionConfig' => $session->getSessionConfig(),
                 'laravelSession' => $session->all(),
-                'nativeSession' => $_SESSION,
-            ];
-        } else {
-            $data = [
-                'sessionId' => session_id(),
-                'nativeSession' => $_SESSION,
             ];
         }
 
-        return $data;
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            $rows['nativeSessionId'] = session_id();
+            $rows['nativeSession'] = $_SESSION;
+        }
+
+        return compact('rows');
     }
 }

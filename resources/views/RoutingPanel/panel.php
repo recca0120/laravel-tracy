@@ -1,9 +1,9 @@
 <h1>Route</h1>
 
-<div class="tracy-inner">
+<div class="tracy-inner Larave-RoutingPanel">
     <table>
         <tbody>
-            <?php foreach ($action as $key => $value): ?>
+            <?php foreach ($rows as $key => $value): ?>
                 <tr>
                     <th><?php echo $key ?></th>
                     <td>

@@ -13,26 +13,24 @@ class RoutingPanel extends AbstractPanel
      *
      * @return array
      */
-    public function getAttributes()
+    protected function getAttributes()
     {
-        $data = [
+        $rows = [
             'uri' => 404,
-            'action' => [],
         ];
         if ($this->isLaravel() === true) {
             $router = $this->laravel['router'];
             $currentRoute = $router->getCurrentRoute();
             if ($currentRoute !== null) {
-                $data = [
+                $rows = array_merge([
                     'uri' => $currentRoute->uri(),
-                    'action' => $currentRoute->getAction(),
-                ];
+                ], $currentRoute->getAction());
             }
         } else {
-            $httpHost = Arr::get($_SERVER, 'HTTP_HOST');
-            $data['uri'] = empty($httpHost) === true ? 404 : Arr::get($_SERVER, 'REQUEST_URI');
+            $rows['uri'] = empty(Arr::get($_SERVER, 'HTTP_HOST')) === true ?
+                404 : Arr::get($_SERVER, 'REQUEST_URI');
         }
 
-        return $data;
+        return compact('rows');
     }
 }

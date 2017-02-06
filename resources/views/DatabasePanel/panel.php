@@ -6,9 +6,7 @@
     #tracy-debug .Laravel-DatabasePanel-explain { margin-top: 15px }
 </style>
 
-<h1>
-    Queries: <?php echo $counter, ($totalTime ? sprintf(', time: %0.3f ms', $totalTime) : '') ?>
-</h1>
+<h1>Queries: <?php echo $counter, ($totalTime ? sprintf(', time: %0.3f ms', $totalTime) : '') ?></h1>
 
 <div class="tracy-inner">
     <table>

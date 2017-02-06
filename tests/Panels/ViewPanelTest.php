@@ -1,78 +1,97 @@
 <?php
 
+namespace Recca0120\LaravelTracy\Tests\Panels;
+
+use stdClass;
 use Mockery as m;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Recca0120\LaravelTracy\Panels\ViewPanel;
 
-class ViewPanelTest extends PHPUnit_Framework_TestCase
+class ViewPanelTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
         m::close();
     }
 
-    public function test_subscribe()
+    public function testRender()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $events = m::spy('Illuminate\Contracts\Event\Dispatcher');
-        $view = m::spy('Illuminate\Contracts\View\View');
-
-        $testData = [];
-        for ($i = 0; $i < 100; ++$i) {
-            $testData[] = $i;
-        }
-        $viewData = [
-            '__env' => [],
-            '__app' => [],
-            'collection' => new Collection($testData),
-            'array' => $testData,
-        ];
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $app
-            ->shouldReceive('offsetGet')->with('events')->andReturn($events);
-
-        $events
-            ->shouldReceive('listen')->with('composing:*', m::type('Closure'))->andReturnUsing(function ($eventName, $closure) use ($view) {
-                $closure($view);
-            });
-
-        $view
-            ->shouldReceive('getName')->andReturn('foo')
-            ->shouldReceive('getData')->andReturn($viewData)
-            ->shouldReceive('getPath')->andReturn('foo.path');
-
         $panel = new ViewPanel();
-        $panel->setLaravel($app);
+        $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $laravel->shouldReceive('version')->once()->andReturn(5.4);
+        $laravel->shouldReceive('offsetGet')->once()->with('events')->andReturn(
+            $events = m::mock('Illuminate\Contracts\Event\Dispatcher')
+        );
+        $collection = m::mock('Illuminate\Support\Collection');
+        $events->shouldReceive('listen')->once()->with('composing:*', m::on(function ($closure) use ($collection) {
+            $event = m::mock('stdClass');
+            $event->shouldReceive('getName')->once()->andReturn($name = 'foo');
 
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
+            $collection->shouldReceive('count')->once()->andReturn(100);
+            $collection->shouldReceive('take')->once()->andReturn(50)->andReturnSelf();
 
-        $this->assertSame('foo', Arr::get($panel->getAttributes(), 'views.0.name'));
-        $this->assertSame(50, Arr::get($panel->getAttributes(), 'views.0.data.collection')->count());
-        $this->assertSame(50, count(Arr::get($panel->getAttributes(), 'views.0.data.array')));
-        $this->assertTrue(is_string($panel->getTab()));
-        $this->assertTrue(is_string($panel->getPanel()));
+            $event->shouldReceive('getData')->once()->andReturn($data = [
+                range(1, 100),
+                $collection,
+            ]);
+            $event->shouldReceive('getPath')->once()->andReturn($path = '');
+            $closure('foo', [$event]);
 
-        $app->shouldHaveReceived('offsetGet')->with('events')->once();
-        $events->shouldHaveReceived('listen')->with('composing:*', m::type('Closure'))->once();
-        $view->shouldHaveReceived('getName')->once();
-        $view->shouldHaveReceived('getData')->once();
-        $view->shouldHaveReceived('getPath')->once();
+            return true;
+        }));
+        $panel->setLaravel($laravel);
+        $panel->getTab();
+        $panel->getPanel();
+        $this->assertAttributeSame([
+            'rows' => [[
+                'name' => 'foo',
+                'data' => [
+                    range(1, 50),
+                    $collection,
+                ],
+                'path' => '',
+            ]],
+        ], 'attributes', $panel);
+    }
+
+    public function testRenderAndLaravel50()
+    {
+        $panel = new ViewPanel();
+        $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $laravel->shouldReceive('version')->once()->andReturn(5.3);
+        $laravel->shouldReceive('offsetGet')->once()->with('events')->andReturn(
+            $events = m::mock('Illuminate\Contracts\Event\Dispatcher')
+        );
+        $collection = m::mock('Illuminate\Support\Collection');
+        $events->shouldReceive('listen')->once()->with('composing:*', m::on(function ($closure) use ($collection) {
+            $event = m::mock('stdClass');
+            $event->shouldReceive('getName')->once()->andReturn($name = 'foo');
+
+            $collection->shouldReceive('count')->once()->andReturn(100);
+            $collection->shouldReceive('take')->once()->andReturn(50)->andReturnSelf();
+
+            $event->shouldReceive('getData')->once()->andReturn($data = [
+                '__env' => [],
+                'app' => [],
+                range(1, 100),
+                $collection,
+            ]);
+            $event->shouldReceive('getPath')->once()->andReturn($path = '');
+            $closure($event);
+
+            return true;
+        }));
+        $panel->setLaravel($laravel);
+        $panel->getTab();
+        $panel->getPanel();
+        $this->assertAttributeSame([
+            'rows' => [[
+                'name' => 'foo',
+                'data' => [
+                    range(1, 50),
+                    $collection,
+                ],
+                'path' => '',
+            ]],
+        ], 'attributes', $panel);
     }
 }

@@ -5,7 +5,7 @@ namespace Recca0120\LaravelTracy\Panels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
-class ViewPanel extends AbstractPanel
+class ViewPanel extends AbstractSubscribePanel
 {
     /**
      * $views.
@@ -24,19 +24,27 @@ class ViewPanel extends AbstractPanel
      *
      * @method subscribe
      */
-    public function subscribe()
+    protected function subscribe()
     {
-        $this->laravel['events']->listen('composing:*', function () {
-            $params = func_get_args();
-            $view = count($params) === 1 ? $params[0] : $params[1][0];
-            $name = $view->getName();
-            $data = $this->limitCollection(Arr::except($view->getData(), ['__env', 'app']));
+        if (version_compare($this->laravel->version(), 5.4, '>=') === true) {
+            $this->laravel['events']->listen('composing:*', function ($key, $payload) {
+                $this->logView($payload[0]);
+            });
+        } else {
+            $this->laravel['events']->listen('composing:*', function ($payload) {
+                $this->logView($payload);
+            });
+        }
+    }
 
-            $path = self::editorLink($view->getPath());
-            preg_match('/href=\"(.+)\"/', $path, $m);
-            $path = (count($m) > 1) ? '(<a href="'.$m[1].'">source</a>)' : '';
-            $this->views[] = compact('name', 'data', 'path');
-        });
+    protected function logView($view)
+    {
+        $name = $view->getName();
+        $data = $this->limitCollection(Arr::except($view->getData(), ['__env', 'app']));
+        $path = self::editorLink($view->getPath());
+        preg_match('/href=\"(.+)\"/', $path, $m);
+        $path = (count($m) > 1) ? '(<a href="'.$m[1].'">source</a>)' : '';
+        $this->views[] = compact('name', 'data', 'path');
     }
 
     /**
@@ -73,10 +81,10 @@ class ViewPanel extends AbstractPanel
      *
      * @return array
      */
-    public function getAttributes()
+    protected function getAttributes()
     {
         return [
-            'views' => $this->views,
+            'rows' => $this->views,
         ];
     }
 }

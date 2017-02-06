@@ -1,6 +1,6 @@
 <h1>View</h1>
 
-<div class="tracy-inner">
+<div class="tracy-inner Laravel-ViewPanel">
     <table>
         <tr>
             <th>
@@ -10,14 +10,14 @@
                 data
             </th>
         </tr>
-        <?php foreach ($views as $view): ?>
+        <?php foreach ($rows as $row): ?>
             <tr>
                 <td>
-                    <?php echo $view['name'] ?>
-                    <?php echo $view['path'] ?>
+                    <?php echo $row['name'] ?>
+                    <?php echo $row['path'] ?>
                 </td>
                 <td>
-                    <?php echo Tracy\Dumper::toHtml($view['data'], [Tracy\Dumper::LIVE => true]) ?>
+                    <?php echo Tracy\Dumper::toHtml($row['data'], [Tracy\Dumper::LIVE => true]) ?>
                 </td>
             </tr>
         <?php endforeach ?>

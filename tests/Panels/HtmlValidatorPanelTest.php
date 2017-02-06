@@ -1,41 +1,26 @@
 <?php
 
+namespace Recca0120\LaravelTracy\Tests\Panels;
+
 use Mockery as m;
 use Recca0120\LaravelTracy\Panels\HtmlValidatorPanel;
 
-class HtmlValidatorPanelTest extends PHPUnit_Framework_TestCase
+class HtmlValidatorPanelTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
         m::close();
     }
 
-    public function test_render()
+    public function testRender()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $html = '<!DOCTYPE html><html><head><title>title</title></head><body></body></html>';
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
         $panel = new HtmlValidatorPanel();
-        $panel->setHtml($html);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame([
+        $panel->setHtml(
+            $html = '<!DOCTYPE html><html><head><title>title</title></head><body></body></html>'
+        );
+        $panel->getTab();
+        $panel->getPanel();
+        $this->assertAttributeSame([
             'severenity' => [
                 LIBXML_ERR_WARNING => 'Warning',
                 LIBXML_ERR_ERROR => 'Error',
@@ -44,8 +29,6 @@ class HtmlValidatorPanelTest extends PHPUnit_Framework_TestCase
             'counter' => 0,
             'errors' => [],
             'html' => $html,
-        ], $panel->getAttributes());
-        $this->assertTrue(is_string($panel->getTab()));
-        $this->assertTrue(is_string($panel->getPanel()));
+        ], 'attributes', $panel);
     }
 }

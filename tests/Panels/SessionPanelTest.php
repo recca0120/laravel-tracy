@@ -1,10 +1,11 @@
 <?php
 
+namespace Recca0120\LaravelTracy\Tests\Panels;
+
 use Mockery as m;
-use Illuminate\Support\Arr;
 use Recca0120\LaravelTracy\Panels\SessionPanel;
 
-class SessionPanelTest extends PHPUnit_Framework_TestCase
+class SessionPanelTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
@@ -14,83 +15,29 @@ class SessionPanelTest extends PHPUnit_Framework_TestCase
     /**
      * @runTestsInSeparateProcesses
      */
-    public function test_render_with_laravel()
+    public function testRender()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $_SESSION = ['test' => 'test'];
-        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $session = m::spy('Illuminate\Session\SessionInterface');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $app->shouldReceive('offsetGet')->with('session')->andReturn($session);
-
-        $session
-            ->shouldReceive('getId')->andReturn('foo.id')
-            ->shouldReceive('getSessionConfig')->andReturn('foo.config')
-            ->shouldReceive('all')->andReturn(['foo.all']);
-
+        @session_start();
         $panel = new SessionPanel();
-        $panel->setLaravel($app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame([
-            'sessionId' => 'foo.id',
-            'config' => 'foo.config',
-            'laravelSession' => ['foo.all'],
-            'nativeSession' => ['test' => 'test'],
-        ], $panel->getAttributes());
-        $this->assertTrue(is_string($panel->getTab()));
-        $this->assertTrue(is_string($panel->getPanel()));
-
-        $session->shouldHaveReceived('getId')->twice();
-        $session->shouldHaveReceived('getSessionConfig')->twice();
-        $session->shouldHaveReceived('all')->twice();
-    }
-
-    /**
-     * @runTestsInSeparateProcesses
-     */
-    public function test_render_without_laravel()
-    {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $_SESSION = ['test' => 'test'];
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $panel = new SessionPanel();
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame(['test' => 'test'], Arr::get($panel->getAttributes(), 'nativeSession'));
-        $this->assertTrue(is_string($panel->getTab()));
-        $this->assertTrue(is_string($panel->getPanel()));
+        $panel->setLaravel(
+            $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
+        );
+        $laravel->shouldReceive('offsetGet')->once()->with('session')->andReturn(
+             $sessionManager = m::mock('Illuminate\Session\SessionManager')
+        );
+        $sessionManager->shouldReceive('getId')->once()->andReturn($id = 'foo');
+        $sessionManager->shouldReceive('getSessionConfig')->once()->andReturn($sessionConfig = ['foo']);
+        $sessionManager->shouldReceive('all')->once()->andReturn($laravelSession = ['foo']);
+        $panel->getTab();
+        $panel->getPanel();
+        $this->assertAttributeSame([
+            'rows' => [
+                'sessionId' => $id,
+                'sessionConfig' => $sessionConfig,
+                'laravelSession' => $laravelSession,
+                'nativeSessionId' => session_id(),
+                'nativeSession' => $_SESSION,
+            ],
+        ], 'attributes', $panel);
     }
 }

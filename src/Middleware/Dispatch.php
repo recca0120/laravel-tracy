@@ -28,7 +28,7 @@ class Dispatch
      * @method __construct
      *
      * @param \Recca0120\LaravelTracy\Debugbar              $debugbar
-     * @param \Recca0120\LaravelTracy\StoreWrapper          $storeWrapper
+     * @param \Recca0120\LaravelTracy\Session\StoreWrapper  $storeWrapper
      * @param \Illuminate\Contracts\Routing\ResponseFactory $responseFactory
      */
     public function __construct(Debugbar $debugbar, StoreWrapper $storeWrapper, ResponseFactory $responseFactory)
@@ -51,7 +51,7 @@ class Dispatch
     public function handle($request, $next)
     {
         return $request->has('_tracy_bar') === true ?
-             $this->dispatchAssets($request, $next) :
+             $this->dispatchAssets($request) :
              $this->dispatchContent($request, $next);
     }
 
@@ -59,14 +59,12 @@ class Dispatch
      * dispatchAssets.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Closure                 $next
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function dispatchAssets($request, $next)
+    protected function dispatchAssets($request)
     {
         $assets = $request->get('_tracy_bar');
-
         switch ($assets) {
             case 'css':
                 $content = $this->debugbar->dispatchAssets();
@@ -116,11 +114,8 @@ class Dispatch
     protected function dispatchContent($request, $next)
     {
         $this->storeWrapper->start();
-
         $this->debugbar->dispatchContent();
-
         $response = $this->debugbar->render($next($request));
-
         $this->storeWrapper
             ->store()
             ->close();

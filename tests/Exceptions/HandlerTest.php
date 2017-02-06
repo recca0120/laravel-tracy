@@ -1,179 +1,115 @@
 <?php
 
+namespace Recca0120\LaravelTracy\Tests\Exceptions;
+
+use Exception;
 use Mockery as m;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 
-class HandlerTest extends PHPUnit_Framework_TestCase
+class HandlerTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
         m::close();
     }
 
-    public function test_handler_report()
+    public function testReportMethod()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $exceptionHandler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
-        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
+        $handler = new Handler(
+            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
+            $bluescreen = m::mock('Recca0120\LaravelTracy\BlueScreen')
+        );
         $exception = new Exception();
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $handler = new Handler($exceptionHandler, $bluescreen);
+        $exceptionHandler->shouldReceive('report')->once()->with($exception);
         $handler->report($exception);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $exceptionHandler->shouldHaveReceived('report')->with($exception)->once();
     }
 
-    public function test_handler_render_exception_with_redirect_response()
+    public function testRednerWithResponseIsRedirectResponse()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $exceptionHandler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
-        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
-        $request = m::spy('Illuminate\Http\Request');
-        $exception = new Exception();
-        $response = m::spy('Symfony\Component\HttpFoundation\RedirectResponse');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $exceptionHandler->shouldReceive('render')->andReturn($response);
-
-        $handler = new Handler($exceptionHandler, $bluescreen);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
+        $handler = new Handler(
+            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
+            $blueScreen = m::mock('Recca0120\LaravelTracy\BlueScreen')
+        );
+        $exceptionHandler->shouldReceive('render')
+            ->once()
+            ->with(
+                $request = m::mock('Illuminate\Http\Request'),
+                $exception = new Exception()
+            )->andReturn(
+                $response = m::mock('Symfony\Component\HttpFoundation\RedirectResponse')
+            );
         $this->assertSame($response, $handler->render($request, $exception));
     }
 
-    public function test_handler_render_exception_with_response_content_is_view()
+    public function testRednerWithResponseIsJsonResponse()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $exceptionHandler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
-        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
-        $request = m::spy('Illuminate\Http\Request');
-        $exception = new Exception();
-        $response = m::spy('Symfony\Component\HttpFoundation\Response');
-        $view = m::spy('Illuminate\Contracts\View\View');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $exceptionHandler->shouldReceive('render')->andReturn($response);
-        $response->shouldReceive('getContent')->andReturn($view);
-
-        $handler = new Handler($exceptionHandler, $bluescreen);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
+        $handler = new Handler(
+            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
+            $blueScreen = m::mock('Recca0120\LaravelTracy\BlueScreen')
+        );
+        $exceptionHandler->shouldReceive('render')
+            ->once()
+            ->with(
+                $request = m::mock('Illuminate\Http\Request'),
+                $exception = new Exception()
+            )->andReturn(
+                $response = m::mock('Symfony\Component\HttpFoundation\JsonResponse')
+            );
         $this->assertSame($response, $handler->render($request, $exception));
     }
 
-    public function test_handler_render_exception()
+    public function testRednerWithResponseContentIsView()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $exceptionHandler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
-        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
-        $request = m::spy('Illuminate\Http\Request');
-        $exception = new Exception();
-        $response = m::spy('Symfony\Component\HttpFoundation\Response');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $exceptionHandler->shouldReceive('render')->andReturn($response);
-        $bluescreen->shouldReceive('render')->with($exception)->andReturn('bluescreen');
-
-        $handler = new Handler($exceptionHandler, $bluescreen);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
+        $handler = new Handler(
+            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
+            $blueScreen = m::mock('Recca0120\LaravelTracy\BlueScreen')
+        );
+        $exceptionHandler->shouldReceive('render')
+            ->once()
+            ->with(
+                $request = m::mock('Illuminate\Http\Request'),
+                $exception = new Exception()
+            )->andReturn(
+                $response = m::mock('Symfony\Component\HttpFoundation\Response')
+            );
+        $response->shouldReceive('getContent')->once()->andReturn(
+            m::mock('Illuminate\Contracts\View\View')
+        );
         $this->assertSame($response, $handler->render($request, $exception));
-        $exceptionHandler->shouldHaveReceived('render')->with($request, $exception)->once();
-        $response->shouldHaveReceived('getContent')->once();
-        $response->shouldHaveReceived('setContent')->with('bluescreen')->once();
-        $bluescreen->shouldHaveReceived('render')->with($exception)->once();
     }
 
-    public function test_handler_render_for_console()
+    public function testRenderBlueScreenRender()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
+        $handler = new Handler(
+            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
+            $blueScreen = m::mock('Recca0120\LaravelTracy\BlueScreen')
+        );
+        $exceptionHandler->shouldReceive('render')
+            ->once()
+            ->with(
+                $request = m::mock('Illuminate\Http\Request'),
+                $exception = new Exception()
+            )->andReturn(
+                $response = m::mock('Symfony\Component\HttpFoundation\Response')
+            );
+        $response->shouldReceive('getContent')->once()->andReturn(
+            m::mock('stdClass')
+        );
+        $blueScreen->shouldReceive('render')->once()->with($exception)->andReturn($content = 'foo');
+        $response->shouldReceive('setContent')->once()->with($content);
+        $this->assertSame($response, $handler->render($request, $exception));
+    }
 
-        $exceptionHandler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler');
-        $bluescreen = m::spy('Recca0120\LaravelTracy\BlueScreen');
-        $exception = new Exception();
-        $output = m::spy('\Symfony\Component\Console\Output\OutputInterface');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $handler = new Handler($exceptionHandler, $bluescreen);
+    public function testRenderForConsoleMethod()
+    {
+        $handler = new Handler(
+            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
+            $blueScreen = m::mock('Recca0120\LaravelTracy\BlueScreen')
+        );
+        $exceptionHandler->shouldReceive('renderForConsole')->once()->with(
+            $output = m::mock('Symfony\Component\Console\Output\OutputInterface'),
+            $exception = new Exception()
+        );
         $handler->renderForConsole($output, $exception);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $exceptionHandler->shouldHaveReceived('renderForConsole')->with($output, $exception)->once();
     }
 }

@@ -19,7 +19,7 @@ class HtmlValidatorPanel extends AbstractPanel
      *
      * @var array
      */
-    public static $ignoreErrors = [
+    protected static $ignoreErrors = [
         // XML_ERR_ENTITYREF_SEMICOL_MISSING
         23,
         // XML_HTML_UNKNOWN_TAG
@@ -31,7 +31,7 @@ class HtmlValidatorPanel extends AbstractPanel
      *
      * @var array
      */
-    public static $severenity = [
+    protected static $severenity = [
         LIBXML_ERR_WARNING => 'Warning',
         LIBXML_ERR_ERROR => 'Error',
         LIBXML_ERR_FATAL => 'Fatal error',
@@ -60,7 +60,7 @@ class HtmlValidatorPanel extends AbstractPanel
      *
      * @return string
      */
-    public static function normalize($s)
+    protected static function normalize($s)
     {
         $s = static::normalizeNewLines($s);
         // remove control characters; leave \t + \n
@@ -80,7 +80,7 @@ class HtmlValidatorPanel extends AbstractPanel
      *
      * @return string
      */
-    public static function normalizeNewLines($s)
+    protected static function normalizeNewLines($s)
     {
         return str_replace(["\r\n", "\r"], "\n", $s);
     }
@@ -92,7 +92,7 @@ class HtmlValidatorPanel extends AbstractPanel
      *
      * @return array
      */
-    public function getAttributes()
+    protected function getAttributes()
     {
         libxml_use_internal_errors(true);
         $dom = new DOMDocument('1.0', 'UTF-8');

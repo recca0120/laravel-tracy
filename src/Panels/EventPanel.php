@@ -4,7 +4,7 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use Tracy\Debugger;
 
-class EventPanel extends AbstractPanel
+class EventPanel extends AbstractSubscribePanel
 {
     /**
      * $counter.
@@ -32,19 +32,28 @@ class EventPanel extends AbstractPanel
      *
      * @method subscribe
      */
-    public function subscribe()
+    protected function subscribe()
     {
-        $key = get_class($this);
-        $timer = Debugger::timer($key);
+        $id = get_class($this);
+        $timer = Debugger::timer($id);
         $events = $this->laravel['events'];
 
-        $events->listen('*', function ($params) use ($key, $events) {
-            $execTime = Debugger::timer($key);
-            $firing = $events->firing();
-            $editorLink = self::editorLink(self::findSource());
-            $this->totalTime += $execTime;
-            $this->events[] = compact('execTime', 'firing', 'params', 'editorLink');
-        });
+        if (version_compare($this->laravel->version(), 5.4, '>=') === true) {
+            $events->listen('*', function ($key, $payload) use ($id) {
+                $execTime = Debugger::timer($id);
+                $editorLink = self::editorLink(self::findSource());
+                $this->totalTime += $execTime;
+                $this->events[] = compact('execTime', 'key', 'payload', 'editorLink');
+            });
+        } else {
+            $events->listen('*', function ($payload) use ($id, $events) {
+                $execTime = Debugger::timer($id);
+                $key = $events->firing();
+                $editorLink = self::editorLink(self::findSource());
+                $this->totalTime += $execTime;
+                $this->events[] = compact('execTime', 'key', 'payload', 'editorLink');
+            });
+        }
     }
 
     /**
