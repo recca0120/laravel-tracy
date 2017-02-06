@@ -19,7 +19,7 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
             $request = m::mock('Illuminate\Http\Request'),
             $app = m::mock('Illuminate\Contracts\Foundation\Application')
         );
-        $debugbar->setBar($bar = m::mock('Tracy\Bar')->makePartial());
+        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar2'));
         $bar->shouldReceive('dispatchAssets')->once();
         $debugbar->dispatchAssets();
     }
@@ -31,7 +31,7 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
             $request = m::mock('Illuminate\Http\Request'),
             $app = m::mock('Illuminate\Contracts\Foundation\Application')
         );
-        $debugbar->setBar($bar = m::mock('Tracy\Bar'));
+        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar2'));
         $bar->shouldReceive('dispatchAssets')->once();
         $debugbar->dispatchContent();
     }
@@ -242,6 +242,13 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
 class Bar extends \Tracy\Bar
 {
     public function dispatchContent()
+    {
+    }
+}
+
+class Bar2 extends \Tracy\Bar
+{
+    public function dispatchAssets()
     {
     }
 }
