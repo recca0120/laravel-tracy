@@ -17,7 +17,6 @@ class SessionPanelTest extends \PHPUnit_Framework_TestCase
      */
     public function testRender()
     {
-        @session_start();
         $panel = new SessionPanel();
         $panel->setLaravel(
             $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')

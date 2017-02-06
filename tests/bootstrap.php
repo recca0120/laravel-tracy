@@ -26,6 +26,8 @@ use Carbon\Carbon;
 date_default_timezone_set('UTC');
 Carbon::setTestNow(Carbon::now());
 
+session_start();
+
 if (function_exists('env') === false) {
     function env($env)
     {
