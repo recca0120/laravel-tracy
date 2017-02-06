@@ -19,8 +19,6 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
             $request = m::mock('Illuminate\Http\Request'),
             $app = m::mock('Illuminate\Contracts\Foundation\Application')
         );
-        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar2'));
-        $bar->shouldReceive('dispatchAssets')->once();
         $debugbar->dispatchAssets();
     }
 
@@ -31,8 +29,6 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
             $request = m::mock('Illuminate\Http\Request'),
             $app = m::mock('Illuminate\Contracts\Foundation\Application')
         );
-        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar2'));
-        $bar->shouldReceive('dispatchAssets')->once();
         $debugbar->dispatchContent();
     }
 
@@ -43,8 +39,6 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
             $request = m::mock('Illuminate\Http\Request'),
             $app = m::mock('Illuminate\Contracts\Foundation\Application')
         );
-        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
-        $bar->shouldReceive('dispatchContent')->once();
         $debugbar->dispatchContent();
     }
 
@@ -99,7 +93,7 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
             $request = m::mock('Illuminate\Http\Request'),
             $app = m::mock('Illuminate\Contracts\Foundation\Application')
         );
-        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $debugbar->setBar($bar = m::mock('Tracy\Bar'));
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $request->shouldReceive('ajax')->once()->andReturn(true);
         $response->shouldReceive('getContent')->once()->andReturn($content = '<body>foo</body>');
@@ -117,7 +111,7 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
             $request = m::mock('Illuminate\Http\Request'),
             $app = m::mock('Illuminate\Contracts\Foundation\Application')
         );
-        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $debugbar->setBar($bar = m::mock('Tracy\Bar'));
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $request->shouldReceive('ajax')->once()->andReturn(false);
         $response->headers = $headers = m::mock('stdClass');
@@ -138,7 +132,7 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
             $request = m::mock('Illuminate\Http\Request'),
             $app = m::mock('Illuminate\Contracts\Foundation\Application')
         );
-        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $debugbar->setBar($bar = m::mock('Tracy\Bar'));
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $request->shouldReceive('ajax')->once()->andReturn(false);
         $response->headers = $headers = m::mock('stdClass');
@@ -159,7 +153,7 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
             $request = m::mock('Illuminate\Http\Request'),
             $app = m::mock('Illuminate\Contracts\Foundation\Application')
         );
-        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $debugbar->setBar($bar = m::mock('Tracy\Bar'));
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $request->shouldReceive('ajax')->once()->andReturn(false);
         $response->headers = $headers = m::mock('stdClass');
@@ -179,7 +173,7 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
             $request = m::mock('Illuminate\Http\Request'),
             $app = m::mock('Illuminate\Contracts\Foundation\Application')
         );
-        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $debugbar->setBar($bar = m::mock('Tracy\Bar'));
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $request->shouldReceive('ajax')->once()->andReturn(false);
         $response->headers = $headers = m::mock('stdClass');
@@ -194,7 +188,7 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
             $request = m::mock('Illuminate\Http\Request'),
             $app = m::mock('Illuminate\Contracts\Foundation\Application')
         );
-        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $debugbar->setBar($bar = m::mock('Tracy\Bar'));
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $request->shouldReceive('ajax')->once()->andReturn(false);
         $response->headers = $headers = m::mock('stdClass');
@@ -212,7 +206,7 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
         $htmlValidatorPanel = m::mock('Tracy\IBarPanel');
         $htmlValidatorPanel->shouldReceive('setLaravel')->once()->with($app);
         $debugbar->put($htmlValidatorPanel, 'html-validator');
-        $debugbar->setBar($bar = m::mock('Recca0120\LaravelTracy\Tests\Bar'));
+        $debugbar->setBar($bar = m::mock('Tracy\Bar'));
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $request->shouldReceive('ajax')->once()->andReturn(false);
         $response->headers = $headers = m::mock('stdClass');
@@ -236,19 +230,5 @@ class DebugbarTest extends \PHPUnit_Framework_TestCase
         );
         $request->shouldReceive('ajax')->once()->andReturn(true);
         $debugbar->loadPanels();
-    }
-}
-
-class Bar extends \Tracy\Bar
-{
-    public function dispatchContent()
-    {
-    }
-}
-
-class Bar2 extends \Tracy\Bar
-{
-    public function dispatchAssets()
-    {
     }
 }
