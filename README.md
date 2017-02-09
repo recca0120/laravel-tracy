@@ -11,7 +11,7 @@ Better Laravel Exception Handler
 [![Monthly Downloads](https://poser.pugx.org/recca0120/laravel-tracy/d/monthly)](https://packagist.org/packages/recca0120/laravel-tracy)
 [![Daily Downloads](https://poser.pugx.org/recca0120/laravel-tracy/d/daily)](https://packagist.org/packages/recca0120/laravel-tracy)
 
-![Laravel Tracy](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/tracy.png)
+![Laravel Tracy](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/tracy.png)
 
 ## Features
 - Visualization of errors and exceptions
@@ -19,7 +19,7 @@ Better Laravel Exception Handler
 - Exception stack trace contains values of all method arguments.
 
 ## Online Demo
-[Demo](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/tracy-exception.html)
+[Demo](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/tracy-exception.html)
 
 ## Installing
 
@@ -104,35 +104,35 @@ Prefer PhpStorm, you can edit `config/tracy.php`'s key of `editor` like this:
 ## Debugger Bar
 
 ### Directive bdump
-![Ajax](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/bdump.png)
+![Ajax](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/bdump.png)
 
 ### Ajax Debugger Bar
-![Ajax](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/ajax.png)
+![Ajax](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/ajax.png)
 
 ### SystemInfo
-![SystemInfo](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/systeminfo.png)
+![SystemInfo](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/systeminfo.png)
 
 ### Route
-![Route](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/route.png)
+![Route](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/route.png)
 
 ### View
-![View](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/view.png)
+![View](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/view.png)
 
 ### Session
-![Session](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/session.png)
+![Session](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/session.png)
 
 ### Request
-![Request](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/request.png)
+![Request](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/request.png)
 
 ### Login
-![Login](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/login.png)
+![Login](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/login.png)
 
 ### Html Validator
-![Html Validator](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/html-validator.png)
+![Html Validator](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/html-validator.png)
 
 ### Web Artisan
 web artisan is another package [recca0120/terminal](https://github.com/recca0120/laravel-terminal)
-![Terminal](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/terminal.png)
+![Terminal](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/terminal.png)
 
 #### notice
 if you install terminal before, this panel will throw errors, please remove folder `app/resources/views/vendor/terminal`
@@ -159,4 +159,4 @@ sql('select * from news');
 sql('select * from products');
 ```
 
-![Standalone](https://cdn.rawgit.com/recca0120/laravel-tracy/master/screenshots/standalone.png)
+![Standalone](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/standalone.png)
