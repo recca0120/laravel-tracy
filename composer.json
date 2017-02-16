@@ -18,6 +18,7 @@
         "illuminate/support": "~5.1",
         "illuminate/view": "~5.1",
         "recca0120/terminal": "~1.6.4",
+        "cartalyst/sentinel": "2.0.*",
         "tracy/tracy": "^2.4.0"
     },
     "require-dev": {
