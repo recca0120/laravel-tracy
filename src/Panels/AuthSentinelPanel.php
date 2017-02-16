@@ -30,7 +30,7 @@ class AuthSentinelPanel extends AbstractPanel
         $auth = $this->laravel['sentinel'];
 
         $userObject = $auth->check();
-        if (is_null($userObject) === false) {
+        if (empty($userObject) === false) {
             if (isset($userObject->account) === true) {
                 $name = $userObject->account;
             } elseif (isset($userObject->email) === true) {
