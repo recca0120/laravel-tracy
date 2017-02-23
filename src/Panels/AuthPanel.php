@@ -2,6 +2,8 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
+use Illuminate\Support\Arr;
+
 class AuthPanel extends AbstractPanel
 {
     /**
@@ -13,29 +15,62 @@ class AuthPanel extends AbstractPanel
      */
     protected function getAttributes()
     {
-        $rows = [];
-        $id = 'Guest';
+        $user = ['id' => 'Guest', 'rows' => []];
         if ($this->isLaravel() === true) {
-            $session = $this->laravel['session'];
-            $auth = $this->laravel['auth'];
+            $user = isset($this->laravel['sentinel']) === true ?
+                $this->fromSentinel($user) :
+                $this->fromGuard($user);
+        }
 
-            if ($session->has($auth->getName()) === true) {
-                $userObject = $auth->user();
-                if (is_null($userObject) === false) {
-                    $rows = $userObject->toArray();
-                    $id = $userObject->getAuthIdentifier();
-                    if (is_numeric($id)) {
-                        foreach (['username', 'email', 'name'] as $key) {
-                            if (isset($rows[$key]) === true) {
-                                $id = $rows[$key];
-                                break;
-                            }
-                        }
-                    }
+        return $this->identifier($user);
+    }
+
+    protected function fromGuard($userData)
+    {
+        $session = $this->laravel['session'];
+        $auth = $this->laravel['auth'];
+        $user = $session->has($auth->getName()) === true ? $auth->user() : null;
+
+        if (is_null($user) === false) {
+            $userData = array_merge($userData, [
+                'id' => $user->getAuthIdentifier(),
+                'rows' => $user->toArray()
+            ]);
+        }
+
+        return $userData;
+    }
+
+    protected function fromSentinel($userData)
+    {
+        $auth = $this->laravel['sentinel'];
+        $user = $auth->check();
+
+        if (empty($user) === false) {
+            $userData['rows'] = $user->toArray();
+            $userData['id'] = null;
+        }
+
+        return $userData;
+    }
+
+    protected function identifier($userData = [])
+    {
+        $id = Arr::get($userData, 'id');
+        $rows = Arr::get($userData, 'rows', []);
+
+        if (is_numeric($id) === true || empty($id) === true) {
+            foreach (['username', 'account', 'email', 'name', 'id'] as $key) {
+                if (isset($rows[$key]) === true) {
+                    $id = $rows[$key];
+                    break;
                 }
             }
         }
 
-        return compact('id', 'rows');
+        return [
+            'id' => $id,
+            'rows' => $rows,
+        ];
     }
 }
