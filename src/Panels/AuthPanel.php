@@ -15,7 +15,11 @@ class AuthPanel extends AbstractPanel
      */
     protected function getAttributes()
     {
-        $user = ['id' => 'Guest', 'rows' => []];
+        $user = [
+            'id' => 'Guest',
+            'rows' => [],
+        ];
+
         if ($this->isLaravel() === true) {
             $user = isset($this->laravel['sentinel']) === true ?
                 $this->fromSentinel($user) :
@@ -32,10 +36,10 @@ class AuthPanel extends AbstractPanel
         $user = $session->has($auth->getName()) === true ? $auth->user() : null;
 
         if (is_null($user) === false) {
-            $userData = array_merge($userData, [
+            $userData = [
                 'id' => $user->getAuthIdentifier(),
-                'rows' => $user->toArray()
-            ]);
+                'rows' => $user->toArray(),
+            ];
         }
 
         return $userData;
@@ -43,8 +47,7 @@ class AuthPanel extends AbstractPanel
 
     protected function fromSentinel($userData)
     {
-        $auth = $this->laravel['sentinel'];
-        $user = $auth->check();
+        $user = $this->laravel['sentinel']->check();
 
         if (empty($user) === false) {
             $userData['rows'] = $user->toArray();
