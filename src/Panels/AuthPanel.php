@@ -2,10 +2,32 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
+use Closure;
 use Illuminate\Support\Arr;
 
 class AuthPanel extends AbstractPanel
 {
+    /**
+     * The user resolver callable.
+     *
+     * @var callable
+     *
+     * @return static
+     */
+    protected $userResolver = null;
+
+    /**
+     * setUserResolver.
+     *
+     * @param \Closure $userResolver
+     */
+    public function setUserResolver(Closure $userResolver)
+    {
+        $this->userResolver = $userResolver;
+
+        return $this;
+    }
+
     /**
      * getAttributes.
      *
@@ -24,7 +46,11 @@ class AuthPanel extends AbstractPanel
             $user = isset($this->laravel['sentinel']) === true ?
                 $this->fromSentinel($user) :
                 $this->fromGuard($user);
+        } else if (is_null($this->userResolver) === false) {
+            $user = array_merge($user, $this->userResolver());
         }
+
+        var_dump($user);
 
         return $this->identifier($user);
     }
