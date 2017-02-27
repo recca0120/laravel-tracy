@@ -6,6 +6,7 @@ return [
     'accepts' => [
         'text/html',
     ],
+    'appendTo' => 'body',
     'editor' => 'subl://open?url=file://%file&line=%line',
     'maxDepth' => 4,
     'maxLength' => 1000,

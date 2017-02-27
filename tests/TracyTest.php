@@ -14,7 +14,7 @@ class TracyTest extends TestCase
     }
 
     /**
-     * @runTestsInSeparateProcesses
+     * @runInSeparateProcess
      */
     public function testInstance()
     {
