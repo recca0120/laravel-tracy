@@ -4,6 +4,7 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use Tracy\Helpers;
 use Tracy\IBarPanel;
+use Recca0120\LaravelTracy\Template;
 use Illuminate\Contracts\Foundation\Application;
 
 abstract class AbstractPanel implements IBarPanel
@@ -35,6 +36,23 @@ abstract class AbstractPanel implements IBarPanel
      * @var string
      */
     protected $viewPath = null;
+
+    /**
+     * $template.
+     *
+     * @var \Recca0120\LaravelTracy\Template
+     */
+    protected $template;
+
+    /**
+     * __construct.
+     *
+     * @param \Recca0120\LaravelTracy\Template $template
+     */
+    public function __construct(Template $template = null)
+    {
+        $this->template = $template ?: new Template;
+    }
 
     /**
      * Renders HTML code for custom tab.
@@ -69,15 +87,12 @@ abstract class AbstractPanel implements IBarPanel
     {
         $view = $this->getViewPath().$view.'.php';
         if (empty($this->attributes) === true) {
-            $this->attributes = $this->getAttributes();
+            $this->template->setAttributes(
+                $this->attributes = $this->getAttributes()
+            );
         }
-        extract($this->attributes);
 
-        ob_start();
-        require $view;
-        $content = ob_get_clean();
-
-        return $content;
+        return $this->template->render($view);
     }
 
     /**

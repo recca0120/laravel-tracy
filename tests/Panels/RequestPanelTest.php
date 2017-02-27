@@ -16,7 +16,9 @@ class RequestPanelTest extends TestCase
 
     public function testRender()
     {
-        $panel = new RequestPanel();
+        $panel = new RequestPanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
         $panel->setLaravel(
             $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
         );
@@ -35,9 +37,7 @@ class RequestPanelTest extends TestCase
             ->shouldReceive('path')->once()->andReturn('foo.path')
             ->shouldReceive('server')->once()->andReturn('foo.server');
 
-        $panel->getTab();
-        $panel->getPanel();
-        $this->assertAttributeSame([
+        $template->shouldReceive('setAttributes')->once()->with([
             'rows' => [
                 'ip' => 'foo.ip',
                 'ips' => 'foo.ips',
@@ -49,6 +49,10 @@ class RequestPanelTest extends TestCase
                 'path' => 'foo.path',
                 'server' => 'foo.server',
             ],
-        ], 'attributes', $panel);
+        ]);
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 }

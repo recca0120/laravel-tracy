@@ -16,7 +16,9 @@ class ViewPanelTest extends TestCase
 
     public function testRender()
     {
-        $panel = new ViewPanel();
+        $panel = new ViewPanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
         $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $laravel->shouldReceive('version')->once()->andReturn(5.4);
         $laravel->shouldReceive('offsetGet')->once()->with('events')->andReturn(
@@ -40,9 +42,8 @@ class ViewPanelTest extends TestCase
             return true;
         }));
         $panel->setLaravel($laravel);
-        $panel->getTab();
-        $panel->getPanel();
-        $this->assertAttributeSame([
+
+        $template->shouldReceive('setAttributes')->once()->with([
             'rows' => [[
                 'name' => 'foo',
                 'data' => [
@@ -51,12 +52,18 @@ class ViewPanelTest extends TestCase
                 ],
                 'path' => '',
             ]],
-        ], 'attributes', $panel);
+        ]);
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 
     public function testRenderAndLaravel50()
     {
-        $panel = new ViewPanel();
+        $panel = new ViewPanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
         $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $laravel->shouldReceive('version')->once()->andReturn(5.3);
         $laravel->shouldReceive('offsetGet')->once()->with('events')->andReturn(
@@ -82,9 +89,8 @@ class ViewPanelTest extends TestCase
             return true;
         }));
         $panel->setLaravel($laravel);
-        $panel->getTab();
-        $panel->getPanel();
-        $this->assertAttributeSame([
+
+        $template->shouldReceive('setAttributes')->once()->with([
             'rows' => [[
                 'name' => 'foo',
                 'data' => [
@@ -93,6 +99,10 @@ class ViewPanelTest extends TestCase
                 ],
                 'path' => '',
             ]],
-        ], 'attributes', $panel);
+        ]);
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 }

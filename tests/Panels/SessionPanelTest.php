@@ -14,11 +14,16 @@ class SessionPanelTest extends TestCase
     }
 
     /**
-     * @runTestsInSeparateProcesses
+     * @runInSeparateProcess
      */
     public function testRender()
     {
-        $panel = new SessionPanel();
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        $panel = new SessionPanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
         $panel->setLaravel(
             $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
         );
@@ -28,9 +33,8 @@ class SessionPanelTest extends TestCase
         $sessionManager->shouldReceive('getId')->once()->andReturn($id = 'foo');
         $sessionManager->shouldReceive('getSessionConfig')->once()->andReturn($sessionConfig = ['foo']);
         $sessionManager->shouldReceive('all')->once()->andReturn($laravelSession = ['foo']);
-        $panel->getTab();
-        $panel->getPanel();
-        $this->assertAttributeSame([
+
+        $template->shouldReceive('setAttributes')->once()->with([
             'rows' => [
                 'sessionId' => $id,
                 'sessionConfig' => $sessionConfig,
@@ -38,6 +42,10 @@ class SessionPanelTest extends TestCase
                 'nativeSessionId' => session_id(),
                 'nativeSession' => $_SESSION,
             ],
-        ], 'attributes', $panel);
+        ]);
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 }

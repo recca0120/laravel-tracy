@@ -16,7 +16,9 @@ class HtmlValidatorPanelTest extends TestCase
 
     public function testRender()
     {
-        $panel = new HtmlValidatorPanel();
+        $panel = new HtmlValidatorPanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
 
         $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $laravel->shouldReceive('offsetGet')->once()->with('events')->andReturn(
@@ -37,9 +39,7 @@ class HtmlValidatorPanelTest extends TestCase
 
         $panel->setLaravel($laravel);
 
-        $panel->getTab();
-        $panel->getPanel();
-        $this->assertAttributeSame([
+        $template->shouldReceive('setAttributes')->once()->with([
             'severenity' => [
                 LIBXML_ERR_WARNING => 'Warning',
                 LIBXML_ERR_ERROR => 'Error',
@@ -48,6 +48,10 @@ class HtmlValidatorPanelTest extends TestCase
             'counter' => 0,
             'errors' => [],
             'html' => $html,
-        ], 'attributes', $panel);
+        ]);
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 }

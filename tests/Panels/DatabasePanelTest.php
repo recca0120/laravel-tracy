@@ -19,7 +19,9 @@ class DatabasePanelTest extends TestCase
 
     public function testRender()
     {
-        $panel = new DatabasePanel();
+        $panel = new DatabasePanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
         $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $laravel->shouldReceive('offsetGet')->once()->with('events')->andReturn(
             $events = m::mock('Illuminate\Contracts\Event\Dispatcher')
@@ -49,13 +51,19 @@ class DatabasePanelTest extends TestCase
             return true;
         }));
         $panel->setLaravel($laravel);
-        $panel->getTab();
-        $panel->getPanel();
+
+        $template->shouldReceive('setAttributes')->once()->with(m::type('array'));
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 
     public function testRenderAndLaravel50()
     {
-        $panel = new DatabasePanel();
+        $panel = new DatabasePanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
         $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $laravel->shouldReceive('offsetGet')->once()->with('events')->andReturn(
             $events = m::mock('Illuminate\Contracts\Event\Dispatcher')
@@ -81,8 +89,12 @@ class DatabasePanelTest extends TestCase
             return true;
         }));
         $panel->setLaravel($laravel);
-        $panel->getTab();
-        $panel->getPanel();
+
+        $template->shouldReceive('setAttributes')->once()->with(m::type('array'));
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 
     public function testPrepareBindings()

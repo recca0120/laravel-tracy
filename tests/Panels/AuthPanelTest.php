@@ -15,7 +15,9 @@ class AuthPanelTest extends TestCase
 
     public function testRenderFromGuard()
     {
-        $panel = new AuthPanel();
+        $panel = new AuthPanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
         $panel->setLaravel(
             $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
         );
@@ -36,19 +38,23 @@ class AuthPanelTest extends TestCase
         $user->shouldReceive('toArray')->once()->andReturn($rows = ['username' => 'foo']);
         $user->shouldReceive('getAuthIdentifier')->once()->andReturn($id = 1);
 
-        $panel->getTab();
-        $panel->getPanel();
-        $this->assertAttributeSame([
+        $template->shouldReceive('setAttributes')->once()->with([
             'id' => 'foo',
             'rows' => [
                 'username' => 'foo',
             ],
-        ], 'attributes', $panel);
+        ]);
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 
     public function testRenderFromSentinel()
     {
-        $panel = new AuthPanel();
+        $panel = new AuthPanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
         $panel->setLaravel(
             $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
         );
@@ -62,32 +68,39 @@ class AuthPanelTest extends TestCase
         );
         $user->shouldReceive('toArray')->once()->andReturn($rows = ['username' => 'foo']);
 
-        $panel->getTab();
-        $panel->getPanel();
-        $this->assertAttributeSame([
+        $template->shouldReceive('setAttributes')->once()->with([
             'id' => 'foo',
             'rows' => [
                 'username' => 'foo',
             ],
-        ], 'attributes', $panel);
+        ]);
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 
     public function testRenderFromUserResolver()
     {
-        $panel = new AuthPanel();
+        $panel = new AuthPanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
+
         $panel->setUserResolver(function() {
             return [
                 'username' => 'foo'
             ];
         });
 
-        $panel->getTab();
-        $panel->getPanel();
-        $this->assertAttributeSame([
+        $template->shouldReceive('setAttributes')->once()->with([
             'id' => 'foo',
             'rows' => [
                 'username' => 'foo',
             ],
-        ], 'attributes', $panel);
+        ]);
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 }

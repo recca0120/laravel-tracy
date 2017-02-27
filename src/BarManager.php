@@ -105,7 +105,7 @@ class BarManager
     public static function make($id)
     {
         $className = '\\'.__NAMESPACE__.'\Panels\\'.Str::studly($id).'Panel';
-        $panel = new $className();
+        $panel = new $className(new Template());
 
         return $panel;
     }

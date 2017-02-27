@@ -15,7 +15,9 @@ class RoutingPanelTest extends TestCase
 
     public function testRender()
     {
-        $panel = new RoutingPanel();
+        $panel = new RoutingPanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
         $panel->setLaravel(
             $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
         );
@@ -27,13 +29,16 @@ class RoutingPanelTest extends TestCase
         );
         $currentRoute->shouldReceive('uri')->once()->andReturn($uri = 'foo');
         $currentRoute->shouldReceive('getAction')->once()->andReturn($action = ['foo' => 'bar']);
-        $panel->getTab();
-        $panel->getPanel();
-        $this->assertAttributeSame([
+
+        $template->shouldReceive('setAttributes')->once()->with([
             'rows' => array_merge([
                 'uri' => $uri,
             ], $action),
-        ], 'attributes', $panel);
+        ]);
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 
     /**
@@ -43,13 +48,18 @@ class RoutingPanelTest extends TestCase
     {
         $_SERVER['HTTP_HOST'] = '127.0.0.1';
         $_SERVER['REQUEST_URI'] = '/foo';
-        $panel = new RoutingPanel();
-        $panel->getTab();
-        $panel->getPanel();
-        $this->assertAttributeSame([
+        $panel = new RoutingPanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
+
+        $template->shouldReceive('setAttributes')->once()->with([
             'rows' => [
                 'uri' => $_SERVER['REQUEST_URI'],
             ],
-        ], 'attributes', $panel);
+        ]);
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 }

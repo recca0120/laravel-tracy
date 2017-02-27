@@ -15,7 +15,9 @@ class TerminalPanelTest extends TestCase
 
     public function testRender()
     {
-        $panel = new TerminalPanel();
+        $panel = new TerminalPanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
         $panel->setLaravel(
             $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
         );
@@ -28,23 +30,32 @@ class TerminalPanelTest extends TestCase
         $response->shouldReceive('getContent')->once()->andReturn(
             $html = 'foo'
         );
-        $panel->getTab();
-        $panel->getPanel();
-        $this->assertAttributeSame([
+
+        $template->shouldReceive('setAttributes')->once()->with([
             'html' => $html,
-        ], 'attributes', $panel);
+        ]);
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 
     public function testException()
     {
-        $panel = new TerminalPanel();
+        $panel = new TerminalPanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
+
         $panel->setLaravel(
             $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
         );
-        $panel->getTab();
-        $panel->getPanel();
-        $this->assertAttributeSame([
+
+        $template->shouldReceive('setAttributes')->once()->with([
             'html' => null,
-        ], 'attributes', $panel);
+        ]);
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
     }
 }
