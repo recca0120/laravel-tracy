@@ -86,7 +86,6 @@ class HtmlValidatorPanel extends AbstractSubscribePanel
         return str_replace(["\r\n", "\r"], "\n", $s);
     }
 
-
     /**
      * getAttributes.
      *
@@ -128,7 +127,7 @@ class HtmlValidatorPanel extends AbstractSubscribePanel
     protected function subscribe()
     {
         $events = $this->laravel['events'];
-        $events->listen(BeforeBarRender::class, function($barRender) {
+        $events->listen(BeforeBarRender::class, function ($barRender) {
             $this->setHtml($barRender->response->getContent());
         });
     }

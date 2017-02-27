@@ -19,8 +19,8 @@ class RenderBar
      *
      * @method __construct
      *
-     * @param \Recca0120\LaravelTracy\DebuggerManager $debuggerManager
-     * @param \Illuminate\Contracts\Events\Dispatcher $events
+     * @param \Recca0120\LaravelTracy\DebuggerManager       $debuggerManager
+     * @param \Illuminate\Contracts\Events\Dispatcher       $events
      * @param \Illuminate\Contracts\Routing\ResponseFactory $responseFactory
      */
     public function __construct(DebuggerManager $debuggerManager, Dispatcher $events, ResponseFactory $responseFactory)
@@ -58,10 +58,10 @@ class RenderBar
 
         $this->events->fire(new BeforeBarRender($request, $response));
 
-        $content = $response->getContent();
-
         $response->setContent(
-            $this->debuggerManager->shutdownHandler($content)
+            $this->debuggerManager->shutdownHandler(
+                $response->getContent()
+            )
         );
 
         return $response;
@@ -83,7 +83,7 @@ class RenderBar
 
         $contentType = strtolower($response->headers->get('Content-Type'));
         $accepts = $this->debuggerManager->accepts();
-        if (empty($contentType) === true && $response->getStatusCode() >= 400 ||
+        if ((empty($contentType) === true && $response->getStatusCode() >= 400) ||
             count($accepts) === 0
         ) {
             return false;

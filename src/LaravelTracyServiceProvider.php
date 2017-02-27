@@ -13,7 +13,6 @@ use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\LaravelTracy\Middleware\RenderBar;
 use Recca0120\Terminal\TerminalServiceProvider;
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Recca0120\LaravelTracy\Session\StoreWrapper;
 
 class LaravelTracyServiceProvider extends ServiceProvider
 {
@@ -23,8 +22,8 @@ class LaravelTracyServiceProvider extends ServiceProvider
      * @method boot
      *
      * @param \Recca0120\LaravelTracy\DebuggerManager $debuggerManager
-     * @param \Illuminate\Contracts\Http\Kernel $kernel
-     * @param \Illuminate\Contracts\View\Factory $view
+     * @param \Illuminate\Contracts\Http\Kernel       $kernel
+     * @param \Illuminate\Contracts\View\Factory      $view
      */
     public function boot(DebuggerManager $debuggerManager, Kernel $kernel, View $view)
     {
@@ -37,8 +36,8 @@ class LaravelTracyServiceProvider extends ServiceProvider
         });
 
         if ($debuggerManager->enabled() === true) {
-            $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
-                return new Handler($exceptionHandler, $app->make(DebuggerManager::class));
+            $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) use ($debuggerManager) {
+                return new Handler($exceptionHandler, $debuggerManager);
             });
             $kernel->prependMiddleware(RenderBar::class);
         }
@@ -67,7 +66,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
                 ->getBar();
         });
 
-        $this->app->singleton(DebuggerManager::class, function($app) use ($config) {
+        $this->app->singleton(DebuggerManager::class, function ($app) use ($config) {
             $config = DebuggerManager::init($config);
 
             return new DebuggerManager(

@@ -18,7 +18,11 @@ class TracyTest extends TestCase
      */
     public function testInstance()
     {
-        $tracy = Tracy::instance(['enabled' => null]);
+        $tracy = Tracy::instance([
+            'email' => 'recca0120@gmail.com',
+            'emailSnooze' => '3 days',
+            'enabled' => true,
+        ]);
         $tracy = Tracy::instance();
         $databasePanel = $tracy->getPanel('database');
         $databasePanel->logQuery('select * from users');

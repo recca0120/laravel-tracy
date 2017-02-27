@@ -43,11 +43,12 @@ class BarManager
     /**
      * __construct.
      *
-     * @param \Tracy\Bar $bar
-     * @param \Illuminate\Http\Request $request
+     * @param \Tracy\Bar                                   $bar
+     * @param \Illuminate\Http\Request                     $request
      * @param \Illuminate\Contracts\Foundation\Application $app
      */
-    public function __construct(Bar $bar = null, Request $request = null, Application $app = null) {
+    public function __construct(Bar $bar = null, Request $request = null, Application $app = null)
+    {
         $this->bar = $bar ?: Debugger::getBar();
         $this->request = $request ?: Request::capture();
         $this->app = $app;
@@ -66,11 +67,12 @@ class BarManager
     /**
      * loadPanels.
      *
-     * @param  array $panels
+     * @param array $panels
      *
      * @return static
      */
-    public function loadPanels($panels = []) {
+    public function loadPanels($panels = [])
+    {
         if (isset($panels['user']) === true) {
             $panels['auth'] = $panels['user'];
             unset($panels['user']);
@@ -100,7 +102,8 @@ class BarManager
      *
      * @return \Tracy\IBarPanel
      */
-    public static function make($id) {
+    public static function make($id)
+    {
         $className = '\\'.__NAMESPACE__.'\Panels\\'.Str::studly($id).'Panel';
         $panel = new $className();
 
@@ -111,11 +114,12 @@ class BarManager
      * set.
      *
      * @param \Tracy\IBarPanel $panel
-     * @param string $id
+     * @param string           $id
      *
      * @return static
      */
-    public function set(IBarPanel $panel, $id) {
+    public function set(IBarPanel $panel, $id)
+    {
         $panel->setLaravel($this->app);
         $this->panels[$id] = $panel;
         $this->bar->addPanel($panel, $id);
@@ -126,11 +130,12 @@ class BarManager
     /**
      * get.
      *
-     * @param  string $id [description]
+     * @param string $id [description]
      *
      * @return \Tracy\IBarPanel
      */
-    public function get($id) {
+    public function get($id)
+    {
         return Arr::get($this->panels, $id);
     }
 }

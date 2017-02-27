@@ -24,6 +24,9 @@ class Tracy
         }
 
         $config = array_merge([
+            'directory' => null,
+            'email' => null,
+            'emailSnooze' => null,
             'enabled' => true,
             'showBar' => true,
             'editor' => 'subl://open?url=file://%file&line=%line',
@@ -45,9 +48,15 @@ class Tracy
         ], $config);
 
         $mode = $config['enabled'] === true ? Debugger::DEVELOPMENT : Debugger::PRODUCTION;
+        $config = DebuggerManager::init($config);
 
-        Debugger::enable($mode);
+        Debugger::enable($mode, $config['directory'], $config['email']);
+        if (is_null($config['emailSnooze']) === false) {
+            Debugger::getLogger()->emailSnooze = $config['emailSnooze'];
+        }
 
-        return $instance = (new Debugbar($config))->loadPanels();
+        return (new BarManager(Debugger::getBar()))
+            ->loadPanels($config['panels'])
+            ->getBar();
     }
 }

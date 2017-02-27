@@ -10,13 +10,6 @@ use ErrorException;
 use Tracy\Debugger;
 use Tracy\BlueScreen;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Illuminate\Contracts\Foundation\Application;
 
 class DebuggerManager
 {
@@ -35,7 +28,7 @@ class DebuggerManager
     protected $bar;
 
     /**
-     * $blueScreen
+     * $blueScreen.
      *
      * @var \Tracy\BlueScreen
      */
@@ -44,8 +37,8 @@ class DebuggerManager
     /**
      * __construct.
      *
-     * @param array $config
-     * @param \Tracy\Bar $bar
+     * @param array             $config
+     * @param \Tracy\Bar        $bar
      * @param \Tracy\BlueScreen $blueScreen
      */
     public function __construct($config = [], Bar $bar = null, BlueScreen $blueScreen = null)
@@ -58,7 +51,7 @@ class DebuggerManager
     /**
      * init.
      *
-     * @param  array $config
+     * @param array $config
      *
      * @return array
      */
@@ -125,11 +118,12 @@ class DebuggerManager
     /**
      * dispatchAssets.
      *
-     * @param  string $type
+     * @param string $type
      *
      * @return array
      */
-    public function dispatchAssets($type = null) {
+    public function dispatchAssets($type)
+    {
         $headers = [];
         $content = '';
 
@@ -139,7 +133,7 @@ class DebuggerManager
                     'content-type' => 'text/css; charset=utf-8',
                     'cache-control' => 'max-age=86400',
                 ];
-                $content = $this->renderBuffer(function() {
+                $content = $this->renderBuffer(function () {
                     return $this->bar->dispatchAssets();
                 });
                 break;
@@ -149,7 +143,7 @@ class DebuggerManager
                     'content-type' => 'text/javascript; charset=utf-8',
                     'cache-control' => 'max-age=86400',
                 ];
-                $content = $this->renderBuffer(function() {
+                $content = $this->renderBuffer(function () {
                     return $this->bar->dispatchAssets();
                 });
                 break;
@@ -185,30 +179,30 @@ class DebuggerManager
             session_start();
         }
 
-        return $this->renderBuffer(function() {
-                return method_exists($this->bar, 'dispatchContent') === true ?
+        return $this->renderBuffer(function () {
+            return method_exists($this->bar, 'dispatchContent') === true ?
                     $this->bar->dispatchContent() : $this->bar->dispatchAssets();
-            });
+        });
     }
 
     /**
      * shutdownHandler.
      *
-     * @param  string $content
+     * @param string $content
      *
      * @return string
      */
     public function shutdownHandler($content, $error = null)
     {
-        $error = ?: error_get_last();
-        if (in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE, E_RECOVERABLE_ERROR, E_USER_ERROR], TRUE)) {
+        $error = $error ?: error_get_last();
+        if (in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE, E_RECOVERABLE_ERROR, E_USER_ERROR], true)) {
             return $this->exceptionHandler(
                 Helpers::fixStack(new ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line'])),
-                FALSE
+                false
             );
         }
 
-        $bar = $this->renderBuffer(function() {
+        $bar = $this->renderBuffer(function () {
             $this->bar->render();
         });
         $pos = strripos($content, '</body>');
@@ -221,26 +215,27 @@ class DebuggerManager
     /**
      * exceptionHandler.
      *
-     * @param  \Exception $exception
+     * @param \Exception $exception
      *
      * @return string
      */
     public function exceptionHandler(Exception $exception)
     {
-        return $this->renderBuffer(function() use ($exception) {
+        return $this->renderBuffer(function () use ($exception) {
             Helpers::improveException($exception);
-            $this->blueScreen()->render($exception);
+            $this->blueScreen->render($exception);
         });
     }
 
     /**
      * renderBuffer.
      *
-     * @param  \Closure $callback
+     * @param \Closure $callback
      *
      * @return string
      */
-    protected function renderBuffer(Closure $callback) {
+    protected function renderBuffer(Closure $callback)
+    {
         ob_start();
         $callback();
 
