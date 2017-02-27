@@ -157,12 +157,15 @@ class DebuggerManagerTest extends TestCase
 
         $content = 'foo';
 
-        $bar->shouldReceive('dispatchContent')->andReturnUsing(function() use ($content) {
-            echo $content;
-        });
-        $bar->shouldReceive('dispatchAssets')->andReturnUsing(function() use ($content) {
-            echo $content;
-        });
+        if (version_compare(Debugger::VERSION, "2.4.4", "<")) {
+            $bar->shouldReceive('dispatchContent')->once()->andReturnUsing(function() use ($content) {
+                echo $content;
+            });
+        } else {
+            $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function() use ($content) {
+                echo $content;
+            });
+        }
 
         $this->assertSame([
             [

@@ -29,5 +29,14 @@ class TracyTest extends TestCase
         $databasePanel->logQuery('select * from news');
         $databasePanel->logQuery('select * from products');
         $this->assertTrue(is_string($databasePanel->getPanel()));
+
+        $authPanel = $tracy->getPanel('auth');
+        $authPanel->setUserResolver(function () {
+            return [
+                'username' => 'foo'
+            ];
+        });
+
+        $this->assertTrue(is_string($authPanel->getPanel()));
     }
 }

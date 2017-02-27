@@ -71,4 +71,23 @@ class AuthPanelTest extends TestCase
             ],
         ], 'attributes', $panel);
     }
+
+    public function testRenderFromUserResolver()
+    {
+        $panel = new AuthPanel();
+        $panel->setUserResolver(function() {
+            return [
+                'username' => 'foo'
+            ];
+        });
+
+        $panel->getTab();
+        $panel->getPanel();
+        $this->assertAttributeSame([
+            'id' => 'foo',
+            'rows' => [
+                'username' => 'foo',
+            ],
+        ], 'attributes', $panel);
+    }
 }

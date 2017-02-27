@@ -42,7 +42,7 @@ class Tracy
                 'event' => false,
                 'session' => true,
                 'request' => true,
-                'auth' => false,
+                'auth' => true,
                 'terminal' => false,
             ],
         ], $config);

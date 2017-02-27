@@ -37,26 +37,22 @@ class AuthPanel extends AbstractPanel
      */
     protected function getAttributes()
     {
-        $user = [
-            'id' => 'Guest',
-            'rows' => [],
-        ];
+        $userData = [];
 
-        if ($this->isLaravel() === true) {
-            $user = isset($this->laravel['sentinel']) === true ?
-                $this->fromSentinel($user) :
-                $this->fromGuard($user);
-        } else if (is_null($this->userResolver) === false) {
-            $user = array_merge($user, $this->userResolver());
+        if (is_null($this->userResolver) === false) {
+           $userData['rows'] = call_user_func($this->userResolver);
+        } else if ($this->isLaravel() === true) {
+            $userData = isset($this->laravel['sentinel']) === true ?
+                $this->fromSentinel() :
+                $this->fromGuard();
         }
 
-        var_dump($user);
-
-        return $this->identifier($user);
+        return $this->identifier($userData);
     }
 
-    protected function fromGuard($userData)
+    protected function fromGuard()
     {
+        $userData = [];
         $session = $this->laravel['session'];
         $auth = $this->laravel['auth'];
         $user = $session->has($auth->getName()) === true ? $auth->user() : null;
@@ -71,8 +67,9 @@ class AuthPanel extends AbstractPanel
         return $userData;
     }
 
-    protected function fromSentinel($userData)
+    protected function fromSentinel()
     {
+        $userData = [];
         $user = $this->laravel['sentinel']->check();
 
         if (empty($user) === false) {
@@ -88,7 +85,11 @@ class AuthPanel extends AbstractPanel
         $id = Arr::get($userData, 'id');
         $rows = Arr::get($userData, 'rows', []);
 
-        if (is_numeric($id) === true || empty($id) === true) {
+        if (empty($rows) === true) {
+            $id = 'Guest';
+            $rows = [];
+        } else if (is_numeric($id) === true || empty($id) === true) {
+            $id = 'UnKnown';
             foreach (['username', 'account', 'email', 'name', 'id'] as $key) {
                 if (isset($rows[$key]) === true) {
                     $id = $rows[$key];

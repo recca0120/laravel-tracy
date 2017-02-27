@@ -1,7 +1,7 @@
-<h1><?php echo is_null($rows) === false ? 'Logged in' : 'Unlogged' ?></h1>
+<h1><?php echo empty($rows) === false ? 'Logged in' : 'Unlogged' ?></h1>
 
 <div class="tracy-inner Laravel-AuthPanel">
-    <?php if (is_null($rows) === true): ?>
+    <?php if (empty($rows) === true): ?>
         <p>No identity</p>
     <?php else: ?>
         <table>
