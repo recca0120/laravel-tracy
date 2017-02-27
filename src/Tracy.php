@@ -43,6 +43,7 @@ class Tracy
                 'session' => true,
                 'request' => true,
                 'auth' => false,
+                'auth-sentinel' => false,
                 'terminal' => false,
             ],
         ], $config);
