@@ -4,7 +4,7 @@ namespace Recca0120\LaravelTracy\Exceptions;
 
 use Exception;
 use Illuminate\Contracts\View\View;
-use Recca0120\LaravelTracy\BlueScreen;
+use Recca0120\LaravelTracy\DebuggerManager;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -19,11 +19,11 @@ class Handler implements ExceptionHandler
     protected $exceptionHandler;
 
     /**
-     * $blueScreen.
+     * $debuggerManager.
      *
-     * @var \Recca0120\LaravelTracy\BlueScreen
+     * @var \Recca0120\LaravelTracy\DebuggerManager
      */
-    protected $blueScreen;
+    protected $debuggerManager;
 
     /**
      * __construct.
@@ -31,12 +31,12 @@ class Handler implements ExceptionHandler
      * @method __construct
      *
      * @param \Illuminate\Contracts\Debug\ExceptionHandler $exceptionHandler
-     * @param \Recca0120\LaravelTracy\BlueScreen           $blueScreen
+     * @param \Recca0120\LaravelTracy\DebuggerManager $debuggerManager
      */
-    public function __construct(ExceptionHandler $exceptionHandler, BlueScreen $blueScreen)
+    public function __construct(ExceptionHandler $exceptionHandler, DebuggerManager $debuggerManager)
     {
         $this->exceptionHandler = $exceptionHandler;
-        $this->blueScreen = $blueScreen;
+        $this->debuggerManager = $debuggerManager;
     }
 
     /**
@@ -53,7 +53,7 @@ class Handler implements ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Exception               $e
+     * @param \Exception $e
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -67,7 +67,9 @@ class Handler implements ExceptionHandler
             return $response;
         }
 
-        $response->setContent($this->blueScreen->render($e));
+        $response->setContent(
+            $this->debuggerManager->exceptionHandler($e)
+        );
 
         return $response;
     }
@@ -76,7 +78,7 @@ class Handler implements ExceptionHandler
      * Render an exception to the console.
      *
      * @param \Symfony\Component\Console\Output\OutputInterface $output
-     * @param \Exception                                        $e
+     * @param \Exception $e
      */
     public function renderForConsole($output, Exception $e)
     {

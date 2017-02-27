@@ -4,8 +4,9 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use DOMDocument;
 use LibXMLError;
+use Recca0120\LaravelTracy\Events\BeforeBarRender;
 
-class HtmlValidatorPanel extends AbstractPanel
+class HtmlValidatorPanel extends AbstractSubscribePanel
 {
     /**
      * $html.
@@ -85,6 +86,7 @@ class HtmlValidatorPanel extends AbstractPanel
         return str_replace(["\r\n", "\r"], "\n", $s);
     }
 
+
     /**
      * getAttributes.
      *
@@ -121,5 +123,13 @@ class HtmlValidatorPanel extends AbstractPanel
             'errors' => $errors,
             'html' => $this->html,
         ];
+    }
+
+    protected function subscribe()
+    {
+        $events = $this->laravel['events'];
+        $events->listen(BeforeBarRender::class, function($barRender) {
+            $this->setHtml($barRender->response->getContent());
+        });
     }
 }

@@ -2,12 +2,15 @@
 
 namespace Recca0120\LaravelTracy;
 
+use Tracy\Bar;
+use Tracy\Debugger;
+use Tracy\BlueScreen;
 use Illuminate\Support\Arr;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\View\Factory as View;
 use Recca0120\LaravelTracy\Exceptions\Handler;
-use Recca0120\LaravelTracy\Middleware\Dispatch;
+use Recca0120\LaravelTracy\Middleware\RenderBar;
 use Recca0120\Terminal\TerminalServiceProvider;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Recca0120\LaravelTracy\Session\StoreWrapper;
@@ -19,31 +22,26 @@ class LaravelTracyServiceProvider extends ServiceProvider
      *
      * @method boot
      *
+     * @param \Recca0120\LaravelTracy\DebuggerManager $debuggerManager
      * @param \Illuminate\Contracts\Http\Kernel $kernel
      * @param \Illuminate\Contracts\View\Factory $view
      */
-    public function boot(Kernel $kernel, View $view)
+    public function boot(DebuggerManager $debuggerManager, Kernel $kernel, View $view)
     {
         if ($this->app->runningInConsole() === true) {
-            $this->publishes([
-                __DIR__.'/../config/tracy.php' => $this->app->configPath().'/tracy.php',
-            ], 'config');
+            $this->publishes([__DIR__.'/../config/tracy.php' => $this->app->configPath().'/tracy.php'], 'config');
         }
 
-        if (Arr::get($this->app['config'], 'tracy.enabled') === true) {
+        $view->getEngineResolver()->resolve('blade')->getCompiler()->directive('bdump', function ($expression) {
+            return "<?php \Tracy\Debugger::barDump({$expression}); ?>";
+        });
+
+        if ($debuggerManager->enabled() === true) {
             $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
-                return new Handler($exceptionHandler, $this->app->make(BlueScreen::class));
+                return new Handler($exceptionHandler, $app->make(DebuggerManager::class));
             });
-            $kernel->prependMiddleware(Dispatch::class);
+            $kernel->prependMiddleware(RenderBar::class);
         }
-
-        $view
-            ->getEngineResolver()
-            ->resolve('blade')
-            ->getCompiler()
-            ->directive('bdump', function ($expression) {
-                return "<?php \Tracy\Debugger::barDump({$expression}); ?>";
-            });
     }
 
     /**
@@ -51,22 +49,32 @@ class LaravelTracyServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(
-            __DIR__.'/../config/tracy.php', 'tracy'
-        );
+        $this->mergeConfigFrom(__DIR__.'/../config/tracy.php', 'tracy');
 
-        if (Arr::get($this->app['config'], 'tracy.panels.terminal') === true) {
+        $config = Arr::get($this->app['config'], 'tracy');
+
+        if (Arr::get($config, 'panels.terminal') === true) {
             $this->app->register(TerminalServiceProvider::class);
         }
 
-        $this->app->singleton(StoreWrapper::class, StoreWrapper::class);
-        $this->app->singleton(BlueScreen::class, BlueScreen::class);
-        $this->app->singleton(Debugbar::class, function ($app) {
-            return (new Debugbar(
-                Arr::get($app['config'], 'tracy', []),
-                $app['request'],
-                $app
-            ))->loadPanels();
+        $this->app->singleton(BlueScreen::class, function ($app) {
+            return Debugger::getBlueScreen();
+        });
+
+        $this->app->singleton(Bar::class, function ($app) use ($config) {
+            return (new BarManager(Debugger::getBar(), $app['request'], $app))
+                ->loadPanels(Arr::get($config, 'panels', []))
+                ->getBar();
+        });
+
+        $this->app->singleton(DebuggerManager::class, function($app) use ($config) {
+            $config = DebuggerManager::init($config);
+
+            return new DebuggerManager(
+                $config,
+                $app->make(Bar::class),
+                $app->make(BlueScreen::class)
+            );
         });
     }
 
