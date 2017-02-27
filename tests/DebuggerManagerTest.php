@@ -84,7 +84,7 @@ class DebuggerManagerTest extends TestCase
         );
 
         $content = 'foo';
-        $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function() use ($content) {
+        $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
             echo $content;
         });
 
@@ -92,7 +92,7 @@ class DebuggerManagerTest extends TestCase
             [
                 'content-type' => 'text/css; charset=utf-8',
                 'cache-control' => 'max-age=86400',
-                'content-length' => strlen($content)
+                'content-length' => strlen($content),
             ],
             $content,
         ], $debuggerManager->dispatchAssets('css'));
@@ -107,7 +107,7 @@ class DebuggerManagerTest extends TestCase
         );
 
         $content = 'foo';
-        $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function() use ($content) {
+        $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
             echo $content;
         });
 
@@ -115,7 +115,7 @@ class DebuggerManagerTest extends TestCase
             [
                 'content-type' => 'text/javascript; charset=utf-8',
                 'cache-control' => 'max-age=86400',
-                'content-length' => strlen($content)
+                'content-length' => strlen($content),
             ],
             $content,
         ], $debuggerManager->dispatchAssets('js'));
@@ -130,7 +130,7 @@ class DebuggerManagerTest extends TestCase
         );
 
         $content = 'foo';
-        $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function() use ($content) {
+        $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
             echo $content;
         });
 
@@ -138,7 +138,7 @@ class DebuggerManagerTest extends TestCase
             [
                 'content-type' => 'text/javascript; charset=utf-8',
                 'cache-control' => 'max-age=86400',
-                'content-length' => strlen($content)
+                'content-length' => strlen($content),
             ],
             $content,
         ], $debuggerManager->dispatchAssets('assets'));
@@ -157,12 +157,12 @@ class DebuggerManagerTest extends TestCase
 
         $content = 'foo';
 
-        if (version_compare(Debugger::VERSION, "2.4.4", "<")) {
-            $bar->shouldReceive('dispatchContent')->once()->andReturnUsing(function() use ($content) {
+        if (version_compare(Debugger::VERSION, '2.4.4', '<')) {
+            $bar->shouldReceive('dispatchContent')->once()->andReturnUsing(function () use ($content) {
                 echo $content;
             });
         } else {
-            $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function() use ($content) {
+            $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
                 echo $content;
             });
         }
@@ -170,7 +170,7 @@ class DebuggerManagerTest extends TestCase
         $this->assertSame([
             [
                 'content-type' => 'text/javascript; charset=utf-8',
-                'content-length' => strlen($content)
+                'content-length' => strlen($content),
             ],
             $content,
         ], $debuggerManager->dispatchAssets(uniqid()));
@@ -185,7 +185,7 @@ class DebuggerManagerTest extends TestCase
         );
 
         $barRender = 'foo';
-        $bar->shouldReceive('render')->once()->andReturnUsing(function() use ($barRender) {
+        $bar->shouldReceive('render')->once()->andReturnUsing(function () use ($barRender) {
             echo $barRender;
         });
 
@@ -203,7 +203,7 @@ class DebuggerManagerTest extends TestCase
         );
 
         $barRender = 'foo';
-        $bar->shouldReceive('render')->once()->andReturnUsing(function() use ($barRender) {
+        $bar->shouldReceive('render')->once()->andReturnUsing(function () use ($barRender) {
             echo $barRender;
         });
 
@@ -227,7 +227,7 @@ class DebuggerManagerTest extends TestCase
             'line' => __LINE__,
         ];
 
-        $blueScreen->shouldReceive('render')->once()->with(m::on(function($errorException) use ($error) {
+        $blueScreen->shouldReceive('render')->once()->with(m::on(function ($errorException) use ($error) {
             $this->assertSame($error['type'], $errorException->getSeverity());
             $this->assertSame($error['message'], $errorException->getMessage());
             $this->assertSame(0, $errorException->getCode());
@@ -235,7 +235,7 @@ class DebuggerManagerTest extends TestCase
             $this->assertSame($error['line'], $errorException->getLine());
 
             return true;
-        }))->andReturnUsing(function() use ($content) {
+        }))->andReturnUsing(function () use ($content) {
             echo $content;
         });
 
@@ -252,7 +252,7 @@ class DebuggerManagerTest extends TestCase
 
         $exception = new Exception();
         $content = 'foo';
-        $blueScreen->shouldReceive('render')->once()->with($exception)->andReturnUsing(function() use ($content) {
+        $blueScreen->shouldReceive('render')->once()->with($exception)->andReturnUsing(function () use ($content) {
             echo $content;
         });
         $this->assertSame($content, $debuggerManager->exceptionHandler($exception));

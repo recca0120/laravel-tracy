@@ -33,7 +33,7 @@ class TracyTest extends TestCase
         $authPanel = $tracy->getPanel('auth');
         $authPanel->setUserResolver(function () {
             return [
-                'username' => 'foo'
+                'username' => 'foo',
             ];
         });
 

@@ -138,7 +138,6 @@ class HandlerTest extends TestCase
 
     public function testRender()
     {
-
         $handler = new Handler(
             $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
             $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')

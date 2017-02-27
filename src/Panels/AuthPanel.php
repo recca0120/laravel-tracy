@@ -40,8 +40,8 @@ class AuthPanel extends AbstractPanel
         $userData = [];
 
         if (is_null($this->userResolver) === false) {
-           $userData['rows'] = call_user_func($this->userResolver);
-        } else if ($this->isLaravel() === true) {
+            $userData['rows'] = call_user_func($this->userResolver);
+        } elseif ($this->isLaravel() === true) {
             $userData = isset($this->laravel['sentinel']) === true ?
                 $this->fromSentinel() :
                 $this->fromGuard();
@@ -88,7 +88,7 @@ class AuthPanel extends AbstractPanel
         if (empty($rows) === true) {
             $id = 'Guest';
             $rows = [];
-        } else if (is_numeric($id) === true || empty($id) === true) {
+        } elseif (is_numeric($id) === true || empty($id) === true) {
             $id = 'UnKnown';
             foreach (['username', 'account', 'email', 'name', 'id'] as $key) {
                 if (isset($rows[$key]) === true) {

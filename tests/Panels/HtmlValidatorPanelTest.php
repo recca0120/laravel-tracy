@@ -26,7 +26,7 @@ class HtmlValidatorPanelTest extends TestCase
         );
 
         $html = '<!DOCTYPE html><html><head><title>title</title></head><body></body></html>';
-        $events->shouldReceive('listen')->once()->with('Recca0120\LaravelTracy\Events\BeforeBarRender', m::on(function($closure) use ($html) {
+        $events->shouldReceive('listen')->once()->with('Recca0120\LaravelTracy\Events\BeforeBarRender', m::on(function ($closure) use ($html) {
             $response = m::mock('Symfony\Component\HttpFoundation\Response');
             $response->shouldReceive('getContent')->once()->andReturn($html);
             $closure(new BeforeBarRender(

@@ -2,7 +2,6 @@
 
 namespace Recca0120\LaravelTracy\Tests;
 
-use Exception;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\BarManager;

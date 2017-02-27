@@ -10,9 +10,9 @@ use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\View\Factory as View;
 use Recca0120\LaravelTracy\Exceptions\Handler;
-use Recca0120\LaravelTracy\Middleware\RenderBar;
 use Recca0120\Terminal\TerminalServiceProvider;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Recca0120\LaravelTracy\Middleware\RenderBar;
 
 class LaravelTracyServiceProvider extends ServiceProvider
 {

@@ -27,23 +27,24 @@ class LaravelTracyServiceProviderTest extends TestCase
         $app->shouldReceive('offsetGet')->once()->with('config')->andReturn($config = [
             'tracy' => [
                 'panels' => [
-                    'terminal' => true
-                ]
+                    'terminal' => true,
+                ],
             ],
         ]);
 
         $app->shouldReceive('register')->once()->with('Recca0120\Terminal\TerminalServiceProvider');
-        $app->shouldReceive('singleton')->once()->with('Tracy\BlueScreen', m::on(function($closure) use ($app) {
+        $app->shouldReceive('singleton')->once()->with('Tracy\BlueScreen', m::on(function ($closure) use ($app) {
             return $closure($app) instanceof \Tracy\BlueScreen;
         }));
-        $app->shouldReceive('singleton')->once()->with('Tracy\Bar', m::on(function($closure) use ($app) {
+        $app->shouldReceive('singleton')->once()->with('Tracy\Bar', m::on(function ($closure) use ($app) {
             $app->shouldReceive('offsetGet')->once()->with('request')->andReturn(
                 $request = m::mock('Illuminate\Http\Request')
             );
             $request->shouldReceive('ajax')->once()->andReturn(false);
+
             return $closure($app) instanceof \Tracy\Bar;
         }));
-        $app->shouldReceive('singleton')->once()->with('Recca0120\LaravelTracy\DebuggerManager', m::on(function($closure) use ($app) {
+        $app->shouldReceive('singleton')->once()->with('Recca0120\LaravelTracy\DebuggerManager', m::on(function ($closure) use ($app) {
             $app->shouldReceive('make')->once()->with('Tracy\Bar')->andReturn(
                 $bar = m::mock('Tracy\Bar')
             );
@@ -76,7 +77,6 @@ class LaravelTracyServiceProviderTest extends TestCase
 
                 return $closure($expression) === "<?php \Tracy\Debugger::barDump({$expression}); ?>";
             }));
-
 
         $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager');
         $debuggerManager->shouldReceive('enabled')->once()->andReturn(true);

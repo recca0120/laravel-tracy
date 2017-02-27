@@ -86,9 +86,9 @@ class AuthPanelTest extends TestCase
             $template = m::mock('Recca0120\LaravelTracy\Template')
         );
 
-        $panel->setUserResolver(function() {
+        $panel->setUserResolver(function () {
             return [
-                'username' => 'foo'
+                'username' => 'foo',
             ];
         });
 

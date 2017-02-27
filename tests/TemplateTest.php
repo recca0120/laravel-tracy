@@ -2,9 +2,6 @@
 
 namespace Recca0120\LaravelTracy\Tests;
 
-use Exception;
-use Mockery as m;
-use Tracy\Debugger;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Template;
 
@@ -16,8 +13,8 @@ class TemplateTest extends TestCase
         $template->setAttributes([
             'id' => 'foo',
             'rows' => [
-                'foo' => 'bar'
-            ]
+                'foo' => 'bar',
+            ],
         ]);
 
         $result = '<span title="Logged in">

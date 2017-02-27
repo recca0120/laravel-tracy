@@ -24,7 +24,7 @@ class RenderBarTest extends TestCase
 
         $request = m::mock('Illuminate\Http\Request');
 
-        $next = function(Request $request) {
+        $next = function (Request $request) {
             $response = m::mock('Symfony\Component\HttpFoundation\Response');
 
             return $response;
@@ -52,7 +52,7 @@ class RenderBarTest extends TestCase
 
         $request = m::mock('Illuminate\Http\Request');
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
-        $next = function(Request $request) use ($response) {
+        $next = function (Request $request) use ($response) {
             return $response;
         };
 
@@ -73,7 +73,7 @@ class RenderBarTest extends TestCase
 
         $request = m::mock('Illuminate\Http\Request');
         $response = m::mock('Symfony\Component\HttpFoundation\BinaryFileResponse');
-        $next = function(Request $request) use ($response) {
+        $next = function (Request $request) use ($response) {
             return $response;
         };
 
@@ -94,7 +94,7 @@ class RenderBarTest extends TestCase
 
         $request = m::mock('Illuminate\Http\Request');
         $response = m::mock('Symfony\Component\HttpFoundation\StreamedResponse');
-        $next = function(Request $request) use ($response) {
+        $next = function (Request $request) use ($response) {
             return $response;
         };
 
@@ -115,7 +115,7 @@ class RenderBarTest extends TestCase
 
         $request = m::mock('Illuminate\Http\Request');
         $response = m::mock('Symfony\Component\HttpFoundation\RedirectResponse');
-        $next = function(Request $request) use ($response) {
+        $next = function (Request $request) use ($response) {
             return $response;
         };
 
@@ -137,7 +137,7 @@ class RenderBarTest extends TestCase
         $request = m::mock('Illuminate\Http\Request');
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $response->headers = $headers = m::mock('stdClass');
-        $next = function(Request $request) use ($response) {
+        $next = function (Request $request) use ($response) {
             return $response;
         };
 
@@ -163,7 +163,7 @@ class RenderBarTest extends TestCase
         $request = m::mock('Illuminate\Http\Request');
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $response->headers = $headers = m::mock('stdClass');
-        $next = function(Request $request) use ($response) {
+        $next = function (Request $request) use ($response) {
             return $response;
         };
 
@@ -192,7 +192,7 @@ class RenderBarTest extends TestCase
         $request = m::mock('Illuminate\Http\Request');
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $response->headers = $headers = m::mock('stdClass');
-        $next = function(Request $request) use ($response) {
+        $next = function (Request $request) use ($response) {
             return $response;
         };
 
@@ -225,7 +225,7 @@ class RenderBarTest extends TestCase
         $request = m::mock('Illuminate\Http\Request');
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $response->headers = $headers = m::mock('stdClass');
-        $next = function(Request $request) use ($response) {
+        $next = function (Request $request) use ($response) {
             return $response;
         };
 
@@ -258,7 +258,7 @@ class RenderBarTest extends TestCase
         $request = m::mock('Illuminate\Http\Request');
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
         $response->headers = $headers = m::mock('stdClass');
-        $next = function(Request $request) use ($response) {
+        $next = function (Request $request) use ($response) {
             return $response;
         };
 

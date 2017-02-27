@@ -5,8 +5,8 @@ namespace Recca0120\LaravelTracy;
 use Tracy\Bar;
 use Tracy\Debugger;
 use Tracy\IBarPanel;
-use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Foundation\Application;
 
