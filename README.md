@@ -147,6 +147,13 @@ use Recca0120\LaravelTracy\Tracy;
 // before outout
 $tracy = Tracy::instance();
 
+$authPanel = $tracy->getPanel('auth');
+$authPanel->setUserResolver(function() {
+    return [
+        'email' => 'recca0120@gmail.com'
+    ];
+});
+
 function sql($sql)
 {
     $tracy = Tracy::instance();

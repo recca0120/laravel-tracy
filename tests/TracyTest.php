@@ -39,10 +39,5 @@ class TracyTest extends TestCase
         });
 
         $this->assertTrue(is_string($authPanel->getPanel()));
-
-        ob_start();
-        $tracy->dump(123);
-
-        $this->assertTrue(is_string(ob_get_clean()));
     }
 }
