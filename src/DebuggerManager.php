@@ -59,6 +59,7 @@ class DebuggerManager
     {
         $config = array_merge([
             'accepts' => [],
+            'appendTo' => 'body',
             'showBar' => false,
             'editor' => Debugger::$editor,
             'maxDepth' => Debugger::$maxDepth,
@@ -205,11 +206,13 @@ class DebuggerManager
         $bar = $this->renderBuffer(function () {
             $this->bar->render();
         });
-        $pos = strripos($content, '</body>');
 
-        return $pos !== false ?
-            substr($content, 0, $pos).$bar.substr($content, $pos) :
-            $content.$bar;
+        $appendTo = Arr::get($this->config, 'appendTo', 'body');
+        $pos = strripos($content, '</'.$appendTo.'>');
+
+        return $pos !== false
+            ? substr($content, 0, $pos).$bar.substr($content, $pos)
+            : $content.$bar;
     }
 
     /**

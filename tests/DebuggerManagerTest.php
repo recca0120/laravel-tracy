@@ -191,6 +191,24 @@ class DebuggerManagerTest extends TestCase
         $this->assertSame('<html><body>'.$barRender.'</body></html>', $debuggerManager->shutdownHandler($content));
     }
 
+    public function testShutdownHandlerAppendToHtml()
+    {
+        $debuggerManager = new DebuggerManager(
+            $config = ['appendTo' => 'html'],
+            $bar = m::mock('Tracy\Bar'),
+            $blueScreen = m::mock('Tracy\BlueScreen')
+        );
+
+        $barRender = 'foo';
+        $bar->shouldReceive('render')->once()->andReturnUsing(function() use ($barRender) {
+            echo $barRender;
+        });
+
+        $content = '<html><body></body></html>';
+
+        $this->assertSame('<html><body></body>'.$barRender.'</html>', $debuggerManager->shutdownHandler($content));
+    }
+
     public function testShutdownHandlerHasError()
     {
         $debuggerManager = new DebuggerManager(
