@@ -28,6 +28,7 @@ class TracyTest extends TestCase
         $databasePanel->logQuery('select * from users');
         $databasePanel->logQuery('select * from news');
         $databasePanel->logQuery('select * from products');
+
         $this->assertTrue(is_string($databasePanel->getPanel()));
 
         $authPanel = $tracy->getPanel('auth');
@@ -38,5 +39,10 @@ class TracyTest extends TestCase
         });
 
         $this->assertTrue(is_string($authPanel->getPanel()));
+
+        ob_start();
+        $tracy->dump(123);
+
+        $this->assertTrue(is_string(ob_get_clean()));
     }
 }
