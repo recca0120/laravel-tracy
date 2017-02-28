@@ -85,11 +85,13 @@ class BarManager
                 continue;
             }
 
+            $panel = static::make($name);
+            
             if ($ajax === true && $panel->supportAjax === false) {
                 continue;
             }
 
-            $this->set(static::make($name), $name);
+            $this->set($panel, $name);
         }
 
         return $this;
