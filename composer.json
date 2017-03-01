@@ -11,13 +11,13 @@
     ],
     "require": {
         "php": ">=5.5.9",
-        "illuminate/contracts": "~5.1",
-        "illuminate/database": "~5.1",
-        "illuminate/routing": "~5.1",
-        "illuminate/session": "~5.1",
-        "illuminate/support": "~5.1",
-        "illuminate/view": "~5.1",
-        "recca0120/terminal": "~1.6.4",
+        "illuminate/contracts": "^5.1",
+        "illuminate/database": "^5.1",
+        "illuminate/routing": "^5.1",
+        "illuminate/session": "^5.1",
+        "illuminate/support": "^5.1",
+        "illuminate/view": "^5.1",
+        "recca0120/terminal": "^1.6.4",
         "tracy/tracy": "^2.4.0"
     },
     "require-dev": {
