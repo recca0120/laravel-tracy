@@ -21,7 +21,7 @@ class BarManagerTest extends TestCase
             $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
         );
 
-        $request->shouldReceive('ajax')->once()->andReturn(false);
+        $request->shouldReceive('ajax')->once()->andReturn(true);
         $bar->shouldReceive('addPanel')->with(m::type('Tracy\IBarPanel'), 'auth');
 
         $barManager->loadPanels(['user' => true]);
