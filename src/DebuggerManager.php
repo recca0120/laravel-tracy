@@ -35,6 +35,20 @@ class DebuggerManager
     protected $blueScreen;
 
     /**
+     * $logger
+     *
+     * @var \Tracy\Logger
+     */
+    protected static $logger;
+
+    /**
+     * $emailSnooze
+     *
+     * @var int seconds
+     */
+    protected static $emailSnooze = 300;
+
+    /**
      * __construct.
      *
      * @param array             $config
@@ -69,6 +83,9 @@ class DebuggerManager
             'strictMode' => true,
             'currentTime' => $_SERVER['REQUEST_TIME_FLOAT'] ?: microtime(true),
             'editorMapping' => isset(Debugger::$editorMapping) === true ? Debugger::$editorMapping : null,
+            'email' => null,
+            'logDirectory' => null,
+            'emailSnooze' => null,
         ], $config);
 
         Debugger::$editor = $config['editor'];
@@ -81,6 +98,16 @@ class DebuggerManager
 
         if (isset(Debugger::$editorMapping) === true) {
             Debugger::$editorMapping = $config['editorMapping'];
+        }
+
+        Debugger::$logDirectory = storage_path(!empty($config['logDirectory']) ? $config['logDirectory'] : 'tracy');
+
+        if (!empty($config['email'])) {
+            Debugger::$email = $config['email'];
+        }
+
+        if (!empty($config['emailSnooze'])) {
+            self::$emailSnooze = $config['emailSnooze'];
         }
 
         return $config;
@@ -224,10 +251,28 @@ class DebuggerManager
      */
     public function exceptionHandler(Exception $exception)
     {
-        return $this->renderBuffer(function () use ($exception) {
+        try {
+            $this->getLogger()->log($exception, Debugger::EXCEPTION);
+        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
+        }
+
+        return  $this->renderBuffer(function () use ($exception) {
             Helpers::improveException($exception);
             $this->blueScreen->render($exception);
         });
+    }
+
+    private function getLogger()
+    {
+        if (!self::$logger) {
+            self::$logger = new \Tracy\Logger(Debugger::$logDirectory, Debugger::$email, $this->blueScreen);
+            self::$logger->directory = & Debugger::$logDirectory; // back compatiblity
+            self::$logger->email = & Debugger::$email;
+            self::$logger->emailSnooze = self::$emailSnooze;
+        }
+
+        return self::$logger;
     }
 
     /**

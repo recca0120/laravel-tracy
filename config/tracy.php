@@ -25,4 +25,6 @@ return [
         'html-validator' => false,
         'terminal' => true,
     ],
+    'email' => env('TRACY_EMAIL'),
+    'emailSnooze' => env('TRACY_SNOOZE'),
 ];
