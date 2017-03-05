@@ -35,7 +35,7 @@ class EventPanel extends AbstractSubscribePanel implements IAjaxPanel
     protected function subscribe()
     {
         $id = get_class($this);
-        $timer = Debugger::timer($id);
+        Debugger::timer($id);
         $events = $this->laravel['events'];
 
         if (version_compare($this->laravel->version(), 5.4, '>=') === true) {
