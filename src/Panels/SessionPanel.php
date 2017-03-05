@@ -12,7 +12,7 @@ class SessionPanel extends AbstractPanel implements IAjaxPanel
     protected function getAttributes()
     {
         $rows = [];
-        if ($this->isLaravel() === true) {
+        if ($this->hasLaravel() === true) {
             $session = $this->laravel['session'];
             $rows = [
                 'sessionId' => $session->getId(),

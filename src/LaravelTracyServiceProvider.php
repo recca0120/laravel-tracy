@@ -19,7 +19,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
     /**
      * boot.
      *
-     * @param \Recca0120\LaravelTracy\DebuggerManager $debuggerManager
+     * @param DebuggerManager $debuggerManager
      * @param \Illuminate\Contracts\Http\Kernel       $kernel
      * @param \Illuminate\Contracts\View\Factory      $view
      */

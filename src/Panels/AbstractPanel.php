@@ -5,16 +5,10 @@ namespace Recca0120\LaravelTracy\Panels;
 use Tracy\Helpers;
 use Tracy\IBarPanel;
 use Recca0120\LaravelTracy\Template;
-use Illuminate\Contracts\Foundation\Application;
 
-abstract class AbstractPanel implements IBarPanel
+abstract class AbstractPanel implements IBarPanel, ILaravelPanel
 {
-    /**
-     * $laravel description.
-     *
-     * @var \Illuminate\Contracts\Foundation\Application
-     */
-    protected $laravel;
+    use LaravelPanel;
 
     /**
      * $attributes.
@@ -83,31 +77,6 @@ abstract class AbstractPanel implements IBarPanel
         }
 
         return $this->template->render($view);
-    }
-
-    /**
-     * setLaravel.
-     *
-     * @param \Illuminate\Contracts\Foundation\Application $laravel
-     * @return static
-     */
-    public function setLaravel(Application $laravel = null)
-    {
-        if (is_null($laravel) === false) {
-            $this->laravel = $laravel;
-        }
-
-        return $this;
-    }
-
-    /**
-     * is laravel.
-     *
-     * @return bool
-     */
-    protected function isLaravel()
-    {
-        return is_a($this->laravel, Application::class);
     }
 
     /**

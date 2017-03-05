@@ -37,7 +37,7 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
 
         if (is_null($this->userResolver) === false) {
             $userData['rows'] = call_user_func($this->userResolver);
-        } elseif ($this->isLaravel() === true) {
+        } elseif ($this->hasLaravel() === true) {
             $userData = isset($this->laravel['sentinel']) === true ?
                 $this->fromSentinel() : $this->fromGuard();
         }

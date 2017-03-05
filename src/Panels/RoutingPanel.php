@@ -16,7 +16,7 @@ class RoutingPanel extends AbstractPanel implements IAjaxPanel
         $rows = [
             'uri' => 404,
         ];
-        if ($this->isLaravel() === true) {
+        if ($this->hasLaravel() === true) {
             $router = $this->laravel['router'];
             $currentRoute = $router->getCurrentRoute();
             if ($currentRoute !== null) {

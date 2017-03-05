@@ -4,11 +4,10 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use Illuminate\Contracts\Foundation\Application;
 
-abstract class AbstractSubscribePanel extends AbstractPanel
+abstract class AbstractSubscriablePanel extends AbstractPanel implements ISubscriablePanel
 {
     /**
      * setLaravel.
-     *
      *
      * @param \Illuminate\Contracts\Foundation\Application $laravel
      * @return static
@@ -16,7 +15,7 @@ abstract class AbstractSubscribePanel extends AbstractPanel
     public function setLaravel(Application $laravel = null)
     {
         parent::setLaravel($laravel);
-        if ($this->isLaravel() === true) {
+        if ($this->hasLaravel() === true) {
             $this->subscribe();
         }
 

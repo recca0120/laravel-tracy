@@ -17,7 +17,7 @@ class TerminalPanel extends AbstractPanel
         $data = [
             'html' => null,
         ];
-        if ($this->isLaravel() === true) {
+        if ($this->hasLaravel() === true) {
             try {
                 $controller = $this->laravel->make(TerminalController::class);
                 $response = $this->laravel->call([$controller, 'index'], ['view' => 'panel']);

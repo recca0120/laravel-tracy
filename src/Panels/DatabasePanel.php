@@ -6,7 +6,7 @@ use PDO;
 use DateTime;
 use Exception;
 
-class DatabasePanel extends AbstractSubscribePanel implements IAjaxPanel
+class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
 {
     /**
      * $queries.

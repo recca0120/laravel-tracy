@@ -14,7 +14,7 @@ class RequestPanel extends AbstractPanel implements IAjaxPanel
     protected function getAttributes()
     {
         $rows = [];
-        $request = $this->isLaravel() === true ? $this->laravel['request'] : Request::capture();
+        $request = $this->hasLaravel() === true ? $this->laravel['request'] : Request::capture();
         $rows = [
             'ip' => $request->ip(),
             'ips' => $request->ips(),

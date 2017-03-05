@@ -18,8 +18,8 @@ class Tracy
      * __construct.
      *
      * @param array $config
-     * @param \Recca0120\LaravelTracy\BarManager $barManager
-     * @param \Recca0120\LaravelTracy\Bar $bar
+     * @param BarManager $barManager
+     * @param \Tracy\Bar $bar
      */
     public function __construct($config = [], BarManager $barManager = null, Bar $bar = null)
     {
