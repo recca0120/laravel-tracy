@@ -10,6 +10,8 @@ Better Laravel Exception Handler
 [![License](https://poser.pugx.org/recca0120/laravel-tracy/license.svg)](https://packagist.org/packages/recca0120/laravel-tracy)
 [![Monthly Downloads](https://poser.pugx.org/recca0120/laravel-tracy/d/monthly)](https://packagist.org/packages/recca0120/laravel-tracy)
 [![Daily Downloads](https://poser.pugx.org/recca0120/laravel-tracy/d/daily)](https://packagist.org/packages/recca0120/laravel-tracy)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/recca0120/laravel-tracy/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/recca0120/laravel-tracy/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/recca0120/laravel-tracy/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/recca0120/laravel-tracy/?branch=master)
 
 ![Laravel Tracy](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/tracy.png)
 

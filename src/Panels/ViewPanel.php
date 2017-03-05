@@ -4,6 +4,7 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Contracts\View\View;
 
 class ViewPanel extends AbstractSubscribePanel implements IAjaxPanel
 {
@@ -40,7 +41,7 @@ class ViewPanel extends AbstractSubscribePanel implements IAjaxPanel
     /**
      * logView.
      *
-     * @param  string $view
+     * @param  \Illuminate\Contracts\View\View
      * @return string
      */
     protected function logView($view)
