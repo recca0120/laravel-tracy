@@ -19,7 +19,7 @@ class Template
     /**
      * render.
      *
-     * @param  string $view
+     * @param string $view
      * @return string
      */
     public function render($view)

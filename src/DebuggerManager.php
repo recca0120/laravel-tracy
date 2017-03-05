@@ -37,8 +37,8 @@ class DebuggerManager
     /**
      * __construct.
      *
-     * @param array             $config
-     * @param \Tracy\Bar        $bar
+     * @param array $config
+     * @param \Tracy\Bar $bar
      * @param \Tracy\BlueScreen $blueScreen
      */
     public function __construct($config = [], Bar $bar = null, BlueScreen $blueScreen = null)

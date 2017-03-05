@@ -63,8 +63,8 @@ class Tracy
     /**
      * __call.
      *
-     * @param  string $method
-     * @param  array $parameters
+     * @param string $method
+     * @param array $parameters
      * @return mix
      */
     public function __call($method, $parameters)

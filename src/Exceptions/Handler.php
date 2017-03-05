@@ -29,7 +29,7 @@ class Handler implements ExceptionHandler
      * __construct.
      *
      * @param \Illuminate\Contracts\Debug\ExceptionHandler $exceptionHandler
-     * @param \Recca0120\LaravelTracy\DebuggerManager      $debuggerManager
+     * @param \Recca0120\LaravelTracy\DebuggerManager $debuggerManager
      */
     public function __construct(ExceptionHandler $exceptionHandler, DebuggerManager $debuggerManager)
     {
@@ -51,7 +51,7 @@ class Handler implements ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Exception               $e
+     * @param \Exception $e
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $e)
@@ -75,7 +75,7 @@ class Handler implements ExceptionHandler
      * Render an exception to the console.
      *
      * @param \Symfony\Component\Console\Output\OutputInterface $output
-     * @param \Exception                                        $e
+     * @param \Exception $e
      */
     public function renderForConsole($output, Exception $e)
     {

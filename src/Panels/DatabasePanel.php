@@ -62,10 +62,10 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
      * logQuery.
      *
      * @param string $sql
-     * @param array  $bindings
-     * @param int    $time
+     * @param array $bindings
+     * @param int $time
      * @param string $name
-     * @param PDO    $pdo
+     * @param PDO $pdo
      * @param string $driver
      * @return static
      */
@@ -95,7 +95,7 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
      * prepare sql.
      *
      * @param string $sql
-     * @param array  $bindings
+     * @param array $bindings
      * @return string
      */
     public static function prepareBindings($sql, $bindings = [])
@@ -125,9 +125,9 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
     /**
      * explain sql.
      *
-     * @param PDO   $pdo
+     * @param PDO $pdo
      * @param string $sql
-     * @param array  $bindings
+     * @param array $bindings
      * @return array
      */
     public static function explain(PDO $pdo, $sql, $bindings = [])
@@ -147,8 +147,8 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
      *
      *
      * @param string $sql
-     * @param array  $params
-     * @param \PDO   $connection
+     * @param array $params
+     * @param \PDO $connection
      * @return string
      */
     public static function formatSql($sql, array $params = null, PDO $connection = null)
@@ -216,7 +216,7 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
      *
      * @param string $sql
      * @param string $version
-     * @param float  $driver
+     * @param float $driver
      * @return array
      */
     public static function performQueryAnalysis($sql, $version = null, $driver = null)
@@ -295,7 +295,7 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
     /**
      * getDatabaseDriver.
      *
-     * @param  \PDO $pdo
+     * @param \PDO $pdo
      * @return string
      */
     protected function getDatabaseDriver(PDO $pdo)
@@ -312,7 +312,7 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
     /**
      * getDatabaseVersion.
      *
-     * @param  \PDO $pdo
+     * @param \PDO $pdo
      * @return string
      */
     protected function getDatabaseVersion(PDO $pdo)

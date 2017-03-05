@@ -44,8 +44,8 @@ class BarManager
     /**
      * __construct.
      *
-     * @param \Tracy\Bar                                   $bar
-     * @param \Illuminate\Http\Request                     $request
+     * @param \Tracy\Bar $bar
+     * @param \Illuminate\Http\Request $request
      * @param \Illuminate\Contracts\Foundation\Application $app
      */
     public function __construct(Bar $bar = null, Request $request = null, Application $app = null)
@@ -98,7 +98,7 @@ class BarManager
     /**
      * isAjaxPanel.
      *
-     * @param  string $id
+     * @param string $id
      * @return bool
      */
     protected function isAjaxPanel($id)
@@ -109,7 +109,7 @@ class BarManager
     /**
      * name.
      *
-     * @param  string $id
+     * @param string $id
      * @return string
      */
     protected static function name($id)
@@ -135,7 +135,7 @@ class BarManager
      * set.
      *
      * @param \Tracy\IBarPanel $panel
-     * @param string           $id
+     * @param string $id
      * @return static
      */
     public function set(IBarPanel $panel, $id)
@@ -150,7 +150,7 @@ class BarManager
     /**
      * get.
      *
-     * @param string $id [description]
+     * @param string $id
      * @return \Tracy\IBarPanel
      */
     public function get($id)

@@ -88,7 +88,7 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
     /**
      * identifier.
      *
-     * @param  array $userData
+     * @param array $userData
      * @return array
      */
     protected function identifier($userData = [])

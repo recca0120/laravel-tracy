@@ -39,8 +39,8 @@ class RenderBar
      * __construct.
      *
      *
-     * @param \Recca0120\LaravelTracy\DebuggerManager       $debuggerManager
-     * @param \Illuminate\Contracts\Events\Dispatcher       $events
+     * @param \Recca0120\LaravelTracy\DebuggerManager $debuggerManager
+     * @param \Illuminate\Contracts\Events\Dispatcher $events
      * @param \Illuminate\Contracts\Routing\ResponseFactory $responseFactory
      */
     public function __construct(DebuggerManager $debuggerManager, Dispatcher $events, ResponseFactory $responseFactory)
@@ -55,7 +55,7 @@ class RenderBar
      *
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Closure                 $next
+     * @param \Closure $next
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -89,8 +89,8 @@ class RenderBar
     /**
      * shouldNotRenderBar.
      *
-     * @param  \Symfony\Component\HttpFoundation\Response $response
-     * @param  \Illuminte\Http\Request  $request
+     * @param \Symfony\Component\HttpFoundation\Response $response
+     * @param \Illuminte\Http\Request $request
      *
      * @return bool
      */

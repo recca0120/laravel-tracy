@@ -20,8 +20,8 @@ class LaravelTracyServiceProvider extends ServiceProvider
      * boot.
      *
      * @param DebuggerManager $debuggerManager
-     * @param \Illuminate\Contracts\Http\Kernel       $kernel
-     * @param \Illuminate\Contracts\View\Factory      $view
+     * @param \Illuminate\Contracts\Http\Kernel $kernel
+     * @param \Illuminate\Contracts\View\Factory $view
      */
     public function boot(DebuggerManager $debuggerManager, Kernel $kernel, View $view)
     {
