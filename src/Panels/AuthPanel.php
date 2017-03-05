@@ -18,6 +18,7 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
      * setUserResolver.
      *
      * @param \Closure $userResolver
+     * @return $this
      */
     public function setUserResolver(Closure $userResolver)
     {

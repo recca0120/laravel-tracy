@@ -17,7 +17,7 @@ trait LaravelPanel
      * setLaravel.
      *
      * @param \Illuminate\Contracts\Foundation\Application $laravel
-     * @return static
+     * @return $this
      */
     public function setLaravel(Application $laravel = null)
     {

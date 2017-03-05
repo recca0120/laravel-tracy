@@ -69,7 +69,7 @@ class BarManager
      * loadPanels.
      *
      * @param array $panels
-     * @return static
+     * @return $this
      */
     public function loadPanels($panels = [])
     {
@@ -136,7 +136,7 @@ class BarManager
      *
      * @param \Tracy\IBarPanel $panel
      * @param string $id
-     * @return static
+     * @return $this
      */
     public function set(IBarPanel $panel, $id)
     {

@@ -67,7 +67,7 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
      * @param string $name
      * @param PDO $pdo
      * @param string $driver
-     * @return static
+     * @return $this
      */
     public function logQuery($sql, $bindings = [], $time = 0, $name = null, PDO $pdo = null, $driver = 'mysql')
     {
