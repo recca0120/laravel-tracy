@@ -131,7 +131,7 @@ class DatabasePanel extends AbstractSubscribePanel implements IAjaxPanel
     /**
      * explain sql.
      *
-     * @param |PDO   $pdo
+     * @param PDO   $pdo
      * @param string $sql
      * @param array  $bindings
      *
@@ -284,18 +284,10 @@ class DatabasePanel extends AbstractSubscribePanel implements IAjaxPanel
             $explains = [];
             $hints = [];
             if ($pdo instanceof PDO) {
-                try {
-                    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
-                } catch (Exception $e) {
-                    $driver = null;
-                }
-
+                $driver = $this->getDatabaseDriver($pdo);
                 if ($driver === 'mysql') {
+                    $version = $this->getDatabaseVersion($pdo);
                     $explains = static::explain($pdo, $sql, $bindings);
-                    try {
-                        $version = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
-                    } catch (Exception $e) {
-                    }
                     $hints = static::performQueryAnalysis($fullSql, $version, $driver);
                 }
             }
@@ -308,5 +300,41 @@ class DatabasePanel extends AbstractSubscribePanel implements IAjaxPanel
             'totalTime' => $this->totalTime,
             'queries' => $queries,
         ];
+    }
+
+    /**
+     * getDatabaseDriver.
+     *
+     * @param  Pdo    $pdo
+     *
+     * @return string
+     */
+    protected function getDatabaseDriver(Pdo $pdo)
+    {
+        try {
+            $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        } catch (Exception $e) {
+            $driver = null;
+        }
+
+        return $driver;
+    }
+
+    /**
+     * getDatabaseVersion.
+     *
+     * @param  Pdo    $pdo
+     *
+     * @return string
+     */
+    protected function getDatabaseVersion(Pdo $pdo)
+    {
+        try {
+            $version = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+        } catch (Exception $e) {
+            $version = 0;
+        }
+
+        return $version;
     }
 }
