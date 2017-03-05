@@ -305,11 +305,11 @@ class DatabasePanel extends AbstractSubscribePanel implements IAjaxPanel
     /**
      * getDatabaseDriver.
      *
-     * @param  Pdo    $pdo
+     * @param  PDO    $pdo
      *
      * @return string
      */
-    protected function getDatabaseDriver(Pdo $pdo)
+    protected function getDatabaseDriver(PDO $pdo)
     {
         try {
             $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
@@ -323,11 +323,11 @@ class DatabasePanel extends AbstractSubscribePanel implements IAjaxPanel
     /**
      * getDatabaseVersion.
      *
-     * @param  Pdo    $pdo
+     * @param  PDO    $pdo
      *
      * @return string
      */
-    protected function getDatabaseVersion(Pdo $pdo)
+    protected function getDatabaseVersion(PDO $pdo)
     {
         try {
             $version = $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);

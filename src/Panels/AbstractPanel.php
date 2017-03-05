@@ -121,11 +121,11 @@ abstract class AbstractPanel implements IBarPanel
      *
      * @method findSource
      *
-     * @return array|null
+     * @return string|array
      */
     protected static function findSource()
     {
-        $source = null;
+        $source = '';
         $trace = debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : false);
         foreach ($trace as $row) {
             if (isset($row['file']) === false) {

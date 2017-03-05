@@ -115,7 +115,8 @@ class BarManager
      *
      * @return string
      */
-    protected static function name($id) {
+    protected static function name($id)
+    {
         return '\\'.__NAMESPACE__.'\Panels\\'.Str::studly($id).'Panel';
     }
 

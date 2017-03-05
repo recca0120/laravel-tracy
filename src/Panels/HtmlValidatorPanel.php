@@ -103,12 +103,7 @@ class HtmlValidatorPanel extends AbstractSubscribePanel implements IAjaxPanel
         $dom->strictErrorChecking = true;
         $dom->recover = true;
 
-        // set_error_handler(function ($severity, $message) {
-        //     restore_error_handler();
-        // });
-
         @$dom->loadHTML($this->normalize($this->html));
-        // restore_error_handler();
 
         $errors = array_filter(libxml_get_errors(), function (LibXMLError $error) {
             return in_array((int) $error->code, static::$ignoreErrors, true) === false;

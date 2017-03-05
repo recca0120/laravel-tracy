@@ -2,4 +2,6 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-interface IAjaxPanel {}
+interface IAjaxPanel
+{
+}

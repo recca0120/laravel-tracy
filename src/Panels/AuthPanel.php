@@ -49,6 +49,11 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
         return $this->identifier($userData);
     }
 
+    /**
+     * fromGuard.
+     *
+     * @return array
+     */
     protected function fromGuard()
     {
         $userData = [];
@@ -66,6 +71,11 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
         return $userData;
     }
 
+    /**
+     * fromSentinel.
+     *
+     * @return array
+     */
     protected function fromSentinel()
     {
         $userData = [];
@@ -79,6 +89,12 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
         return $userData;
     }
 
+    /**
+     * identifier.
+     *
+     * @param  array $userData
+     * @return array
+     */
     protected function identifier($userData = [])
     {
         $id = Arr::get($userData, 'id');
