@@ -121,7 +121,7 @@ abstract class AbstractPanel implements IBarPanel
      *
      * @method findSource
      *
-     * @return array|null;
+     * @return array|null
      */
     protected static function findSource()
     {
@@ -158,8 +158,6 @@ abstract class AbstractPanel implements IBarPanel
      */
     protected static function editorLink($source)
     {
-        $link = null;
-
         if (is_string($source) === true) {
             $file = $source;
             $line = null;
@@ -168,10 +166,7 @@ abstract class AbstractPanel implements IBarPanel
             $line = $source[1];
         }
 
-        $link = Helpers::editorLink($file, $line);
-        // $link = self::updateEditorUri($link);
-
-        return $link;
+        return Helpers::editorLink($file, $line);
     }
 
     /**

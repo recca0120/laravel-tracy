@@ -36,7 +36,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
         });
 
         if ($debuggerManager->enabled() === true) {
-            $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) use ($debuggerManager) {
+            $this->app->extend(ExceptionHandler::class, function ($exceptionHandler) use ($debuggerManager) {
                 return new Handler($exceptionHandler, $debuggerManager);
             });
             $kernel->prependMiddleware(RenderBar::class);
@@ -56,7 +56,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
             $this->app->register(TerminalServiceProvider::class);
         }
 
-        $this->app->singleton(BlueScreen::class, function ($app) {
+        $this->app->singleton(BlueScreen::class, function () {
             return Debugger::getBlueScreen();
         });
 
