@@ -65,10 +65,8 @@ class LaravelTracyServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(DebuggerManager::class, function ($app) use ($config) {
-            $config = DebuggerManager::init($config);
-
             return new DebuggerManager(
-                $config,
+                DebuggerManager::init($config),
                 $app->make(Bar::class),
                 $app->make(BlueScreen::class)
             );
