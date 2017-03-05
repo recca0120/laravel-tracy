@@ -4,7 +4,7 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use Illuminate\Support\Arr;
 
-class RoutingPanel extends AbstractPanel
+class RoutingPanel extends AbstractPanel implements IAjaxPanel
 {
     /**
      * getAttributes.

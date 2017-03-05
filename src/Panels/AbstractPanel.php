@@ -10,13 +10,6 @@ use Illuminate\Contracts\Foundation\Application;
 abstract class AbstractPanel implements IBarPanel
 {
     /**
-     * $supportAjax.
-     *
-     * @var bool
-     */
-    public $supportAjax = true;
-
-    /**
      * $laravel description.
      *
      * @var \Illuminate\Contracts\Foundation\Application

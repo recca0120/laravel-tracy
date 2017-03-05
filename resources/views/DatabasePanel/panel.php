@@ -48,7 +48,7 @@
                     <?php if ($query['explains']): ?>
                         <table class="tracy-collapsed Laravel-DatabasePanel-explain">
                             <tr>
-                                <?php foreach ($query['explains'][0] as $col => $foo): ?>
+                                <?php foreach (array_keys($query['explains'][0]) as $col): ?>
                                     <th><?php echo htmlspecialchars($col, ENT_NOQUOTES, 'UTF-8') ?></th>
                                  <?php endforeach ?>
                             </tr>

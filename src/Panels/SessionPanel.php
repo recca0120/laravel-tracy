@@ -2,7 +2,7 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-class SessionPanel extends AbstractPanel
+class SessionPanel extends AbstractPanel implements IAjaxPanel
 {
     /**
      * getAttributes.

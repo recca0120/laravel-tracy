@@ -8,6 +8,7 @@ use Tracy\IBarPanel;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Recca0120\LaravelTracy\Panels\IAjaxPanel;
 use Illuminate\Contracts\Foundation\Application;
 
 class BarManager
@@ -80,19 +81,42 @@ class BarManager
 
         $ajax = $this->request->ajax();
 
-        foreach ($panels as $name => $enabled) {
+        foreach ($panels as $id => $enabled) {
             if ($enabled === false) {
                 continue;
             }
 
-            $panel = static::make($name);
-            if ($ajax === true && $panel->supportAjax === false) {
+            if ($ajax === true && $this->isAjaxPanel($id) === false) {
                 continue;
             }
-            $this->set($panel, $name);
+            $panel = static::make($id);
+            $this->set($panel, $id);
         }
 
         return $this;
+    }
+
+    /**
+     * isAjaxPanel.
+     *
+     * @param  string $id
+     *
+     * @return bool
+     */
+    protected function isAjaxPanel($id)
+    {
+        return in_array(IAjaxPanel::class, class_implements(static::name($id)), true) === true;
+    }
+
+    /**
+     * name.
+     *
+     * @param  string $id
+     *
+     * @return string
+     */
+    protected static function name($id) {
+        return '\\'.__NAMESPACE__.'\Panels\\'.Str::studly($id).'Panel';
     }
 
     /**
@@ -104,7 +128,7 @@ class BarManager
      */
     public static function make($id)
     {
-        $className = '\\'.__NAMESPACE__.'\Panels\\'.Str::studly($id).'Panel';
+        $className = static::name($id);
         $panel = new $className(new Template());
 
         return $panel;

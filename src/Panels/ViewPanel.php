@@ -5,7 +5,7 @@ namespace Recca0120\LaravelTracy\Panels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
-class ViewPanel extends AbstractSubscribePanel
+class ViewPanel extends AbstractSubscribePanel implements IAjaxPanel
 {
     /**
      * $views.

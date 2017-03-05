@@ -4,7 +4,7 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use Tracy\Debugger;
 
-class EventPanel extends AbstractSubscribePanel
+class EventPanel extends AbstractSubscribePanel implements IAjaxPanel
 {
     /**
      * $counter.

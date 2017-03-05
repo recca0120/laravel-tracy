@@ -4,7 +4,7 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use Illuminate\Http\Request;
 
-class RequestPanel extends AbstractPanel
+class RequestPanel extends AbstractPanel implements IAjaxPanel
 {
     /**
      * getAttributes.
