@@ -68,7 +68,7 @@ class DebuggerManager
             'showLocation' => true,
             'strictMode' => true,
             'currentTime' => $_SERVER['REQUEST_TIME_FLOAT'] ?: microtime(true),
-            'editorMapping' => isset(Debugger::$editorMapping) === true ? Debugger::$editorMapping : null,
+            'editorMapping' => isset(Debugger::$editorMapping) === true ? Debugger::$editorMapping : [],
         ], $config);
 
         Debugger::$editor = $config['editor'];
@@ -79,7 +79,7 @@ class DebuggerManager
         Debugger::$strictMode = $config['strictMode'];
         Debugger::$time = $config['currentTime'];
 
-        if (isset(Debugger::$editorMapping) === true) {
+        if (empty(Debugger::$editorMapping) === false) {
             Debugger::$editorMapping = $config['editorMapping'];
         }
 
@@ -125,9 +125,6 @@ class DebuggerManager
      */
     public function dispatchAssets($type)
     {
-        $headers = [];
-        $content = '';
-
         switch ($type) {
             case 'css':
                 $headers = [

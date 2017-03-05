@@ -105,7 +105,7 @@ class BarManager
      */
     protected function isAjaxPanel($id)
     {
-        return in_array(IAjaxPanel::class, class_implements(static::name($id)), true) === true;
+        return is_subclass_of(static::name($id), IAjaxPanel::class) === true;
     }
 
     /**

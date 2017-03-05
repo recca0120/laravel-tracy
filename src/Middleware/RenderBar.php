@@ -15,6 +15,27 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class RenderBar
 {
     /**
+     * $debuggerManager.
+     *
+     * @var \Recca0120\LaravelTracy\DebuggerManager
+     */
+    protected $debuggerManager;
+
+    /**
+     * $events.
+     *
+     * @var \Illuminate\Contracts\Events\Dispatcher
+     */
+    protected $events;
+
+    /**
+     * $responseFactory.
+     *
+     * @var \Illuminate\Contracts\Routing\ResponseFactory
+     */
+    protected $responseFactory;
+
+    /**
      * __construct.
      *
      * @method __construct
@@ -67,6 +88,14 @@ class RenderBar
         return $response;
     }
 
+    /**
+     * shouldNotRenderBar.
+     *
+     * @param  \Symfony\Component\HttpFoundation\Response $response
+     * @param  \Illuminte\Http\Request  $request
+     *
+     * @return bool
+     */
     protected function shouldNotRenderBar(Response $response, Request $request)
     {
         if ($this->debuggerManager->showBar() === false ||
