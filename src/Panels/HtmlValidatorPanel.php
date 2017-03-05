@@ -54,7 +54,7 @@ class HtmlValidatorPanel extends AbstractSubscriablePanel implements IAjaxPanel
     /**
      * Removes special controls characters and normalizes line endings and spaces.
      *
-     * @param string UTF
+     * @param string $str
      * @return string
      */
     protected static function normalize($str)
