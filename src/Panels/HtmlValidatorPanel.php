@@ -41,10 +41,7 @@ class HtmlValidatorPanel extends AbstractSubscribePanel implements IAjaxPanel
     /**
      * setHTML.
      *
-     * @method setHtml
-     *
      * @param string $html
-     *
      * @return $this
      */
     public function setHtml($html)
@@ -58,27 +55,25 @@ class HtmlValidatorPanel extends AbstractSubscribePanel implements IAjaxPanel
      * Removes special controls characters and normalizes line endings and spaces.
      *
      * @param  string  UTF-8 encoding
-     *
      * @return string
      */
-    protected static function normalize($s)
+    protected static function normalize($str)
     {
-        $s = static::normalizeNewLines($s);
+        $str = static::normalizeNewLines($str);
         // remove control characters; leave \t + \n
-        $s = preg_replace('#[\x00-\x08\x0B-\x1F\x7F-\x9F]+#u', '', $s);
+        $str = preg_replace('#[\x00-\x08\x0B-\x1F\x7F-\x9F]+#u', '', $str);
         // right trim
-        $s = preg_replace('#[\t ]+$#m', '', $s);
+        $str = preg_replace('#[\t ]+$#m', '', $str);
         // leading and trailing blank lines
-        $s = trim($s, "\n");
+        $str = trim($str, "\n");
 
-        return $s;
+        return $str;
     }
 
     /**
      * Standardize line endings to unix-like.
      *
-     * @param  string  UTF-8 encoding or 8-bit
-     *
+     * @param  string $s
      * @return string
      */
     protected static function normalizeNewLines($s)
@@ -88,8 +83,6 @@ class HtmlValidatorPanel extends AbstractSubscribePanel implements IAjaxPanel
 
     /**
      * getAttributes.
-     *
-     * @method getAttributes
      *
      * @return array
      */
@@ -119,6 +112,9 @@ class HtmlValidatorPanel extends AbstractSubscribePanel implements IAjaxPanel
         ];
     }
 
+    /**
+     * subscribe.
+     **/
     protected function subscribe()
     {
         $events = $this->laravel['events'];

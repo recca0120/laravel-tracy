@@ -16,13 +16,13 @@ class ViewPanel extends AbstractSubscribePanel implements IAjaxPanel
 
     /**
      * $limit.
+     *
+     * @var int
      */
     public $limit = 50;
 
     /**
      * subscribe.
-     *
-     * @method subscribe
      */
     protected function subscribe()
     {
@@ -37,6 +37,12 @@ class ViewPanel extends AbstractSubscribePanel implements IAjaxPanel
         }
     }
 
+    /**
+     * logView.
+     *
+     * @param  string $view
+     * @return string
+     */
     protected function logView($view)
     {
         $name = $view->getName();
@@ -50,10 +56,7 @@ class ViewPanel extends AbstractSubscribePanel implements IAjaxPanel
     /**
      * limitCollection.
      *
-     * @method limitCollection
-     *
      * @param array $data
-     *
      * @return array
      */
     protected function limitCollection($data)
@@ -76,8 +79,6 @@ class ViewPanel extends AbstractSubscribePanel implements IAjaxPanel
 
     /**
      * getAttributes.
-     *
-     * @method getAttributes
      *
      * @return array
      */

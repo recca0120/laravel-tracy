@@ -65,7 +65,6 @@ class Tracy
      *
      * @param  string $method
      * @param  array $parameters
-     *
      * @return mix
      */
     public function __call($method, $parameters)
@@ -80,10 +79,7 @@ class Tracy
     /**
      * instance.
      *
-     * @method instance
-     *
      * @param  array$config
-     *
      * @return static
      */
     public static function instance($config = [], BarManager $barManager = null, Bar $bar = null)

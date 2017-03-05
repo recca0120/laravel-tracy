@@ -28,8 +28,6 @@ class Handler implements ExceptionHandler
     /**
      * __construct.
      *
-     * @method __construct
-     *
      * @param \Illuminate\Contracts\Debug\ExceptionHandler $exceptionHandler
      * @param \Recca0120\LaravelTracy\DebuggerManager      $debuggerManager
      */
@@ -54,7 +52,6 @@ class Handler implements ExceptionHandler
      *
      * @param \Illuminate\Http\Request $request
      * @param \Exception               $e
-     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $e)

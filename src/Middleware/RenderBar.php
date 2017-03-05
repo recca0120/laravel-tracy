@@ -38,7 +38,6 @@ class RenderBar
     /**
      * __construct.
      *
-     * @method __construct
      *
      * @param \Recca0120\LaravelTracy\DebuggerManager       $debuggerManager
      * @param \Illuminate\Contracts\Events\Dispatcher       $events
@@ -54,7 +53,6 @@ class RenderBar
     /**
      * handle.
      *
-     * @method handle
      *
      * @param \Illuminate\Http\Request $request
      * @param \Closure                 $next

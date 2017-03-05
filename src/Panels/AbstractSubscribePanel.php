@@ -9,10 +9,8 @@ abstract class AbstractSubscribePanel extends AbstractPanel
     /**
      * setLaravel.
      *
-     * @method setLaravel
      *
      * @param \Illuminate\Contracts\Foundation\Application $laravel
-     *
      * @return static
      */
     public function setLaravel(Application $laravel = null)
@@ -25,5 +23,8 @@ abstract class AbstractSubscribePanel extends AbstractPanel
         return $this;
     }
 
+    /**
+     * subscribe.
+     */
     abstract protected function subscribe();
 }

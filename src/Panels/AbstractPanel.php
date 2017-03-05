@@ -70,10 +70,7 @@ abstract class AbstractPanel implements IBarPanel
     /**
      * render.
      *
-     * @method render
-     *
      * @param string $view
-     *
      * @return string
      */
     protected function render($view)
@@ -91,10 +88,7 @@ abstract class AbstractPanel implements IBarPanel
     /**
      * setLaravel.
      *
-     * @method setLaravel
-     *
      * @param \Illuminate\Contracts\Foundation\Application $laravel
-     *
      * @return static
      */
     public function setLaravel(Application $laravel = null)
@@ -118,8 +112,6 @@ abstract class AbstractPanel implements IBarPanel
 
     /**
      * Use a backtrace to search for the origin of the query.
-     *
-     * @method findSource
      *
      * @return string|array
      */
@@ -153,7 +145,6 @@ abstract class AbstractPanel implements IBarPanel
      * editor link.
      *
      * @param string|array $source
-     *
      * @return string
      */
     protected static function editorLink($source)
@@ -172,8 +163,6 @@ abstract class AbstractPanel implements IBarPanel
     /**
      * getViewPath.
      *
-     * @method getViewPath
-     *
      * @return string
      */
     protected function getViewPath()
@@ -187,8 +176,6 @@ abstract class AbstractPanel implements IBarPanel
 
     /**
      * getAttributes.
-     *
-     * @method getAttributes
      *
      * @return array
      */

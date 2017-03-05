@@ -52,7 +52,6 @@ class DebuggerManager
      * init.
      *
      * @param array $config
-     *
      * @return array
      */
     public static function init($config = [])
@@ -120,7 +119,6 @@ class DebuggerManager
      * dispatchAssets.
      *
      * @param string $type
-     *
      * @return array
      */
     public function dispatchAssets($type)
@@ -187,7 +185,6 @@ class DebuggerManager
      * shutdownHandler.
      *
      * @param string $content
-     *
      * @return string
      */
     public function shutdownHandler($content, $error = null)
@@ -216,7 +213,6 @@ class DebuggerManager
      * exceptionHandler.
      *
      * @param \Exception $exception
-     *
      * @return string
      */
     public function exceptionHandler(Exception $exception)
@@ -231,7 +227,6 @@ class DebuggerManager
      * renderBuffer.
      *
      * @param \Closure $callback
-     *
      * @return string
      */
     protected function renderBuffer(Closure $callback)

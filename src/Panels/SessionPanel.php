@@ -7,8 +7,6 @@ class SessionPanel extends AbstractPanel implements IAjaxPanel
     /**
      * getAttributes.
      *
-     * @method getAttributes
-     *
      * @return array
      */
     protected function getAttributes()

@@ -10,9 +10,7 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
     /**
      * The user resolver callable.
      *
-     * @var callable
-     *
-     * @return static
+     * @var callable|null
      */
     protected $userResolver = null;
 
@@ -31,9 +29,7 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
     /**
      * getAttributes.
      *
-     * @method getAttributes
-     *
-     * @return array
+     ** @return array
      */
     protected function getAttributes()
     {

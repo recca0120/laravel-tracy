@@ -29,8 +29,6 @@ class EventPanel extends AbstractSubscribePanel implements IAjaxPanel
 
     /**
      * subscribe.
-     *
-     * @method subscribe
      */
     protected function subscribe()
     {
@@ -58,8 +56,6 @@ class EventPanel extends AbstractSubscribePanel implements IAjaxPanel
 
     /**
      * getAttributes.
-     *
-     * @method getAttributes
      *
      * @return array
      */

@@ -69,7 +69,6 @@ class BarManager
      * loadPanels.
      *
      * @param array $panels
-     *
      * @return static
      */
     public function loadPanels($panels = [])
@@ -100,7 +99,6 @@ class BarManager
      * isAjaxPanel.
      *
      * @param  string $id
-     *
      * @return bool
      */
     protected function isAjaxPanel($id)
@@ -112,7 +110,6 @@ class BarManager
      * name.
      *
      * @param  string $id
-     *
      * @return string
      */
     protected static function name($id)
@@ -124,7 +121,6 @@ class BarManager
      * make.
      *
      * @param string $id
-     *
      * @return \Tracy\IBarPanel
      */
     public static function make($id)
@@ -140,7 +136,6 @@ class BarManager
      *
      * @param \Tracy\IBarPanel $panel
      * @param string           $id
-     *
      * @return static
      */
     public function set(IBarPanel $panel, $id)
@@ -156,7 +151,6 @@ class BarManager
      * get.
      *
      * @param string $id [description]
-     *
      * @return \Tracy\IBarPanel
      */
     public function get($id)
