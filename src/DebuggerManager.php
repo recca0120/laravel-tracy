@@ -125,18 +125,10 @@ class DebuggerManager
     {
         switch ($type) {
             case 'css':
-                $headers = [
-                    'content-type' => 'text/css; charset=utf-8',
-                    'cache-control' => 'max-age=86400',
-                ];
-                $content = $this->renderBuffer(function () {
-                    return $this->bar->dispatchAssets();
-                });
-                break;
             case 'js':
             case 'assets':
                 $headers = [
-                    'content-type' => 'text/javascript; charset=utf-8',
+                    'content-type' => $type === 'css' ? 'text/css; charset=utf-8' : 'text/javascript; charset=utf-8',
                     'cache-control' => 'max-age=86400',
                 ];
                 $content = $this->renderBuffer(function () {
