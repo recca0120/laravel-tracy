@@ -128,8 +128,33 @@ Prefer PhpStorm, you can edit `config/tracy.php`'s key of `editor` like this:
 ### Request
 ![Request](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/request.png)
 
-### Login
-![Login](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/login.png)
+### Auth
+![Auth](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/login.png)
+
+#### Custom Auth
+```
+// app/Providers/AppServiceProvider.php
+
+namespace App\Providers;
+
+use Recca0120\LaravelTracy\BarManager;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot(BarManager $barManager)
+    {
+        $barManager->get('auth')->setUserResolver(function() {
+            return [
+                'id' => 'xxx',
+                'username' => 'xxx',
+                ...
+            ];
+        });
+    }
+}
+```
+
 
 ### Html Validator
 ![Html Validator](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/html-validator.png)
