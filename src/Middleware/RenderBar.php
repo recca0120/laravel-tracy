@@ -57,12 +57,21 @@ class RenderBar
      * @param \Illuminate\Http\Request $request
      * @param \Closure $next
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function handle($request, $next)
     {
         if ($request->has('_tracy_bar') === true) {
-            list($headers, $content) = $this->debuggerManager->dispatchAssets($request->get('_tracy_bar'));
+            return $this->responseFactory->stream(function () use ($request) {
+                list($headers, $content) = $this->debuggerManager->dispatchAssets($request->get('_tracy_bar'));
+                if (headers_sent() === false) {
+                    foreach ($headers as $name => $value) {
+                        header(sprintf('%s: %s', $name, $value), true, 200);
+                    }
+                }
+                echo $content;
+            }, 200);
+
 
             return $this->responseFactory->make($content, 200, $headers);
         }

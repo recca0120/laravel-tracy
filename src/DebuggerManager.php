@@ -128,8 +128,8 @@ class DebuggerManager
             case 'js':
             case 'assets':
                 $headers = [
-                    'content-type' => $type === 'css' ? 'text/css; charset=utf-8' : 'text/javascript; charset=utf-8',
-                    'cache-control' => 'max-age=86400',
+                    'Content-Type' => $type === 'css' ? 'text/css; charset=utf-8' : 'text/javascript; charset=utf-8',
+                    'Cache-Control' => 'max-age=86400',
                 ];
                 $content = $this->renderBuffer(function () {
                     return $this->bar->dispatchAssets();
@@ -137,7 +137,7 @@ class DebuggerManager
                 break;
             default:
                 $headers = [
-                    'content-type' => 'text/javascript; charset=utf-8',
+                    'Content-Type' => 'text/javascript; charset=utf-8',
                 ];
                 $content = $this->dispatch();
                 break;
@@ -145,7 +145,7 @@ class DebuggerManager
 
         return [
             array_merge($headers, [
-                'content-length' => strlen($content),
+                'Content-Length' => strlen($content),
             ]),
             $content,
         ];

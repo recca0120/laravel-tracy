@@ -90,9 +90,9 @@ class DebuggerManagerTest extends TestCase
 
         $this->assertSame([
             [
-                'content-type' => 'text/css; charset=utf-8',
-                'cache-control' => 'max-age=86400',
-                'content-length' => strlen($content),
+                'Content-Type' => 'text/css; charset=utf-8',
+                'Cache-Control' => 'max-age=86400',
+                'Content-Length' => strlen($content),
             ],
             $content,
         ], $debuggerManager->dispatchAssets('css'));
@@ -113,9 +113,9 @@ class DebuggerManagerTest extends TestCase
 
         $this->assertSame([
             [
-                'content-type' => 'text/javascript; charset=utf-8',
-                'cache-control' => 'max-age=86400',
-                'content-length' => strlen($content),
+                'Content-Type' => 'text/javascript; charset=utf-8',
+                'Cache-Control' => 'max-age=86400',
+                'Content-Length' => strlen($content),
             ],
             $content,
         ], $debuggerManager->dispatchAssets('js'));
@@ -136,9 +136,9 @@ class DebuggerManagerTest extends TestCase
 
         $this->assertSame([
             [
-                'content-type' => 'text/javascript; charset=utf-8',
-                'cache-control' => 'max-age=86400',
-                'content-length' => strlen($content),
+                'Content-Type' => 'text/javascript; charset=utf-8',
+                'Cache-Control' => 'max-age=86400',
+                'Content-Length' => strlen($content),
             ],
             $content,
         ], $debuggerManager->dispatchAssets('assets'));
@@ -169,8 +169,8 @@ class DebuggerManagerTest extends TestCase
 
         $this->assertSame([
             [
-                'content-type' => 'text/javascript; charset=utf-8',
-                'content-length' => strlen($content),
+                'Content-Type' => 'text/javascript; charset=utf-8',
+                'Content-Length' => strlen($content),
             ],
             $content,
         ], $debuggerManager->dispatchAssets(uniqid()));

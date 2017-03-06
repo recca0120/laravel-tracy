@@ -14,6 +14,9 @@ class RenderBarTest extends TestCase
         m::close();
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testHandleAssets()
     {
         $renderBar = new RenderBar(
@@ -36,7 +39,17 @@ class RenderBarTest extends TestCase
             $headers = ['foo' => 'bar'],
             $content = 'foo',
         ]);
-        $responseFactory->shouldReceive('make')->with($content, 200, $headers)->andReturn(
+        $responseFactory->shouldReceive('stream')->with(m::on(function($callback) use ($content) {
+            ob_start();
+            $callback();
+            $output = ob_get_clean();
+
+            if (function_exists('xdebug_get_headers') === true) {
+                $this->assertTrue(in_array('foo: bar', xdebug_get_headers(), true));
+            }
+
+            return $content === $output;
+        }), 200)->andReturn(
             $response = m::mock('Symfony\Component\HttpFoundation\Response')
         );
         $this->assertSame($response, $renderBar->handle($request, $next));
