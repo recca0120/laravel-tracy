@@ -1,0 +1,22 @@
+# Changelog
+
+All notable changes to `laravel-tracy` will be documented in this file
+
+## 1.8.3 - 2017-03-06
+
+- 在 console 模式下不啟用，避免無法執行 PHPUnit
+
+## 1.8.2 - 2017-03-06
+
+- 使用 interface IAjaxPanel 來判別在 ajax 的情況下是否使用 Panel
+
+## 1.8.1 - 2017-03-05
+
+- 修正 Panel 在 ajax 下的 bug
+
+## 1.8.0 - 2017-02-27
+
+- 重構
+- 可在 config 設定 bar 要 append 在 html 或者 body
+- AuthPanel 支援 Sentinel
+- AuthPanel 可以使用 setUserResolver(Closure $userResolver) 設定使用者資訊
