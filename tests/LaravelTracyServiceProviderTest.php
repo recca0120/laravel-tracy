@@ -64,8 +64,7 @@ class LaravelTracyServiceProviderTest extends TestCase
             $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
         );
 
-        $app->shouldReceive('runningInConsole')->once()->andReturn(true);
-        $app->shouldReceive('configPath')->once();
+        $app->shouldReceive('runningInConsole')->once()->andReturn(false);
 
         $view = m::mock('Illuminate\Contracts\View\Factory');
         $view
@@ -96,6 +95,33 @@ class LaravelTracyServiceProviderTest extends TestCase
         $serviceProvider->boot(
             $debuggerManager,
             $kernel,
+            $view
+        );
+    }
+
+    public function testBootRunningInConsole()
+    {
+        $serviceProvider = new LaravelTracyServiceProvider(
+            $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
+        );
+
+        $app->shouldReceive('runningInConsole')->once()->andReturn(true);
+        $app->shouldReceive('configPath')->once();
+
+        $view = m::mock('Illuminate\Contracts\View\Factory');
+        $view
+            ->shouldReceive('getEngineResolver')->once()->andReturnSelf()
+            ->shouldReceive('resolve')->once()->with('blade')->andReturnSelf()
+            ->shouldReceive('getCompiler')->once()->andReturnSelf()
+            ->shouldReceive('directive')->once()->with('bdump', m::on(function ($closure) {
+                $expression = '$foo';
+
+                return $closure($expression) === "<?php \Tracy\Debugger::barDump({$expression}); ?>";
+            }));
+
+        $serviceProvider->boot(
+            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager'),
+            $kernel = m::mock('Illuminate\Contracts\Http\Kernel'),
             $view
         );
     }

@@ -25,13 +25,18 @@ class LaravelTracyServiceProvider extends ServiceProvider
      */
     public function boot(DebuggerManager $debuggerManager, Kernel $kernel, View $view)
     {
+        $viewCompiler = $view->getEngineResolver()
+            ->resolve('blade')
+            ->getCompiler()
+            ->directive('bdump', function ($expression) {
+                return "<?php \Tracy\Debugger::barDump({$expression}); ?>";
+            });
+
         if ($this->app->runningInConsole() === true) {
             $this->publishes([__DIR__.'/../config/tracy.php' => $this->app->configPath().'/tracy.php'], 'config');
-        }
 
-        $view->getEngineResolver()->resolve('blade')->getCompiler()->directive('bdump', function ($expression) {
-            return "<?php \Tracy\Debugger::barDump({$expression}); ?>";
-        });
+            return;
+        }
 
         if ($debuggerManager->enabled() === true) {
             $this->app->extend(ExceptionHandler::class, function ($exceptionHandler) use ($debuggerManager) {
