@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-tracy` will be documented in this file
 
+## 1.8.4 - 2017-03-06
+
+- 修正 DatabasePanel bug
+- 修正某些 php 版本當使用 header 時第二個參數設為 false 時會出錯
+
 ## 1.8.3 - 2017-03-06
 
 - 在 console 模式下不啟用，避免無法執行 PHPUnit

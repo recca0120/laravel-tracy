@@ -25,7 +25,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
      */
     public function boot(DebuggerManager $debuggerManager, Kernel $kernel, View $view)
     {
-        $viewCompiler = $view->getEngineResolver()
+        $view->getEngineResolver()
             ->resolve('blade')
             ->getCompiler()
             ->directive('bdump', function ($expression) {

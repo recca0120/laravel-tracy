@@ -39,7 +39,7 @@ class RenderBarTest extends TestCase
             $headers = ['foo' => 'bar'],
             $content = 'foo',
         ]);
-        $responseFactory->shouldReceive('stream')->with(m::on(function($callback) use ($content) {
+        $responseFactory->shouldReceive('stream')->with(m::on(function ($callback) use ($content) {
             ob_start();
             $callback();
             $output = ob_get_clean();

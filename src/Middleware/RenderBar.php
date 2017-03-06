@@ -71,9 +71,6 @@ class RenderBar
                 }
                 echo $content;
             }, 200);
-
-
-            return $this->responseFactory->make($content, 200, $headers);
         }
 
         $this->debuggerManager->dispatch();
