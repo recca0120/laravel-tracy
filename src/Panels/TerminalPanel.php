@@ -15,17 +15,30 @@ class TerminalPanel extends AbstractPanel
     protected function getAttributes()
     {
         $data = [
-            'html' => null,
+            'terminal' => null,
         ];
         if ($this->hasLaravel() === true) {
             try {
                 $controller = $this->laravel->make(TerminalController::class);
                 $response = $this->laravel->call([$controller, 'index'], ['view' => 'panel']);
-                $data['html'] = $response->getContent();
+                $data['terminal'] = $response->getContent();
             } catch (Exception $e) {
+                $data['terminal'] = $e->getMessage();
             }
         }
 
         return $data;
+    }
+
+    /**
+     * Renders HTML code for custom panel.
+     *
+     * @return string
+     */
+    public function getPanel()
+    {
+        $this->template->minify(false);
+
+        return $this->render('panel');
     }
 }

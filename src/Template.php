@@ -12,6 +12,13 @@ class Template
     protected $attributes = [];
 
     /**
+     * $minify.
+     *
+     * @var bool
+     */
+    protected $minify = true;
+
+    /**
      * setAttributes.
      *
      * @param array $attributes
@@ -19,6 +26,19 @@ class Template
     public function setAttributes($attributes)
     {
         $this->attributes = $attributes;
+    }
+
+    /**
+     * minify.
+     *
+     * @param bool $minify
+     * @return $this
+     */
+    public function minify($minify)
+    {
+        $this->minify = $minify;
+
+        return $this;
     }
 
     /**
@@ -34,19 +54,21 @@ class Template
         ob_start();
         require $view;
 
-        return $this->minify(ob_get_clean());
+        return $this->minify === true
+            ? $this->min(ob_get_clean())
+            : ob_get_clean();
     }
 
     /**
-     * minify.
+     * min.
      *
-     * if need minify style and script, refrence
+     * if need min style and script, refrence
      * https://gist.github.com/recca0120/5930842de4e0a43a48b8bf027ab058f9
      *
      * @param string $buffer
      * @return string
      */
-    protected function minify($buffer)
+    protected function min($buffer)
     {
         return preg_replace(
             ['/<!--(.*)-->/Uis', '/[[:blank:]]+/'],
