@@ -78,7 +78,7 @@ class DebuggerManager
         Debugger::$strictMode = $config['strictMode'];
         Debugger::$time = $config['currentTime'];
 
-        if (empty(Debugger::$editorMapping) === false) {
+        if (isset(Debugger::$editorMapping) === true) {
             Debugger::$editorMapping = $config['editorMapping'];
         }
 
