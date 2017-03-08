@@ -54,4 +54,4 @@ install:
 ## Run the actual test
 test_script:
     - cd c:\projects\laravel-tracy
-    - vendor\bin\phpunit.bat --verbose
+    - vendor\bin\phpunit.bat --verbose -d memory_limit=512M
