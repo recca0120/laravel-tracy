@@ -5,35 +5,53 @@ platform:
   - x64
 clone_folder: c:\projects\laravel-tracy
 
+## Build matrix for lowest and highest possible targets
+environment:
+  matrix:
+  - dependencies: lowest
+    php_ver_target: 5.5.9
+  - dependencies: current
+    php_ver_target: 7.0
+  - dependencies: highest
+    php_ver_target: 7.1
+
+## Cache composer, chocolatey and php bits
 cache:
-  - c:\php -> appveyor.yml
+    - '%LOCALAPPDATA%\Composer\files -> composer.lock'
+    - composer.phar
+    # Cache chocolatey packages
+    - C:\ProgramData\chocolatey\bin -> .appveyor.yml
+    - C:\ProgramData\chocolatey\lib -> .appveyor.yml
+    # Cache php install
+    - c:\tools\php -> .appveyor.yml
 
+## Set up environment variables
 init:
-  - SET PATH=c:\php;%PATH%
-  - SET COMPOSER_NO_INTERACTION=1
-  - SET PHP=1
+    - SET PATH=C:\Program Files\OpenSSL;c:\tools\php;%PATH%
+    - SET COMPOSER_NO_INTERACTION=1
+    - SET PHP=1 # This var is connected to PHP install cache
+    - SET ANSICON=121x90 (121x90)
 
+## Install PHP and composer, and run the appropriate composer command
 install:
-  - IF EXIST c:\php (SET PHP=0) ELSE (mkdir c:\php)
-  - cd c:\php
-  - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/releases/archives/php-7.0.0-nts-Win32-VC14-x86.zip
-  - IF %PHP%==1 7z x php-7.0.0-nts-Win32-VC14-x86.zip -y >nul
-  - IF %PHP%==1 del /Q *.zip
-  - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
-  - IF %PHP%==1 copy /Y php.ini-development php.ini
-  - IF %PHP%==1 echo max_execution_time=1200 >> php.ini
-  - IF %PHP%==1 echo date.timezone="UTC" >> php.ini
-  - IF %PHP%==1 echo extension_dir=ext >> php.ini
-  - IF %PHP%==1 echo extension=php_curl.dll >> php.ini
-  - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
-  - IF %PHP%==1 echo extension=php_mbstring.dll >> php.ini
-  - IF %PHP%==1 echo extension=php_fileinfo.dll >> php.ini
-  - appveyor DownloadFile https://getcomposer.org/composer.phar
-  - cd c:\projects\laravel-tracy
-  - mkdir %APPDATA%\Composer
-  - IF %APPVEYOR_REPO_NAME%==laravel-tracy copy /Y .composer-auth.json %APPDATA%\Composer\auth.json
-  - composer update --prefer-dist --no-progress --ansi
+    - IF EXIST c:\tools\php (SET PHP=0) # Checks for the PHP install being cached
+    - ps: appveyor-retry cinst --params '""/InstallDir:C:\tools\php""' --ignore-checksums -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:php_ver_target | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
+    - cd c:\tools\php
+    - IF %PHP%==1 copy php.ini-production php.ini /Y
+    - IF %PHP%==1 echo date.timezone="UTC" >> php.ini
+    - IF %PHP%==1 echo extension_dir=ext >> php.ini
+    - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_mbstring.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_fileinfo.dll >> php.ini
+    - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
+    - appveyor-retry appveyor DownloadFile https://getcomposer.org/composer.phar
+    - cd c:\projects\laravel-tracy
+    - IF %dependencies%==lowest appveyor-retry composer update --prefer-lowest --no-progress --profile -n
+    - IF %dependencies%==current appveyor-retry composer install --no-progress --profile
+    - IF %dependencies%==highest appveyor-retry composer update --no-progress --profile -n
+    - composer show
 
+## Run the actual test
 test_script:
-  - cd c:\projects\laravel-tracy
-  - vendor\bin\phpunit.bat --verbose
+    - cd c:\projects\laravel-tracy
+    - vendor/bin/phpunit -c phpunit.xml.dist
