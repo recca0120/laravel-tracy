@@ -39,7 +39,7 @@ install:
   - appveyor DownloadFile https://getcomposer.org/composer.phar
   - cd c:\projects\laravel-tracy
   - mkdir %APPDATA%\Composer
-  - composer.phar update --no-progress --ansi
+  - composer update --prefer-dist --no-progress --ansi
 
 test_script:
   - cd c:\projects\laravel-tracy
