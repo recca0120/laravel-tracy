@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-tracy` will be documented in this file
 
+## 1.8.5 - 2017-03-08
+
+- minify panel
+
 ## 1.8.4 - 2017-03-06
 
 - 修正 DatabasePanel bug
