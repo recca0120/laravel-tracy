@@ -22,10 +22,13 @@ class Template
      * setAttributes.
      *
      * @param array $attributes
+     * @return $this
      */
     public function setAttributes($attributes)
     {
         $this->attributes = $attributes;
+
+        return $this;
     }
 
     /**
