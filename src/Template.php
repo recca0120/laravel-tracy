@@ -29,6 +29,21 @@ class Template
         ob_start();
         require $view;
 
-        return ob_get_clean();
+        return $this->minify(ob_get_clean());
+    }
+
+    /**
+     * minify.
+     *
+     * @param string $html
+     * @return string
+     */
+    protected function minify($html)
+    {
+        return preg_replace(
+            ['/<!--(.*)-->/Uis', '/[[:blank:]]+/'],
+            ['', ' '],
+            str_replace(["\n", "\r", "\t"], '', $html)
+        );
     }
 }
