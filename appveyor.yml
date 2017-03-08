@@ -9,11 +9,11 @@ clone_folder: c:\projects\laravel-tracy
 environment:
   matrix:
   - dependencies: lowest
-    php_ver_target: 5.5
+    PHP: 5.6
   - dependencies: current
-    php_ver_target: 7.0
+    PHP: 7.0
   - dependencies: highest
-    php_ver_target: 7.1
+    PHP: 7.1
 
 ## Cache composer, chocolatey and php bits
 cache:
@@ -35,7 +35,7 @@ init:
 ## Install PHP and composer, and run the appropriate composer command
 install:
     - IF EXIST c:\tools\php (SET PHP=0) # Checks for the PHP install being cached
-    - ps: appveyor-retry cinst --params '""/InstallDir:C:\tools\php""' --ignore-checksums -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:php_ver_target | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
+    - ps: appveyor-retry cinst --params '""/InstallDir:C:\tools\php""' --ignore-checksums -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:PHP | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
     - cd c:\tools\php
     - IF %PHP%==1 copy php.ini-production php.ini /Y
     - IF %PHP%==1 echo date.timezone="UTC" >> php.ini
