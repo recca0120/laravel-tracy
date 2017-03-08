@@ -54,4 +54,4 @@ install:
 ## Run the actual test
 test_script:
     - cd c:\projects\laravel-tracy
-    - vendor/bin/phpunit -c phpunit.xml.dist
+    - vendor/bin/phpunit --verbose
