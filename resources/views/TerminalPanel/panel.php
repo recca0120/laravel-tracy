@@ -1,5 +1,5 @@
 <style class="tracy-debug">
-	#tracy-debug .Laravel-TerminalPanel {background: #000; min-width: 700px; padding-bottom:15px;}
+	#tracy-debug .Laravel-TerminalPanel {background: #000; min-width: 700px; min-height: 500px; padding-bottom:15px;}
 </style>
 
 <h1>Terminal</h1>
