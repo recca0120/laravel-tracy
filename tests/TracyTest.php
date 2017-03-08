@@ -39,5 +39,6 @@ class TracyTest extends TestCase
         });
 
         $this->assertTrue(is_string($authPanel->getPanel()));
+        $this->assertTrue($tracy->isEnabled());
     }
 }
