@@ -38,6 +38,9 @@ class DatabasePanelTest extends TestCase
             $connection->shouldReceive('getPdo')->once()->andReturn(
                 $pdo = m::mock('PDO')
             );
+            $pdo->shouldReceive('quote')->andReturnUsing(function ($param) {
+                return addslashes($param);
+            });
 
             $pdo->shouldReceive('getAttribute')->once()->with(PDO::ATTR_DRIVER_NAME)->andReturn('mysql');
             $pdo->shouldReceive('prepare')->once()->with('EXPLAIN '.$sql)->andReturn(
@@ -83,6 +86,9 @@ class DatabasePanelTest extends TestCase
                 ->shouldReceive('getPdo')->once()->andReturn(
                     $pdo = m::mock('PDO')
                 );
+            $pdo->shouldReceive('quote')->andReturnUsing(function ($param) {
+                return addslashes($param);
+            });
 
             $closure($sql, $bindings, $time, $connectionName, $pdo);
 
@@ -97,29 +103,28 @@ class DatabasePanelTest extends TestCase
         $this->assertSame($content, $panel->getPanel());
     }
 
-    public function testPrepareBindings()
-    {
-        $now = new DateTime('now');
-        $this->assertSame(
-            'SELECT * FROM users WHERE id IN (1,2) AND name = \'foo\' AND created_at = \''.$now->format('Y-m-d H:i:s').'\'',
-            DatabasePanel::prepareBindings(
-                'SELECT * FROM users WHERE id IN ? AND name = ? AND created_at = ?',
-                [[1, 2], 'foo', $now]
-            )
-        );
-    }
-
-    public function testFormatSQL()
+    public function testHighlight()
     {
         $pdo = m::mock('PDO');
         $pdo->shouldReceive('quote')->andReturnUsing(function ($param) {
             return addslashes($param);
         });
-        DatabasePanel::formatSql(
-            'SELECT *, id, name, NOW() AS n FROM users WHERE name LIKE "%?%" AND id = (?) ORDER BY RAND(); /** **/ **foo**',
-            ['foo', 1],
-            $pdo
+
+        $now = new DateTime('now');
+        $fp = fopen(__FILE__, 'r');
+        $this->assertSame(
+            'SELECT *, id, name, NOW() AS n FROM users WHERE name LIKE "%foo%" AND id = (1, 2) AND created_at = \''.$now->format('Y-m-d H:i:s').'\' AND resource = &lt;stream resource&gt; ORDER BY RAND(); /** **/ **foo**',
+            preg_replace("/\n/", '',
+                strip_tags(
+                    DatabasePanel::hightlight(
+                        'SELECT *, id, name, NOW() AS n FROM users WHERE name LIKE "%?%" AND id = ? AND created_at = ? AND resource = ? ORDER BY RAND(); /** **/ **foo**',
+                        ['foo', [1, 2], $now, $fp],
+                        $pdo
+                    )
+                )
+            )
         );
+        fclose($fp);
     }
 
     public function testPerformQueryAnalysis()

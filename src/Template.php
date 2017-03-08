@@ -43,15 +43,15 @@ class Template
      * if need minify style and script, refrence
      * https://gist.github.com/recca0120/5930842de4e0a43a48b8bf027ab058f9
      *
-     * @param string $buff
+     * @param string $buffer
      * @return string
      */
-    protected function minify($buff)
+    protected function minify($buffer)
     {
         return preg_replace(
             ['/<!--(.*)-->/Uis', '/[[:blank:]]+/'],
             ['', ' '],
-            str_replace(["\n", "\r", "\t"], '', $buff)
+            str_replace(["\n", "\r", "\t"], '', $buffer)
         );
     }
 }

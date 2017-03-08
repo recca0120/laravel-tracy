@@ -26,7 +26,7 @@
                     <?php endif; ?>
                 </td>
                 <td class="Laravel-DatabasePanel-sql">
-                    <?php echo $query['formattedSql'] ?>
+                    <?php echo $query['hightlight'] ?>
                     <?php if (count($query['hints']) > 0): ?>
                         <?php $i = 0 ?>
                         <table class="tracy-collapsed Laravel-DatabasePanel-hint" id="">
