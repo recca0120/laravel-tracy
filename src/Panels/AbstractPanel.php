@@ -112,6 +112,27 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
     }
 
     /**
+     * getViewPath.
+     *
+     * @return string
+     */
+    protected function getViewPath()
+    {
+        if (is_null($this->viewPath) === false) {
+            return $this->viewPath;
+        }
+
+        return $this->viewPath = __DIR__.'/../../resources/views/'.ucfirst(class_basename(get_class($this))).'/';
+    }
+
+    /**
+     * getAttributes.
+     *
+     * @return array
+     */
+    abstract protected function getAttributes();
+
+    /**
      * Use a backtrace to search for the origin of the query.
      *
      * @return string|array
@@ -160,25 +181,4 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
 
         return Helpers::editorLink($file, $line);
     }
-
-    /**
-     * getViewPath.
-     *
-     * @return string
-     */
-    protected function getViewPath()
-    {
-        if (is_null($this->viewPath) === false) {
-            return $this->viewPath;
-        }
-
-        return $this->viewPath = __DIR__.'/../../resources/views/'.ucfirst(class_basename(get_class($this))).'/';
-    }
-
-    /**
-     * getAttributes.
-     *
-     * @return array
-     */
-    abstract protected function getAttributes();
 }

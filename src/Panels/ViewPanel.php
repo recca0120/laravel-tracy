@@ -48,7 +48,7 @@ class ViewPanel extends AbstractSubscriablePanel implements IAjaxPanel
     {
         $name = $view->getName();
         $data = $this->limitCollection(Arr::except($view->getData(), ['__env', 'app']));
-        $path = self::editorLink($view->getPath());
+        $path = static::editorLink($view->getPath());
         preg_match('/href=\"(.+)\"/', $path, $m);
         $path = (count($m) > 1) ? '(<a href="'.$m[1].'">source</a>)' : '';
         $this->views[] = compact('name', 'data', 'path');

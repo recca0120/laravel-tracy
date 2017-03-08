@@ -8,7 +8,7 @@ use Tracy\IBarPanel;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Recca0120\LaravelTracy\Panels\IAjaxPanel;
+use Recca0120\LaravelTracy\Contracts\IAjaxPanel;
 use Illuminate\Contracts\Foundation\Application;
 
 class BarManager

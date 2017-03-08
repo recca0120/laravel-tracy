@@ -40,7 +40,7 @@ class EventPanel extends AbstractSubscriablePanel implements IAjaxPanel
         if (version_compare($this->laravel->version(), 5.4, '>=') === true) {
             $events->listen('*', function ($key, $payload) use ($id) {
                 $execTime = Debugger::timer($id);
-                $editorLink = self::editorLink(self::findSource());
+                $editorLink = static::editorLink(static::findSource());
                 $this->totalTime += $execTime;
                 $this->events[] = compact('execTime', 'key', 'payload', 'editorLink');
             });
@@ -48,7 +48,7 @@ class EventPanel extends AbstractSubscriablePanel implements IAjaxPanel
             $events->listen('*', function ($payload) use ($id, $events) {
                 $execTime = Debugger::timer($id);
                 $key = $events->firing();
-                $editorLink = self::editorLink(self::findSource());
+                $editorLink = static::editorLink(static::findSource());
                 $this->totalTime += $execTime;
                 $this->events[] = compact('execTime', 'key', 'payload', 'editorLink');
             });

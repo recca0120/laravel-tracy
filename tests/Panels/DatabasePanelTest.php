@@ -80,7 +80,7 @@ class DatabasePanelTest extends TestCase
             $connectionName = 'foo';
 
             $laravel->shouldReceive('offsetGet')->once()->with('db')->andReturn(
-                $db = m::spy('Illuminate\Database\DatabaseManager')
+                $db = m::mock('Illuminate\Database\DatabaseManager')
             );
             $db->shouldReceive('connection')->once()->with($connectionName)->andReturnSelf()
                 ->shouldReceive('getPdo')->once()->andReturn(
@@ -101,53 +101,5 @@ class DatabasePanelTest extends TestCase
 
         $this->assertSame($content, $panel->getTab());
         $this->assertSame($content, $panel->getPanel());
-    }
-
-    public function testHighlight()
-    {
-        $pdo = m::mock('PDO');
-        $pdo->shouldReceive('quote')->andReturnUsing(function ($param) {
-            return addslashes($param);
-        });
-
-        $now = new DateTime('now');
-        $fp = fopen(__FILE__, 'r');
-        $this->assertSame(
-            'SELECT *, id, name, NOW() AS n FROM users WHERE name LIKE "%foo%" AND id = (1, 2) AND created_at = \''.$now->format('Y-m-d H:i:s').'\' AND resource = &lt;stream resource&gt; ORDER BY RAND(); /** **/ **foo**',
-            preg_replace("/\n/", '',
-                strip_tags(
-                    DatabasePanel::hightlight(
-                        'SELECT *, id, name, NOW() AS n FROM users WHERE name LIKE "%?%" AND id = ? AND created_at = ? AND resource = ? ORDER BY RAND(); /** **/ **foo**',
-                        ['foo', [1, 2], $now, $fp],
-                        $pdo
-                    )
-                )
-            )
-        );
-        fclose($fp);
-    }
-
-    public function testPerformQueryAnalysis()
-    {
-        $version = 5.0;
-        $driver = 'mysql';
-
-        $sql = 'SELECT * FROM users ORDER BY RAND()';
-        DatabasePanel::performQueryAnalysis($sql, $version, $driver);
-
-        $sql = 'SELECT * FROM users WHERE id != 1';
-        DatabasePanel::performQueryAnalysis($sql, $version, $driver);
-
-        $sql = 'SELECT * FROM users LIMIT 1';
-        DatabasePanel::performQueryAnalysis($sql, $version, $driver);
-
-        $sql = 'SELECT * FROM users WHERE name LIKE "foo%"';
-        DatabasePanel::performQueryAnalysis($sql, $version, $driver);
-
-        $sql = 'SELECT * FROM users WHERE name LIKE "%foo%"';
-        DatabasePanel::performQueryAnalysis($sql, $version, $driver);
-
-        $sql = 'SELECT * FROM users WHERE id IN (SELECT user_id FROM roles)';
-        DatabasePanel::performQueryAnalysis($sql, $version, $driver);
     }
 }
