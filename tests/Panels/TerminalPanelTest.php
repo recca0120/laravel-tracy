@@ -56,7 +56,7 @@ class TerminalPanelTest extends TestCase
         $laravel->shouldReceive('make')->once()->andThrow(new Exception('foo'));
 
         $template->shouldReceive('setAttributes')->once()->with([
-            'terminal' => 'foo'
+            'terminal' => 'foo',
         ]);
 
         $template->shouldReceive('minify')->once()->with(false);

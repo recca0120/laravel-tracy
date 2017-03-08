@@ -4,6 +4,7 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use Closure;
 use Illuminate\Support\Arr;
+use Recca0120\LaravelTracy\Contracts\IAjaxPanel;
 
 class AuthPanel extends AbstractPanel implements IAjaxPanel
 {

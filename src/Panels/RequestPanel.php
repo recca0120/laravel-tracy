@@ -3,6 +3,7 @@
 namespace Recca0120\LaravelTracy\Panels;
 
 use Illuminate\Http\Request;
+use Recca0120\LaravelTracy\Contracts\IAjaxPanel;
 
 class RequestPanel extends AbstractPanel implements IAjaxPanel
 {

@@ -4,6 +4,7 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use DOMDocument;
 use LibXMLError;
+use Recca0120\LaravelTracy\Contracts\IAjaxPanel;
 use Recca0120\LaravelTracy\Events\BeforeBarRender;
 
 class HtmlValidatorPanel extends AbstractSubscriablePanel implements IAjaxPanel

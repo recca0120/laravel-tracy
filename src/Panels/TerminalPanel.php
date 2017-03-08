@@ -26,7 +26,7 @@ class TerminalPanel extends AbstractPanel
         }
 
         return [
-            'terminal' => $terminal
+            'terminal' => $terminal,
         ];
     }
 
