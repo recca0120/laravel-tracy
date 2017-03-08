@@ -145,7 +145,6 @@ class DebuggerManager
 
         return [
             array_merge($headers, [
-                'Content-Length' => strlen($content),
             ]),
             $content,
         ];
@@ -158,14 +157,8 @@ class DebuggerManager
      */
     public function dispatch()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            ini_set('session.use_cookies', '1');
-            ini_set('session.use_only_cookies', '1');
-            ini_set('session.use_trans_sid', '0');
-            ini_set('session.cookie_path', '/');
-            ini_set('session.cookie_httponly', '1');
-            session_start();
-        }
+        $session = new Session();
+        $session->start();
 
         return $this->renderBuffer(function () {
             return method_exists($this->bar, 'dispatchContent') === true ?
@@ -192,6 +185,14 @@ class DebuggerManager
 
         $bar = $this->renderBuffer(function () {
             $this->bar->render();
+            $tracyBar = Arr::get($_SESSION, '_tracy.bar', []);
+            $keys = array_keys($tracyBar);
+            $contentId = array_pop($keys);
+            Arr::set($_SESSION, 'tracy.bar.'.$contentId,
+                gzcompress(serialize(
+                    $_SESSION['_tracy']['bar'][$contentId]
+                ))
+            );
         });
 
         $appendTo = Arr::get($this->config, 'appendTo', 'body');
