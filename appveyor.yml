@@ -1,36 +1,35 @@
 build: false
-platform: x86
-clone_folder: c:\projects\recca0120\laravel-tracy
+shallow_clone: true
+platform:
+  - x86
+  - x64
+clone_folder: c:\projects\laravel-tracy
 
 cache:
-  - c:\php -> appveyor.yml
+  - c:\tools\php -> appveyor.yml
 
 init:
-  - SET PATH=c:\php;%PATH%
+  - SET PATH=C:\Program Files\OpenSSL;c:\tools\php;%PATH%
   - SET COMPOSER_NO_INTERACTION=1
   - SET PHP=1
+  - SET ANSICON=121x90 (121x90)
 
 install:
-  - IF EXIST c:\php (SET PHP=0) ELSE (mkdir c:\php)
-  - cd c:\php
-  - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/releases/archives/php-7.0.0-nts-Win32-VC14-x86.zip
-  - IF %PHP%==1 7z x php-7.0.0-nts-Win32-VC14-x86.zip -y >nul
-  - IF %PHP%==1 del /Q *.zip
-  - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
-  - IF %PHP%==1 copy /Y php.ini-development php.ini
-  - IF %PHP%==1 echo max_execution_time=1200 >> php.ini
+  - IF EXIST c:\tools\php (SET PHP=0)
+  - IF %PHP%==1 cinst -y OpenSSL.Light
+  - IF %PHP%==1 cinst -y php
+  - cd c:\tools\php
+  - IF %PHP%==1 copy php.ini-production php.ini /Y
   - IF %PHP%==1 echo date.timezone="UTC" >> php.ini
   - IF %PHP%==1 echo extension_dir=ext >> php.ini
-  - IF %PHP%==1 echo extension=php_curl.dll >> php.ini
   - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
   - IF %PHP%==1 echo extension=php_mbstring.dll >> php.ini
   - IF %PHP%==1 echo extension=php_fileinfo.dll >> php.ini
+  - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
   - appveyor DownloadFile https://getcomposer.org/composer.phar
-  - cd c:\projects\recca0120\laravel-tracy
-  - mkdir %APPDATA%\Composer
-  - IF %APPVEYOR_REPO_NAME%==recca0120\laravel-tracy copy /Y .composer-auth.json %APPDATA%\Composer\auth.json
-  - composer update --prefer-dist --no-progress --ansi
+  - cd c:\projects\laravel-tracy
+  - composer install --prefer-dist --no-progress
 
 test_script:
-  - cd c:\projects\recca0120\laravel-tracy
-  - vendor\bin\phpunit.bat --verbose
+  - cd c:\projects\laravel-tracy
+  - vendor/bin/phpunit --colors=always
