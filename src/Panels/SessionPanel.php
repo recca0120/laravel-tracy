@@ -1,6 +1,7 @@
 <?php
 
 namespace Recca0120\LaravelTracy\Panels;
+
 use Recca0120\LaravelTracy\Contracts\IAjaxPanel;
 
 class SessionPanel extends AbstractPanel implements IAjaxPanel

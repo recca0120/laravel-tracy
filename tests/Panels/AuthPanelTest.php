@@ -111,7 +111,6 @@ class AuthPanelTest extends TestCase
         );
 
         $panel->setUserResolver(function () {
-
         });
 
         $template->shouldReceive('setAttributes')->once()->with([
