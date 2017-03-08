@@ -103,4 +103,25 @@ class AuthPanelTest extends TestCase
         $this->assertSame($content, $panel->getTab());
         $this->assertSame($content, $panel->getPanel());
     }
+
+    public function testRenderFromUserResolverAndEmpty()
+    {
+        $panel = new AuthPanel(
+            $template = m::mock('Recca0120\LaravelTracy\Template')
+        );
+
+        $panel->setUserResolver(function () {
+
+        });
+
+        $template->shouldReceive('setAttributes')->once()->with([
+            'id' => 'Guest',
+            'rows' => [
+            ],
+        ]);
+        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+
+        $this->assertSame($content, $panel->getTab());
+        $this->assertSame($content, $panel->getPanel());
+    }
 }
