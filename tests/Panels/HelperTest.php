@@ -2,12 +2,9 @@
 
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
-use PDO;
 use DateTime;
-use stdClass;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
-use Illuminate\Database\Connection;
 use Recca0120\LaravelTracy\Panels\Helper;
 
 class HelperTest extends TestCase
