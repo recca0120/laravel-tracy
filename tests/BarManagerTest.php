@@ -24,8 +24,9 @@ class BarManagerTest extends TestCase
         $request->shouldReceive('ajax')->once()->andReturn(true);
         $bar->shouldReceive('addPanel')->with(m::type('Tracy\IBarPanel'), 'auth');
 
-        $barManager->loadPanels(['user' => true]);
+        $barManager->loadPanels(['user' => true, 'terminal' => true]);
         $this->assertInstanceOf('Tracy\IbarPanel', $barManager->get('auth'));
+        $this->assertNull($barManager->get('terminal'));
         $this->assertSame($bar, $barManager->getBar());
     }
 }
