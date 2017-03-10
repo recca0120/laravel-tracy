@@ -1,5 +1,7 @@
 ## [Nette Tracy](https://github.com/nette/tracy.git) for Laravel 5
 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](recca0120@gmail.com)
+
 Better Laravel Exception Handler
 
 [![StyleCI](https://styleci.io/repos/40661503/shield?style=flat)](https://styleci.io/repos/40661503)
