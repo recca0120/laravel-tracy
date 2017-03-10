@@ -196,3 +196,8 @@ sql('select * from products');
 ```
 
 ![Standalone](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/standalone.png)
+
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/recca0120/laravel-tracy/badge.svg?style=beer-square)](https://beerpay.io/recca0120/laravel-tracy)  [![Beerpay](https://beerpay.io/recca0120/laravel-tracy/make-wish.svg?style=flat-square)](https://beerpay.io/recca0120/laravel-tracy?focus=wish)
