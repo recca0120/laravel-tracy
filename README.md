@@ -1,6 +1,6 @@
 ## [Nette Tracy](https://github.com/nette/tracy.git) for Laravel 5
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YNNLC9V28YDPN)
+
 
 Better Laravel Exception Handler
 
@@ -14,6 +14,7 @@ Better Laravel Exception Handler
 [![Daily Downloads](https://poser.pugx.org/recca0120/laravel-tracy/d/daily)](https://packagist.org/packages/recca0120/laravel-tracy)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/recca0120/laravel-tracy/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/recca0120/laravel-tracy/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/recca0120/laravel-tracy/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/recca0120/laravel-tracy/?branch=master)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YNNLC9V28YDPN)
 
 ![Laravel Tracy](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/tracy.png)
 
