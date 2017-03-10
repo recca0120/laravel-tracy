@@ -1,6 +1,6 @@
 ## [Nette Tracy](https://github.com/nette/tracy.git) for Laravel 5
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EWH9W9MXC3U56)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YNNLC9V28YDPN)
 
 Better Laravel Exception Handler
 
