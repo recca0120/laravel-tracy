@@ -29,6 +29,20 @@ class EventPanel extends AbstractSubscriablePanel implements IAjaxPanel
     protected $events = [];
 
     /**
+     * getAttributes.
+     *
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return [
+            'counter' => $this->counter,
+            'totalTime' => $this->totalTime,
+            'events' => $this->events,
+        ];
+    }
+
+    /**
      * subscribe.
      */
     protected function subscribe()
@@ -53,19 +67,5 @@ class EventPanel extends AbstractSubscriablePanel implements IAjaxPanel
                 $this->events[] = compact('execTime', 'key', 'payload', 'editorLink');
             });
         }
-    }
-
-    /**
-     * getAttributes.
-     *
-     * @return array
-     */
-    public function getAttributes()
-    {
-        return [
-            'counter' => $this->counter,
-            'totalTime' => $this->totalTime,
-            'events' => $this->events,
-        ];
     }
 }

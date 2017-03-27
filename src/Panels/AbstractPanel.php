@@ -32,6 +32,13 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
     protected $template;
 
     /**
+     * $laravel description.
+     *
+     * @var \Illuminate\Contracts\Foundation\Application
+     */
+    protected $laravel;
+
+    /**
      * __construct.
      *
      * @param \Recca0120\LaravelTracy\Template $template
@@ -40,13 +47,6 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
     {
         $this->template = $template ?: new Template;
     }
-
-    /**
-     * $laravel description.
-     *
-     * @var \Illuminate\Contracts\Foundation\Application
-     */
-    protected $laravel;
 
     /**
      * setLaravel.
@@ -61,16 +61,6 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
         }
 
         return $this;
-    }
-
-    /**
-     * has laravel.
-     *
-     * @return bool
-     */
-    protected function hasLaravel()
-    {
-        return is_a($this->laravel, Application::class);
     }
 
     /**
@@ -91,6 +81,16 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
     public function getPanel()
     {
         return $this->render('panel');
+    }
+
+    /**
+     * has laravel.
+     *
+     * @return bool
+     */
+    protected function hasLaravel()
+    {
+        return is_a($this->laravel, Application::class);
     }
 
     /**

@@ -8,6 +8,18 @@ use Recca0120\Terminal\Http\Controllers\TerminalController;
 class TerminalPanel extends AbstractPanel
 {
     /**
+     * Renders HTML code for custom panel.
+     *
+     * @return string
+     */
+    public function getPanel()
+    {
+        $this->template->minify(false);
+
+        return $this->render('panel');
+    }
+
+    /**
      * getAttributes.
      *
      * @return array
@@ -28,17 +40,5 @@ class TerminalPanel extends AbstractPanel
         return [
             'terminal' => $terminal,
         ];
-    }
-
-    /**
-     * Renders HTML code for custom panel.
-     *
-     * @return string
-     */
-    public function getPanel()
-    {
-        $this->template->minify(false);
-
-        return $this->render('panel');
     }
 }

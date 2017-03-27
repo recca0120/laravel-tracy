@@ -96,28 +96,6 @@ class BarManager
     }
 
     /**
-     * isAjaxPanel.
-     *
-     * @param string $id
-     * @return bool
-     */
-    protected function isAjaxPanel($id)
-    {
-        return is_subclass_of(static::name($id), IAjaxPanel::class) === true;
-    }
-
-    /**
-     * name.
-     *
-     * @param string $id
-     * @return string
-     */
-    protected static function name($id)
-    {
-        return '\\'.__NAMESPACE__.'\Panels\\'.Str::studly($id).'Panel';
-    }
-
-    /**
      * make.
      *
      * @param string $id
@@ -156,5 +134,27 @@ class BarManager
     public function get($id)
     {
         return Arr::get($this->panels, $id);
+    }
+
+    /**
+     * isAjaxPanel.
+     *
+     * @param string $id
+     * @return bool
+     */
+    protected function isAjaxPanel($id)
+    {
+        return is_subclass_of(static::name($id), IAjaxPanel::class) === true;
+    }
+
+    /**
+     * name.
+     *
+     * @param string $id
+     * @return string
+     */
+    protected static function name($id)
+    {
+        return '\\'.__NAMESPACE__.'\Panels\\'.Str::studly($id).'Panel';
     }
 }

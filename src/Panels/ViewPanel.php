@@ -9,18 +9,17 @@ use Recca0120\LaravelTracy\Contracts\IAjaxPanel;
 class ViewPanel extends AbstractSubscriablePanel implements IAjaxPanel
 {
     /**
-     * $views.
-     *
-     * @var array
-     */
-    protected $views = [];
-
-    /**
      * $limit.
      *
      * @var int
      */
     public $limit = 50;
+    /**
+     * $views.
+     *
+     * @var array
+     */
+    protected $views = [];
 
     /**
      * subscribe.

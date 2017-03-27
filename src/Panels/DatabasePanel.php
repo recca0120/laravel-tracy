@@ -30,35 +30,6 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
     protected $counter = 0;
 
     /**
-     * subscribe.
-     */
-    protected function subscribe()
-    {
-        $events = $this->laravel['events'];
-        if (version_compare($this->laravel->version(), 5.2, '>=') === true) {
-            $events->listen('Illuminate\Database\Events\QueryExecuted', function ($event) {
-                $this->logQuery(
-                    $event->sql,
-                    $event->bindings,
-                    $event->time,
-                    $event->connectionName,
-                    $event->connection->getPdo()
-                );
-            });
-        } else {
-            $events->listen('illuminate.query', function ($sql, $bindings, $time, $connectionName) {
-                $this->logQuery(
-                    $sql,
-                    $bindings,
-                    $time,
-                    $connectionName,
-                    $this->laravel['db']->connection($connectionName)->getPdo()
-                );
-            });
-        }
-    }
-
-    /**
      * logQuery.
      *
      * @param string $sql
@@ -88,6 +59,35 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
         ];
 
         return $this;
+    }
+
+    /**
+     * subscribe.
+     */
+    protected function subscribe()
+    {
+        $events = $this->laravel['events'];
+        if (version_compare($this->laravel->version(), 5.2, '>=') === true) {
+            $events->listen('Illuminate\Database\Events\QueryExecuted', function ($event) {
+                $this->logQuery(
+                    $event->sql,
+                    $event->bindings,
+                    $event->time,
+                    $event->connectionName,
+                    $event->connection->getPdo()
+                );
+            });
+        } else {
+            $events->listen('illuminate.query', function ($sql, $bindings, $time, $connectionName) {
+                $this->logQuery(
+                    $sql,
+                    $bindings,
+                    $time,
+                    $connectionName,
+                    $this->laravel['db']->connection($connectionName)->getPdo()
+                );
+            });
+        }
     }
 
     /**
