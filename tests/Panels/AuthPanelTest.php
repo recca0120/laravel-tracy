@@ -10,6 +10,7 @@ class AuthPanelTest extends TestCase
 {
     protected function tearDown()
     {
+        parent::tearDown();
         m::close();
     }
 
