@@ -3,13 +3,23 @@
 namespace Recca0120\LaravelTracy\Tests;
 
 use Mockery as m;
+use Illuminate\Container\Container;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\LaravelTracyServiceProvider;
 
 class LaravelTracyServiceProviderTest extends TestCase
 {
+    protected function setUp()
+    {
+        parent::setUp();
+        $container = Container::getInstance();
+        $container->instance('path.config', __DIR__);
+        Container::setInstance($container);
+    }
+
     protected function tearDown()
     {
+        parent::tearDown();
         m::close();
     }
 
@@ -41,8 +51,10 @@ class LaravelTracyServiceProviderTest extends TestCase
                 $request = m::mock('Illuminate\Http\Request')
             );
             $request->shouldReceive('ajax')->once()->andReturn(false);
+            $bar = $closure($app);
+            $this->assertInstanceOf(\Tracy\Bar::class, $bar);
 
-            return $closure($app) instanceof \Tracy\Bar;
+            return $bar instanceof \Tracy\Bar;
         }));
         $app->shouldReceive('singleton')->once()->with('Recca0120\LaravelTracy\DebuggerManager', m::on(function ($closure) use ($app) {
             $app->shouldReceive('make')->once()->with('Tracy\Bar')->andReturn(
@@ -51,8 +63,10 @@ class LaravelTracyServiceProviderTest extends TestCase
             $app->shouldReceive('make')->once()->with('Tracy\BlueScreen')->andReturn(
                 $bar = m::mock('Tracy\BlueScreen')
             );
+            $debugbarManager = $closure($app);
+            $this->assertInstanceOf(\Recca0120\LaravelTracy\DebuggerManager::class, $debugbarManager);
 
-            return $closure($app) instanceof \Recca0120\LaravelTracy\DebuggerManager;
+            return $debugbarManager instanceof \Recca0120\LaravelTracy\DebuggerManager;
         }));
 
         $serviceProvider->register();
@@ -81,12 +95,13 @@ class LaravelTracyServiceProviderTest extends TestCase
         $debuggerManager->shouldReceive('enabled')->once()->andReturn(true);
 
         $app->shouldReceive('extend')->once()->with('Illuminate\Contracts\Debug\ExceptionHandler', m::on(function ($closure) use ($app) {
-            $closure(
+            $handler = $closure(
                 $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
                 $app
             );
+            $this->assertInstanceOf(\Recca0120\LaravelTracy\Exceptions\Handler::class, $handler);
 
-            return true;
+            return $handler instanceof \Recca0120\LaravelTracy\Exceptions\Handler;
         }));
 
         $kernel = m::mock('Illuminate\Contracts\Http\Kernel');
@@ -106,7 +121,6 @@ class LaravelTracyServiceProviderTest extends TestCase
         );
 
         $app->shouldReceive('runningInConsole')->once()->andReturn(true);
-        $app->shouldReceive('configPath')->once();
 
         $view = m::mock('Illuminate\Contracts\View\Factory');
         $view
@@ -115,8 +129,10 @@ class LaravelTracyServiceProviderTest extends TestCase
             ->shouldReceive('getCompiler')->once()->andReturnSelf()
             ->shouldReceive('directive')->once()->with('bdump', m::on(function ($closure) {
                 $expression = '$foo';
+                $compiled = $closure($expression);
+                $this->assertSame($compiled, "<?php \Tracy\Debugger::barDump({$expression}); ?>");
 
-                return $closure($expression) === "<?php \Tracy\Debugger::barDump({$expression}); ?>";
+                return $compiled === "<?php \Tracy\Debugger::barDump({$expression}); ?>";
             }));
 
         $serviceProvider->boot(

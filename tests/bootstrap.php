@@ -47,4 +47,9 @@ if (function_exists('env') === false) {
                 break;
         }
     }
+
+    function config_path($path = '') {
+        return \Illuminate\Container\Container::getInstance()->make('path.config')
+            .($path ? DIRECTORY_SEPARATOR.$path : $path);
+    }
 }

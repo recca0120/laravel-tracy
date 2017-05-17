@@ -33,7 +33,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
             });
 
         if ($this->app->runningInConsole() === true) {
-            $this->publishes([__DIR__.'/../config/tracy.php' => $this->app->configPath().'/tracy.php'], 'config');
+            $this->publishes([__DIR__.'/../config/tracy.php' => config_path('tracy.php')], 'config');
 
             return;
         }
