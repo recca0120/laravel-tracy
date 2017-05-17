@@ -50,7 +50,8 @@ if (function_exists('env') === false) {
 }
 
 if (function_exists('config_path') === false) {
-    function config_path($path = '') {
+    function config_path($path = '')
+    {
         return \Illuminate\Container\Container::getInstance()->make('path.config')
             .($path ? DIRECTORY_SEPARATOR.$path : $path);
     }

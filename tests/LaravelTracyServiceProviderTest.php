@@ -3,8 +3,8 @@
 namespace Recca0120\LaravelTracy\Tests;
 
 use Mockery as m;
-use Illuminate\Container\Container;
 use PHPUnit\Framework\TestCase;
+use Illuminate\Container\Container;
 use Recca0120\LaravelTracy\LaravelTracyServiceProvider;
 
 class LaravelTracyServiceProviderTest extends TestCase
