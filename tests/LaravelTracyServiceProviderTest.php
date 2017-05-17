@@ -12,10 +12,9 @@ class LaravelTracyServiceProviderTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        $container = Container::getInstance();
-        $container->bind('path.config', function () {
-            return __DIR__;
-        });
+        $container = new Container;
+        $container->instance('path.config', __DIR__);
+        Container::setInstance($container);
     }
 
     protected function tearDown()
