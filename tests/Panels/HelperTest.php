@@ -45,21 +45,21 @@ class HelperTest extends TestCase
         $driver = 'mysql';
 
         $sql = 'SELECT * FROM users ORDER BY RAND()';
-        Helper::performQueryAnalysis($sql, $version, $driver);
+        $this->assertNotNull(Helper::performQueryAnalysis($sql, $version, $driver));
 
         $sql = 'SELECT * FROM users WHERE id != 1';
-        Helper::performQueryAnalysis($sql, $version, $driver);
+        $this->assertNotNull(Helper::performQueryAnalysis($sql, $version, $driver));
 
         $sql = 'SELECT * FROM users LIMIT 1';
-        Helper::performQueryAnalysis($sql, $version, $driver);
+        $this->assertNotNull(Helper::performQueryAnalysis($sql, $version, $driver));
 
         $sql = 'SELECT * FROM users WHERE name LIKE "foo%"';
-        Helper::performQueryAnalysis($sql, $version, $driver);
+        $this->assertNotNull(Helper::performQueryAnalysis($sql, $version, $driver));
 
         $sql = 'SELECT * FROM users WHERE name LIKE "%foo%"';
-        Helper::performQueryAnalysis($sql, $version, $driver);
+        $this->assertNotNull(Helper::performQueryAnalysis($sql, $version, $driver));
 
         $sql = 'SELECT * FROM users WHERE id IN (SELECT user_id FROM roles)';
-        Helper::performQueryAnalysis($sql, $version, $driver);
+        $this->assertNotNull(Helper::performQueryAnalysis($sql, $version, $driver));
     }
 }

@@ -15,7 +15,7 @@ class HandlerTest extends TestCase
         m::close();
     }
 
-    public function testReportMethod()
+    public function testReport()
     {
         $handler = new Handler(
             $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
@@ -23,7 +23,7 @@ class HandlerTest extends TestCase
         );
         $exception = new Exception();
         $exceptionHandler->shouldReceive('report')->once()->with($exception);
-        $handler->report($exception);
+        $this->assertNull($handler->report($exception));
     }
 
     public function testRednerWithResponseIsRedirectResponse()
@@ -169,6 +169,6 @@ class HandlerTest extends TestCase
             $output = m::mock('Symfony\Component\Console\Output\OutputInterface'),
             $exception = new Exception()
         );
-        $handler->renderForConsole($output, $exception);
+        $this->assertNull($handler->renderForConsole($output, $exception));
     }
 }
