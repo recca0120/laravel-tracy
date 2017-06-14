@@ -227,6 +227,10 @@ class DebuggerManager
         ob_start();
         $callback();
 
-        return ob_get_clean();
+        return str_replace(
+            '?_tracy_bar',
+            Arr::get($this->config, 'root', '').'/tracy/bar?_tracy_bar',
+            ob_get_clean()
+        );
     }
 }

@@ -31,21 +31,6 @@ class RenderBarTest extends TestCase
         };
 
         $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(true);
-        $request->shouldReceive('get')->once()->with('_tracy_bar')->andReturn($tracyBar = 'assets');
-
-        $request->shouldReceive('server')->once()->andReturn(
-            $server = [
-                'foo' => 'bar',
-                'REDIRECT_URL' => 'foo',
-                'REDIRECT_QUERY_STRING' => 'bar',
-            ]
-        );
-        $request->shouldReceive('duplicate')->once()->with(
-            null, null, null, null, null, [
-                'foo' => 'bar',
-                'REQUEST_URI' => '/_tracy/'.$tracyBar,
-            ]
-        )->andReturnSelf();
 
         $this->assertSame($response, $renderBar->handle($request, $next));
     }
