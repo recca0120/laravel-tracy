@@ -43,18 +43,25 @@ class RenderBar
     /**
      * handle.
      *
-     *
      * @param \Illuminate\Http\Request $request
      * @param \Closure $next
-     *
-     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle($request, $next)
     {
-        if ($request->has('_tracy_bar') === true) {
-            return $next($request);
-        }
+        return $request->has('_tracy_bar') === true
+            ? $next($request)
+            : $this->render($request, $next);
+    }
 
+    /**
+     * render.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function render($request, $next) {
         $this->debuggerManager->dispatch();
 
         $response = $next($request);
