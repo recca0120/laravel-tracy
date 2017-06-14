@@ -43,7 +43,7 @@ class RenderBarTest extends TestCase
         $request->shouldReceive('duplicate')->once()->with(
             null, null, null, null, null, [
                 'foo' => 'bar',
-                'REQUEST_URI' => '/_tracy/'.$tracyBar
+                'REQUEST_URI' => '/_tracy/'.$tracyBar,
             ]
         )->andReturnSelf();
 

@@ -111,7 +111,7 @@ class LaravelTracyServiceProviderTest extends TestCase
 
         $app->shouldReceive('routesAreCached')->once()->andReturn(false);
         $router->shouldReceive('group')->once()->with([
-            'namespace' => 'Recca0120\LaravelTracy\Http\Controllers'
+            'namespace' => 'Recca0120\LaravelTracy\Http\Controllers',
         ], m::type('Closure'));
 
         $serviceProvider->boot(

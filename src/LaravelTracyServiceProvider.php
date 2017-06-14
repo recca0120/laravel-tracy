@@ -58,22 +58,6 @@ class LaravelTracyServiceProvider extends ServiceProvider
     }
 
     /**
-     * register routes.
-     *
-     * @param \Illuminate\Routing\Router $router
-     */
-    protected function handleRoutes(Router $router)
-    {
-        if ($this->app->routesAreCached() === false) {
-            $router->group([
-                'namespace' => $this->namespace,
-            ], function (Router $router) {
-                require __DIR__.'/../routes/api.php';
-            });
-        }
-    }
-
-    /**
      * Register the service provider.
      */
     public function register()
@@ -113,5 +97,21 @@ class LaravelTracyServiceProvider extends ServiceProvider
     public function provides()
     {
         return [ExceptionHandler::class];
+    }
+
+    /**
+     * register routes.
+     *
+     * @param \Illuminate\Routing\Router $router
+     */
+    protected function handleRoutes(Router $router)
+    {
+        if ($this->app->routesAreCached() === false) {
+            $router->group([
+                'namespace' => $this->namespace,
+            ], function (Router $router) {
+                require __DIR__.'/../routes/web.php';
+            });
+        }
     }
 }

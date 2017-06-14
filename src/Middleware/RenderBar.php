@@ -55,7 +55,7 @@ class RenderBar
         if ($request->has('_tracy_bar') === true) {
             return $next($request->duplicate(
                 null, null, null, null, null, Arr::except(array_merge($request->server(), [
-                    'REQUEST_URI' => '/_tracy/'.$request->get('_tracy_bar')
+                    'REQUEST_URI' => '/_tracy/'.$request->get('_tracy_bar'),
                 ]), ['REDIRECT_URL', 'REDIRECT_QUERY_STRING'])
             ));
         }

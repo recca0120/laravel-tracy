@@ -11,8 +11,9 @@ class LaravelTracyController extends Controller
     /**
      * index.
      *
-     * @param \Recca0120\Terminal\Kernel $kernel
-     * @param string $view
+     * @param \Recca0120\LaravelTracy\DebuggerManager $debuggerManager
+     * @param \Illuminate\Contracts\Routing\ResponseFactory $responseFactory
+     * @param string $type
      * @return \Illuminate\Http\Response
      */
     public function index(DebuggerManager $debuggerManager, ResponseFactory $responseFactory, $type)
