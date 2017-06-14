@@ -57,10 +57,10 @@ class LaravelTracyServiceProviderTest extends TestCase
             return $bar instanceof \Tracy\Bar;
         }));
         $app->shouldReceive('singleton')->once()->with('Recca0120\LaravelTracy\DebuggerManager', m::on(function ($closure) use ($app) {
-            $app->shouldReceive('make')->once()->with('Tracy\Bar')->andReturn(
+            $app->shouldReceive('offsetGet')->once()->with('Tracy\Bar')->andReturn(
                 $bar = m::mock('Tracy\Bar')
             );
-            $app->shouldReceive('make')->once()->with('Tracy\BlueScreen')->andReturn(
+            $app->shouldReceive('offsetGet')->once()->with('Tracy\BlueScreen')->andReturn(
                 $bar = m::mock('Tracy\BlueScreen')
             );
             $debugbarManager = $closure($app);

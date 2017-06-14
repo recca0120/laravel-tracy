@@ -17,17 +17,15 @@ class LaravelTracyControllerTest extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testIndex()
+    public function testBar()
     {
         $controller = new LaravelTracyController();
 
         $request = m::mock('Illuminate\Http\Request');
 
-        $request->shouldReceive('session')->once()->andReturn(
-            $session = m::mock('Illuminate\Contracts\Session\Session')
+        $request->shouldReceive('get')->andReturn(
+            $type = 'foo'
         );
-
-        $session->shouldReceive('reflash')->once();
 
         $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager');
         $debuggerManager->shouldReceive('dispatchAssets')->once()->andReturn([
@@ -50,13 +48,10 @@ class LaravelTracyControllerTest extends TestCase
             $response = m::mock('Symfony\Component\HttpFoundation\Response')
         );
 
-        $type = 'foo';
-
-        $this->assertSame($response, $controller->index(
-            $request,
-            $responseFactory,
+        $this->assertSame($response, $controller->bar(
             $debuggerManager,
-            $type
+            $request,
+            $responseFactory
         ));
     }
 }

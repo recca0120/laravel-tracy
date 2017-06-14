@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('/_tracy/{type}', [
-    'as' => 'laravel-tracy',
-    'uses' => 'LaravelTracyController@index',
+Route::get('/_tracy', [
+    'as' => 'tracy.bar',
+    'uses' => 'LaravelTracyController@bar',
 ]);

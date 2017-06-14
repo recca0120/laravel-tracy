@@ -10,17 +10,18 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 class LaravelTracyController extends Controller
 {
     /**
-     * index.
+     * bar.
      *
-     * @param \Illuminate\Contracts\Routing\ResponseFactory $responseFactory
      * @param \Recca0120\LaravelTracy\DebuggerManager $debuggerManager
+     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Contracts\Routing\ResponseFactory $responseFactory
      * @param string $type
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, ResponseFactory $responseFactory, DebuggerManager $debuggerManager, $type)
+    public function bar(DebuggerManager $debuggerManager, Request $request, ResponseFactory $responseFactory)
     {
-        return $responseFactory->stream(function () use ($debuggerManager, $type) {
-            list($headers, $content) = $debuggerManager->dispatchAssets($type);
+        return $responseFactory->stream(function () use ($debuggerManager, $request) {
+            list($headers, $content) = $debuggerManager->dispatchAssets($request->get('_tracy_bar'));
             if (headers_sent() === false) {
                 foreach ($headers as $name => $value) {
                     header(sprintf('%s: %s', $name, $value), true, 200);
