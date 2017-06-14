@@ -2,7 +2,6 @@
 
 namespace Recca0120\LaravelTracy\Middleware;
 
-use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Events\Dispatcher;
 use Recca0120\LaravelTracy\DebuggerManager;

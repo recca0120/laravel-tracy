@@ -58,23 +58,6 @@ class LaravelTracyServiceProvider extends ServiceProvider
     }
 
     /**
-     * register routes.
-     *
-     * @param \Illuminate\Routing\Router $router
-     * @param array $config
-     */
-    protected function handleRoutes(Router $router, $config = [])
-    {
-        if ($this->app->routesAreCached() === false) {
-            $router->group(array_merge([
-                'namespace' => $this->namespace,
-            ], $config), function (Router $router) {
-                require __DIR__.'/../routes/web.php';
-            });
-        }
-    }
-
-    /**
      * Register the service provider.
      */
     public function register()
@@ -100,7 +83,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
         $this->app->singleton(DebuggerManager::class, function ($app) use ($config) {
             return new DebuggerManager(
                 DebuggerManager::init(array_merge($config, [
-                    'root' => $app['request']->root()
+                    'root' => $app['request']->root(),
                 ])),
                 $app[Bar::class],
                 $app[BlueScreen::class]
@@ -116,5 +99,22 @@ class LaravelTracyServiceProvider extends ServiceProvider
     public function provides()
     {
         return [ExceptionHandler::class];
+    }
+
+    /**
+     * register routes.
+     *
+     * @param \Illuminate\Routing\Router $router
+     * @param array $config
+     */
+    protected function handleRoutes(Router $router, $config = [])
+    {
+        if ($this->app->routesAreCached() === false) {
+            $router->group(array_merge([
+                'namespace' => $this->namespace,
+            ], $config), function (Router $router) {
+                require __DIR__.'/../routes/web.php';
+            });
+        }
     }
 }

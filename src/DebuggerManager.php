@@ -224,13 +224,12 @@ class DebuggerManager
      */
     protected function renderBuffer(Closure $callback)
     {
+        $root = Arr::get($this->config, 'root');
         ob_start();
         $callback();
 
-        return str_replace(
-            '?_tracy_bar',
-            Arr::get($this->config, 'root', '').'/tracy/bar?_tracy_bar',
-            ob_get_clean()
-        );
+        return empty($root) === false
+            ? str_replace('?_tracy_bar', $root.'/tracy/bar?_tracy_bar', ob_get_clean())
+            : ob_get_clean();
     }
 }

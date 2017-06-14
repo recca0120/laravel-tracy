@@ -121,9 +121,9 @@ class LaravelTracyServiceProviderTest extends TestCase
             $config = [
                 'tracy' => [
                     'route' => [
-                        'middleware' => ['web']
-                    ]
-                ]
+                        'middleware' => ['web'],
+                    ],
+                ],
             ]
         );
 
