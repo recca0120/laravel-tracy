@@ -3,9 +3,6 @@
 return [
     'enabled' => env('APP_DEBUG') === true,
     'showBar' => env('APP_ENV') !== 'production',
-    'route' => [
-        'middleware' => ['web'],
-    ],
     'accepts' => [
         'text/html',
     ],

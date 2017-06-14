@@ -19,8 +19,6 @@ class LaravelTracyController extends Controller
      */
     public function index(Request $request, ResponseFactory $responseFactory, DebuggerManager $debuggerManager, $type)
     {
-        $request->session()->reflash();
-
         return $responseFactory->stream(function () use ($debuggerManager, $type) {
             list($headers, $content) = $debuggerManager->dispatchAssets($type);
             if (headers_sent() === false) {
