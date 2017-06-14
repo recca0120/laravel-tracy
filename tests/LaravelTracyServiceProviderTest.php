@@ -110,9 +110,20 @@ class LaravelTracyServiceProviderTest extends TestCase
         $router = m::mock('Illuminate\Routing\Router');
 
         $app->shouldReceive('routesAreCached')->once()->andReturn(false);
-        $router->shouldReceive('group')->once()->with([
+
+        $app->shouldReceive('offsetGet')->once()->with('config')->andReturn(
+            $config = [
+                'tracy' => [
+                    'route' => [
+                        'middleware' => ['web']
+                    ]
+                ]
+            ]
+        );
+
+        $router->shouldReceive('group')->once()->with(array_merge([
             'namespace' => 'Recca0120\LaravelTracy\Http\Controllers',
-        ], m::type('Closure'));
+        ], $config['tracy']['route']), m::type('Closure'));
 
         $serviceProvider->boot(
             $debuggerManager, $kernel, $view, $router

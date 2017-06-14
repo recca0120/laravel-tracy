@@ -52,8 +52,25 @@ class LaravelTracyServiceProvider extends ServiceProvider
                 return new Handler($exceptionHandler, $debuggerManager);
             });
 
-            $this->handleRoutes($router);
+            $this->handleRoutes($router, $this->app['config']['tracy']['route']);
             $kernel->prependMiddleware(RenderBar::class);
+        }
+    }
+
+    /**
+     * register routes.
+     *
+     * @param \Illuminate\Routing\Router $router
+     * @param array $config
+     */
+    protected function handleRoutes(Router $router, $config = [])
+    {
+        if ($this->app->routesAreCached() === false) {
+            $router->group(array_merge([
+                'namespace' => $this->namespace,
+            ], $config), function (Router $router) {
+                require __DIR__.'/../routes/web.php';
+            });
         }
     }
 
@@ -97,21 +114,5 @@ class LaravelTracyServiceProvider extends ServiceProvider
     public function provides()
     {
         return [ExceptionHandler::class];
-    }
-
-    /**
-     * register routes.
-     *
-     * @param \Illuminate\Routing\Router $router
-     */
-    protected function handleRoutes(Router $router)
-    {
-        if ($this->app->routesAreCached() === false) {
-            $router->group([
-                'namespace' => $this->namespace,
-            ], function (Router $router) {
-                require __DIR__.'/../routes/web.php';
-            });
-        }
     }
 }
