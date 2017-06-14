@@ -107,10 +107,15 @@ class LaravelTracyServiceProviderTest extends TestCase
         $kernel = m::mock('Illuminate\Contracts\Http\Kernel');
         $kernel->shouldReceive('prependMiddleware')->once()->with('Recca0120\LaravelTracy\Middleware\RenderBar');
 
+        $router = m::mock('Illuminate\Routing\Router');
+
+        $app->shouldReceive('routesAreCached')->once()->andReturn(false);
+        $router->shouldReceive('group')->once()->with([
+            'namespace' => 'Recca0120\LaravelTracy\Http\Controllers'
+        ], m::type('Closure'));
+
         $serviceProvider->boot(
-            $debuggerManager,
-            $kernel,
-            $view
+            $debuggerManager, $kernel, $view, $router
         );
     }
 
@@ -138,7 +143,8 @@ class LaravelTracyServiceProviderTest extends TestCase
         $serviceProvider->boot(
             $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager'),
             $kernel = m::mock('Illuminate\Contracts\Http\Kernel'),
-            $view
+            $view,
+            $router = m::mock('Illuminate\Routing\Router')
         );
     }
 

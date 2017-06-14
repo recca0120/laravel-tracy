@@ -6,6 +6,7 @@ use Tracy\Bar;
 use Tracy\Debugger;
 use Tracy\BlueScreen;
 use Illuminate\Support\Arr;
+use Illuminate\Routing\Router;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\View\Factory as View;
@@ -17,13 +18,21 @@ use Recca0120\LaravelTracy\Middleware\RenderBar;
 class LaravelTracyServiceProvider extends ServiceProvider
 {
     /**
+     * namespace.
+     *
+     * @var string
+     */
+    protected $namespace = 'Recca0120\LaravelTracy\Http\Controllers';
+
+    /**
      * boot.
      *
      * @param DebuggerManager $debuggerManager
      * @param \Illuminate\Contracts\Http\Kernel $kernel
      * @param \Illuminate\Contracts\View\Factory $view
+     * @param \Illuminate\Routing\Router $router
      */
-    public function boot(DebuggerManager $debuggerManager, Kernel $kernel, View $view)
+    public function boot(DebuggerManager $debuggerManager, Kernel $kernel, View $view, Router $router)
     {
         $view->getEngineResolver()
             ->resolve('blade')
@@ -42,7 +51,25 @@ class LaravelTracyServiceProvider extends ServiceProvider
             $this->app->extend(ExceptionHandler::class, function ($exceptionHandler) use ($debuggerManager) {
                 return new Handler($exceptionHandler, $debuggerManager);
             });
+
+            $this->handleRoutes($router);
             $kernel->prependMiddleware(RenderBar::class);
+        }
+    }
+
+    /**
+     * register routes.
+     *
+     * @param \Illuminate\Routing\Router $router
+     */
+    protected function handleRoutes(Router $router)
+    {
+        if ($this->app->routesAreCached() === false) {
+            $router->group([
+                'namespace' => $this->namespace,
+            ], function (Router $router) {
+                require __DIR__.'/../routes/api.php';
+            });
         }
     }
 
