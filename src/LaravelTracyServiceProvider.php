@@ -52,7 +52,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
                 return new Handler($exceptionHandler, $debuggerManager);
             });
 
-            $this->handleRoutes($router, $this->app['config']['tracy']['route']);
+            $this->handleRoutes($router, Arr::get($this->app['config']['tracy'], 'route', []));
             $kernel->prependMiddleware(RenderBar::class);
         }
     }

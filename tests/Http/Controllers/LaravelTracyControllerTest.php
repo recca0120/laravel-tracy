@@ -20,14 +20,22 @@ class LaravelTracyControllerTest extends TestCase
     public function testIndex()
     {
         $controller = new LaravelTracyController();
-        $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
 
+        $request = m::mock('Illuminate\Http\Request');
+
+        $request->shouldReceive('session')->once()->andReturn(
+            $session = m::mock('Illuminate\Contracts\Session\Session')
+        );
+
+        $session->shouldReceive('reflash')->once();
+
+        $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager');
         $debuggerManager->shouldReceive('dispatchAssets')->once()->andReturn([
             $headers = ['foo' => 'bar'],
             $content = 'foo',
         ]);
 
+        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
         $responseFactory->shouldReceive('stream')->with(m::on(function ($callback) use ($content) {
             ob_start();
             $callback();
@@ -44,6 +52,11 @@ class LaravelTracyControllerTest extends TestCase
 
         $type = 'foo';
 
-        $this->assertSame($response, $controller->index($debuggerManager, $responseFactory, $type));
+        $this->assertSame($response, $controller->index(
+            $request,
+            $responseFactory,
+            $debuggerManager,
+            $type
+        ));
     }
 }
