@@ -15,9 +15,6 @@ class RenderBarTest extends TestCase
         m::close();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
     public function testHandleAssets()
     {
         $renderBar = new RenderBar(

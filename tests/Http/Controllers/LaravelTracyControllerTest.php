@@ -14,6 +14,9 @@ class LaravelTracyControllerTest extends TestCase
         m::close();
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testIndex()
     {
         $controller = new LaravelTracyController();
