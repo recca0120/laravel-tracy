@@ -61,9 +61,11 @@ class RenderBar
      * @param \Closure $next
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function renderBar($request, $next) {
+    protected function renderBar($request, $next)
+    {
         $response = $next($request);
-        if ($request->hasSession()){
+        $type = $request->get('_tracy_bar');
+        if ($request->hasSession() === true && in_array($type, ['js', 'css']) === false) {
             $request->session()->reflash();
         }
 
@@ -77,7 +79,8 @@ class RenderBar
      * @param \Closure $next
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function appendBar($request, $next) {
+    protected function appendBar($request, $next)
+    {
         $this->debuggerManager->dispatch();
 
         $response = $next($request);

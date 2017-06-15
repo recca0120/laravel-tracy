@@ -196,8 +196,8 @@ class DebuggerManager
 
         $bar = $this->replacePath(
                 $this->renderBuffer(function () {
-                $this->bar->render();
-            })
+                    $this->bar->render();
+                })
         );
 
         $appendTo = Arr::get($this->config, 'appendTo', 'body');

@@ -24,6 +24,9 @@ class RenderBarTest extends TestCase
 
         $request = m::mock('Illuminate\Http\Request');
 
+        $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(true);
+        $request->shouldReceive('get')->once()->with('_tracy_bar')->andReturn('foo');
+
         $request->shouldReceive('hasSession')->once()->andReturn(true);
         $request->shouldReceive('session->reflash')->once();
 
@@ -32,8 +35,6 @@ class RenderBarTest extends TestCase
         $next = function (Request $request) use ($response) {
             return $response;
         };
-
-        $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(true);
 
         $this->assertSame($response, $renderBar->handle($request, $next));
     }
