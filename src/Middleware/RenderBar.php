@@ -62,7 +62,12 @@ class RenderBar
      * @return \Symfony\Component\HttpFoundation\Response
      */
     protected function renderBar($request, $next) {
-        return $next($request);
+        $response = $next($request);
+        if ($request->hasSession()){
+            $request->session()->reflash();
+        }
+
+        return $response;
     }
 
     /**

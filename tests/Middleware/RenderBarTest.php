@@ -24,6 +24,9 @@ class RenderBarTest extends TestCase
 
         $request = m::mock('Illuminate\Http\Request');
 
+        $request->shouldReceive('hasSession')->once()->andReturn(true);
+        $request->shouldReceive('session->reflash')->once();
+
         $response = m::mock('Symfony\Component\HttpFoundation\Response');
 
         $next = function (Request $request) use ($response) {
