@@ -50,18 +50,29 @@ class RenderBar
     public function handle($request, $next)
     {
         return $request->has('_tracy_bar') === true
-            ? $next($request)
-            : $this->render($request, $next);
+            ? $this->renderBar($request, $next)
+            : $this->appendBar($request, $next);
     }
 
     /**
-     * render.
+     * appendBar.
      *
      * @param \Illuminate\Http\Request $request
      * @param \Closure $next
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function render($request, $next) {
+    protected function renderBar($request, $next) {
+        return $next($request);
+    }
+
+    /**
+     * appendBar.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function appendBar($request, $next) {
         $this->debuggerManager->dispatch();
 
         $response = $next($request);
