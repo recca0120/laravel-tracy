@@ -65,7 +65,7 @@ class RenderBar
     {
         $response = $next($request);
         $type = $request->get('_tracy_bar');
-        if ($request->hasSession() === true && in_array($type, ['js', 'css']) === false) {
+        if ($request->hasSession() === true && in_array($type, ['js', 'css'], true) === false) {
             $request->session()->reflash();
         }
 
