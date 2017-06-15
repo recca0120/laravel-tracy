@@ -244,10 +244,10 @@ class DebuggerManager
      */
     protected function replacePath($content)
     {
-        $root = Arr::get($this->config, 'root');
+        $path = Arr::get($this->config, 'path');
 
-        return empty($root) === false
-            ? str_replace('?_tracy_bar', $root.'/tracy/bar?_tracy_bar', $content)
+        return empty($path) === false
+            ? str_replace('?_tracy_bar', $path.'?_tracy_bar', $content)
             : $content;
     }
 }

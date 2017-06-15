@@ -39,7 +39,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
      * @param \Illuminate\Contracts\View\Factory $view
      * @param \Illuminate\Routing\Router $router
      */
-    public function boot(DebuggerManager $debuggerManager, Kernel $kernel, View $view, Router $router)
+    public function boot(Kernel $kernel, View $view, Router $router)
     {
         $view->getEngineResolver()
             ->resolve('blade')
@@ -54,12 +54,13 @@ class LaravelTracyServiceProvider extends ServiceProvider
             return;
         }
 
-        if ($debuggerManager->enabled() === true) {
-            $this->app->extend(ExceptionHandler::class, function ($exceptionHandler) use ($debuggerManager) {
-                return new Handler($exceptionHandler, $debuggerManager);
+        $config = $this->app['config']['tracy'];
+        $enabled = Arr::get($config, 'enabled', true) === true;
+        if ($enabled === true) {
+            $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
+                return new Handler($exceptionHandler, $app[DebuggerManager::class]);
             });
-
-            $this->handleRoutes($router, Arr::get($this->app['config']['tracy'], 'route', []));
+            $this->handleRoutes($router, Arr::get($config, 'route', []));
             $kernel->prependMiddleware(RenderBar::class);
         }
     }
@@ -90,7 +91,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
         $this->app->singleton(DebuggerManager::class, function ($app) use ($config) {
             return new DebuggerManager(
                 DebuggerManager::init(array_merge($config, [
-                    'root' => $app['request']->root(),
+                    'path' => $app['url']->route(Arr::get($config, 'route.as').'bar'),
                 ])),
                 $app[Bar::class],
                 $app[BlueScreen::class]
