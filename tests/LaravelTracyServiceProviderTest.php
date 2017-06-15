@@ -57,10 +57,16 @@ class LaravelTracyServiceProviderTest extends TestCase
             return $bar instanceof \Tracy\Bar;
         }));
         $app->shouldReceive('singleton')->once()->with('Recca0120\LaravelTracy\DebuggerManager', m::on(function ($closure) use ($app) {
-            $app->shouldReceive('make')->once()->with('Tracy\Bar')->andReturn(
+            $app->shouldReceive('offsetGet')->once()->with('request')->andReturn(
+                $request = m::mock('Illuminate\Http\Request')
+            );
+
+            $request->shouldReceive('root')->once()->andReturn($root = 'foo');
+
+            $app->shouldReceive('offsetGet')->once()->with('Tracy\Bar')->andReturn(
                 $bar = m::mock('Tracy\Bar')
             );
-            $app->shouldReceive('make')->once()->with('Tracy\BlueScreen')->andReturn(
+            $app->shouldReceive('offsetGet')->once()->with('Tracy\BlueScreen')->andReturn(
                 $bar = m::mock('Tracy\BlueScreen')
             );
             $debugbarManager = $closure($app);
@@ -107,10 +113,26 @@ class LaravelTracyServiceProviderTest extends TestCase
         $kernel = m::mock('Illuminate\Contracts\Http\Kernel');
         $kernel->shouldReceive('prependMiddleware')->once()->with('Recca0120\LaravelTracy\Middleware\RenderBar');
 
+        $router = m::mock('Illuminate\Routing\Router');
+
+        $app->shouldReceive('routesAreCached')->once()->andReturn(false);
+
+        $app->shouldReceive('offsetGet')->once()->with('config')->andReturn(
+            $config = [
+                'tracy' => [
+                    'route' => [
+                        'middleware' => ['web'],
+                    ],
+                ],
+            ]
+        );
+
+        $router->shouldReceive('group')->once()->with(array_merge([
+            'namespace' => 'Recca0120\LaravelTracy\Http\Controllers',
+        ], $config['tracy']['route']), m::type('Closure'));
+
         $serviceProvider->boot(
-            $debuggerManager,
-            $kernel,
-            $view
+            $debuggerManager, $kernel, $view, $router
         );
     }
 
@@ -138,7 +160,8 @@ class LaravelTracyServiceProviderTest extends TestCase
         $serviceProvider->boot(
             $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager'),
             $kernel = m::mock('Illuminate\Contracts\Http\Kernel'),
-            $view
+            $view,
+            $router = m::mock('Illuminate\Routing\Router')
         );
     }
 

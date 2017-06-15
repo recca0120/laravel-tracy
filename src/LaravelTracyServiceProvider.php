@@ -6,6 +6,7 @@ use Tracy\Bar;
 use Tracy\Debugger;
 use Tracy\BlueScreen;
 use Illuminate\Support\Arr;
+use Illuminate\Routing\Router;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\View\Factory as View;
@@ -17,13 +18,28 @@ use Recca0120\LaravelTracy\Middleware\RenderBar;
 class LaravelTracyServiceProvider extends ServiceProvider
 {
     /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
+    protected $defer = false;
+
+    /**
+     * namespace.
+     *
+     * @var string
+     */
+    protected $namespace = 'Recca0120\LaravelTracy\Http\Controllers';
+
+    /**
      * boot.
      *
      * @param DebuggerManager $debuggerManager
      * @param \Illuminate\Contracts\Http\Kernel $kernel
      * @param \Illuminate\Contracts\View\Factory $view
+     * @param \Illuminate\Routing\Router $router
      */
-    public function boot(DebuggerManager $debuggerManager, Kernel $kernel, View $view)
+    public function boot(DebuggerManager $debuggerManager, Kernel $kernel, View $view, Router $router)
     {
         $view->getEngineResolver()
             ->resolve('blade')
@@ -42,6 +58,8 @@ class LaravelTracyServiceProvider extends ServiceProvider
             $this->app->extend(ExceptionHandler::class, function ($exceptionHandler) use ($debuggerManager) {
                 return new Handler($exceptionHandler, $debuggerManager);
             });
+
+            $this->handleRoutes($router, Arr::get($this->app['config']['tracy'], 'route', []));
             $kernel->prependMiddleware(RenderBar::class);
         }
     }
@@ -71,9 +89,11 @@ class LaravelTracyServiceProvider extends ServiceProvider
 
         $this->app->singleton(DebuggerManager::class, function ($app) use ($config) {
             return new DebuggerManager(
-                DebuggerManager::init($config),
-                $app->make(Bar::class),
-                $app->make(BlueScreen::class)
+                DebuggerManager::init(array_merge($config, [
+                    'root' => $app['request']->root(),
+                ])),
+                $app[Bar::class],
+                $app[BlueScreen::class]
             );
         });
     }
@@ -86,5 +106,22 @@ class LaravelTracyServiceProvider extends ServiceProvider
     public function provides()
     {
         return [ExceptionHandler::class];
+    }
+
+    /**
+     * register routes.
+     *
+     * @param \Illuminate\Routing\Router $router
+     * @param array $config
+     */
+    protected function handleRoutes(Router $router, $config = [])
+    {
+        if ($this->app->routesAreCached() === false) {
+            $router->group(array_merge([
+                'namespace' => $this->namespace,
+            ], $config), function (Router $router) {
+                require __DIR__.'/../routes/web.php';
+            });
+        }
     }
 }

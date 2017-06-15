@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Events\Dispatcher;
 use Recca0120\LaravelTracy\DebuggerManager;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Recca0120\LaravelTracy\Events\BeforeBarRender;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -29,50 +28,59 @@ class RenderBar
     protected $events;
 
     /**
-     * $responseFactory.
-     *
-     * @var \Illuminate\Contracts\Routing\ResponseFactory
-     */
-    protected $responseFactory;
-
-    /**
      * __construct.
      *
      *
      * @param \Recca0120\LaravelTracy\DebuggerManager $debuggerManager
      * @param \Illuminate\Contracts\Events\Dispatcher $events
-     * @param \Illuminate\Contracts\Routing\ResponseFactory $responseFactory
      */
-    public function __construct(DebuggerManager $debuggerManager, Dispatcher $events, ResponseFactory $responseFactory)
+    public function __construct(DebuggerManager $debuggerManager, Dispatcher $events)
     {
         $this->debuggerManager = $debuggerManager;
         $this->events = $events;
-        $this->responseFactory = $responseFactory;
     }
 
     /**
      * handle.
      *
-     *
      * @param \Illuminate\Http\Request $request
      * @param \Closure $next
-     *
-     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle($request, $next)
     {
-        if ($request->has('_tracy_bar') === true) {
-            return $this->responseFactory->stream(function () use ($request) {
-                list($headers, $content) = $this->debuggerManager->dispatchAssets($request->get('_tracy_bar'));
-                if (headers_sent() === false) {
-                    foreach ($headers as $name => $value) {
-                        header(sprintf('%s: %s', $name, $value), true, 200);
-                    }
-                }
-                echo $content;
-            }, 200);
+        return $request->has('_tracy_bar') === true
+            ? $this->renderBar($request, $next)
+            : $this->appendBar($request, $next);
+    }
+
+    /**
+     * appendBar.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function renderBar($request, $next)
+    {
+        $response = $next($request);
+        $type = $request->get('_tracy_bar');
+        if ($request->hasSession() === true && in_array($type, ['js', 'css'], true) === false) {
+            $request->session()->reflash();
         }
 
+        return $response;
+    }
+
+    /**
+     * appendBar.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function appendBar($request, $next)
+    {
         $this->debuggerManager->dispatch();
 
         $response = $next($request);
@@ -96,7 +104,7 @@ class RenderBar
      * shouldNotRenderBar.
      *
      * @param \Symfony\Component\HttpFoundation\Response $response
-     * @param \Illuminte\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return bool
      */
