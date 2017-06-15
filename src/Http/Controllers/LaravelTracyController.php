@@ -20,6 +20,10 @@ class LaravelTracyController extends Controller
      */
     public function bar(DebuggerManager $debuggerManager, Request $request, ResponseFactory $responseFactory)
     {
+        if ($request->hasSession()){
+            $request->session()->reflash();
+        }
+
         return $responseFactory->stream(function () use ($debuggerManager, $request) {
             list($headers, $content) = $debuggerManager->dispatchAssets($request->get('_tracy_bar'));
             if (headers_sent() === false) {

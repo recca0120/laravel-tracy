@@ -27,6 +27,9 @@ class LaravelTracyControllerTest extends TestCase
             $type = 'foo'
         );
 
+        $request->shouldReceive('hasSession')->once()->andReturn(true);
+        $request->shouldReceive('session->reflash')->once();
+
         $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager');
         $debuggerManager->shouldReceive('dispatchAssets')->once()->andReturn([
             $headers = ['foo' => 'bar'],

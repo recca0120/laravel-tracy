@@ -236,6 +236,12 @@ class DebuggerManager
         return ob_get_clean();
     }
 
+    /**
+     * replacePath.
+     *
+     * @param string $content
+     * @return string
+     */
     protected function replacePath($content)
     {
         $root = Arr::get($this->config, 'root');
