@@ -131,9 +131,11 @@ class DebuggerManager
                     'Content-Type' => $type === 'css' ? 'text/css; charset=utf-8' : 'text/javascript; charset=utf-8',
                     'Cache-Control' => 'max-age=86400',
                 ];
-                $content = $this->renderBuffer(function () {
-                    return $this->bar->dispatchAssets();
-                });
+                $content = $this->replacePath(
+                    $this->renderBuffer(function () {
+                        return $this->bar->dispatchAssets();
+                    })
+                );
                 break;
             default:
                 $headers = [
@@ -167,10 +169,12 @@ class DebuggerManager
             session_start();
         }
 
-        return $this->renderBuffer(function () {
-            return method_exists($this->bar, 'dispatchContent') === true ?
-                    $this->bar->dispatchContent() : $this->bar->dispatchAssets();
-        });
+        return $this->replacePath(
+            $this->renderBuffer(function () {
+                return method_exists($this->bar, 'dispatchContent') === true ?
+                        $this->bar->dispatchContent() : $this->bar->dispatchAssets();
+            })
+        );
     }
 
     /**
@@ -190,9 +194,11 @@ class DebuggerManager
             );
         }
 
-        $bar = $this->renderBuffer(function () {
-            $this->bar->render();
-        });
+        $bar = $this->replacePath(
+                $this->renderBuffer(function () {
+                $this->bar->render();
+            })
+        );
 
         $appendTo = Arr::get($this->config, 'appendTo', 'body');
         $pos = strripos($content, '</'.$appendTo.'>');
@@ -224,12 +230,18 @@ class DebuggerManager
      */
     protected function renderBuffer(Closure $callback)
     {
-        $root = Arr::get($this->config, 'root');
         ob_start();
         $callback();
 
+        return ob_get_clean();
+    }
+
+    protected function replacePath($content)
+    {
+        $root = Arr::get($this->config, 'root');
+
         return empty($root) === false
-            ? str_replace('?_tracy_bar', $root.'/tracy/bar?_tracy_bar', ob_get_clean())
-            : ob_get_clean();
+            ? str_replace('?_tracy_bar', $root.'/tracy/bar?_tracy_bar', $content)
+            : $content;
     }
 }
