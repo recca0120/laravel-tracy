@@ -150,7 +150,7 @@ class LaravelTracyServiceProviderTest extends TestCase
             ->shouldReceive('directive')->once()->with('bdump', m::on(function ($closure) {
                 $expression = '$foo';
                 $compiled = $closure($expression);
-                $this->assertSame($compiled, "<?php \Tracy\Debugger::barDump({$expression}); ?>");
+                $this->assertSame("<?php \Tracy\Debugger::barDump({$expression}); ?>", $compiled);
 
                 return $compiled === "<?php \Tracy\Debugger::barDump({$expression}); ?>";
             }));
