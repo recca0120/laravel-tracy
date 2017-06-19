@@ -261,7 +261,7 @@ class DebuggerManager
     protected function replacePath($content)
     {
         $path = is_null($this->urlGenerator) === false
-            ? parse_url($this->urlGenerator->route(Arr::get($this->config, 'route.as').'bar'), PHP_URL_PATH)
+            ? $this->urlGenerator->route(Arr::get($this->config, 'route.as').'bar')
             : null;
 
         return empty($path) === false
