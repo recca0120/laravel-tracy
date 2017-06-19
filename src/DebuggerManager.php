@@ -123,6 +123,12 @@ class DebuggerManager
         return Arr::get($this->config, 'accepts', []);
     }
 
+    /**
+     * setUrlGenerator.
+     *
+     * @param \Illuminate\Contracts\Routing\UrlGenerator $urlGenerator
+     * @return $this
+     */
     public function setUrlGenerator(UrlGenerator $urlGenerator)
     {
         $this->urlGenerator = $urlGenerator;
