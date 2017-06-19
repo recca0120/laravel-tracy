@@ -258,4 +258,25 @@ class DebuggerManagerTest extends TestCase
         });
         $this->assertSame($content, $debuggerManager->exceptionHandler($exception));
     }
+
+    public function testReplacePath()
+    {
+        $debuggerManager = new DebuggerManager(
+            $config = ['accepts' => ['foo']],
+            $bar = m::mock('Tracy\Bar'),
+            $blueScreen = m::mock('Tracy\BlueScreen')
+        );
+
+        $debuggerManager->setUrlGenerator(
+            $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator')
+        );
+
+        $bar->shouldReceive('render')->once()->andReturnUsing(function () {
+            echo '?_tracy_bar=foo';
+        });
+
+        $urlGenerator->shouldReceive('route')->once()->andReturn($root = 'foo');
+
+        $this->assertSame('<body>foo?_tracy_bar=foo</body>', $debuggerManager->shutdownHandler('<body></body>'));
+    }
 }

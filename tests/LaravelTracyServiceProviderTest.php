@@ -61,8 +61,6 @@ class LaravelTracyServiceProviderTest extends TestCase
                 $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator')
             );
 
-            $urlGenerator->shouldReceive('route')->once()->andReturn($root = 'foo');
-
             $app->shouldReceive('offsetGet')->once()->with('Tracy\Bar')->andReturn(
                 $bar = m::mock('Tracy\Bar')
             );

@@ -10,6 +10,7 @@ use ErrorException;
 use Tracy\Debugger;
 use Tracy\BlueScreen;
 use Illuminate\Support\Arr;
+use Illuminate\Contracts\Routing\UrlGenerator;
 
 class DebuggerManager
 {
@@ -33,6 +34,13 @@ class DebuggerManager
      * @var \Tracy\BlueScreen
      */
     protected $blueScreen;
+
+    /**
+     * $urlGenerator.
+     *
+     * @var \Illuminate\Contracts\Routing\UrlGenerator
+     */
+    protected $urlGenerator;
 
     /**
      * __construct.
@@ -115,6 +123,13 @@ class DebuggerManager
         return Arr::get($this->config, 'accepts', []);
     }
 
+    public function setUrlGenerator(UrlGenerator $urlGenerator)
+    {
+        $this->urlGenerator = $urlGenerator;
+
+        return $this;
+    }
+
     /**
      * dispatchAssets.
      *
@@ -195,9 +210,9 @@ class DebuggerManager
         }
 
         $bar = $this->replacePath(
-                $this->renderBuffer(function () {
-                    $this->bar->render();
-                })
+            $this->renderBuffer(function () {
+                $this->bar->render();
+            })
         );
 
         $appendTo = Arr::get($this->config, 'appendTo', 'body');
@@ -244,7 +259,9 @@ class DebuggerManager
      */
     protected function replacePath($content)
     {
-        $path = Arr::get($this->config, 'path');
+        $path = is_null($this->urlGenerator) === false
+            ? $this->urlGenerator->route(Arr::get($this->config, 'route.as').'bar')
+            : null;
 
         return empty($path) === false
             ? str_replace('?_tracy_bar', $path.'?_tracy_bar', $content)
