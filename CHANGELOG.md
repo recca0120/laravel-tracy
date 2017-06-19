@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-tracy` will be documented in this file
 
+## 1.8.7
+- 當找不到 route name [tracy.xxx] 時將丟出例外錯誤
+
+## 1.8.6
+- 重構
+- 增加 Controller
+
 ## 1.8.5 - 2017-03-08
 
 - 除了 Terminal Panel之外，其他的 Panel 的 HTML 全部最小化

@@ -38,7 +38,7 @@ Instead, you may of course manually update your require block and run `composer 
 ```json
 {
     "require": {
-        "recca0120/laravel-tracy": "^1.7.13"
+        "recca0120/laravel-tracy": "^1.8.7"
     }
 }
 ```
@@ -57,6 +57,12 @@ publish
 
 ```bash
 php artisan vendor:publish --provider="Recca0120\LaravelTracy\LaravelTracyServiceProvider"
+```
+
+if you see Route [tracy.bar] not defined. pleace run `artisan route:clear` once
+
+```bash
+artisan route:clear
 ```
 
 ## Config
