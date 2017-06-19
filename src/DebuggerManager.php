@@ -186,8 +186,9 @@ class DebuggerManager
 
         return $this->replacePath(
             $this->renderBuffer(function () {
-                return method_exists($this->bar, 'dispatchContent') === true ?
-                        $this->bar->dispatchContent() : $this->bar->dispatchAssets();
+                return method_exists($this->bar, 'dispatchContent') === true
+                    ? $this->bar->dispatchContent()
+                    : $this->bar->dispatchAssets();
             })
         );
     }
@@ -260,7 +261,7 @@ class DebuggerManager
     protected function replacePath($content)
     {
         $path = is_null($this->urlGenerator) === false
-            ? $this->urlGenerator->route(Arr::get($this->config, 'route.as').'bar')
+            ? parse_url($this->urlGenerator->route(Arr::get($this->config, 'route.as').'bar'), PHP_URL_PATH)
             : null;
 
         return empty($path) === false
