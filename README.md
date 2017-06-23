@@ -15,7 +15,7 @@ Better Laravel Exception Handler
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/recca0120/laravel-tracy/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/recca0120/laravel-tracy/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/recca0120/laravel-tracy/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/recca0120/laravel-tracy/?branch=master)
 
-![Laravel Tracy](https://cdn.rawgit.com/recca0120/laravel-tracy/master/docs/screenshots/tracy.png)
+![Laravel Tracy](https://user-images.githubusercontent.com/1390554/27463755-382577ac-57fc-11e7-87e5-80eb39db0683.png)
 
 ## Features
 - Visualization of errors and exceptions
