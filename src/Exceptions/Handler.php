@@ -3,6 +3,7 @@
 namespace Recca0120\LaravelTracy\Exceptions;
 
 use Exception;
+use Illuminate\Http\Response;
 use Illuminate\Contracts\View\View;
 use Recca0120\LaravelTracy\DebuggerManager;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -59,7 +60,11 @@ class Handler implements ExceptionHandler
         $response = $this->exceptionHandler->render($request, $e);
         if ($response instanceof RedirectResponse ||
             $response instanceof JsonResponse ||
-            $response->getContent() instanceof View
+            $response->getContent() instanceof View ||
+            (
+                $response instanceof Response &&
+                $response->getOriginalContent() instanceof View
+            )
         ) {
             return $response;
         }
