@@ -60,12 +60,10 @@ class Handler implements ExceptionHandler
         $response = $this->exceptionHandler->render($request, $e);
 
         if ($this->shouldRenderException($response) === true) {
-            return $response;
+            $response->setContent(
+                $this->debuggerManager->exceptionHandler($e)
+            );
         }
-
-        $response->setContent(
-            $this->debuggerManager->exceptionHandler($e)
-        );
 
         return $response;
     }
@@ -87,24 +85,23 @@ class Handler implements ExceptionHandler
      * @param \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response $response
      * @return bool
      */
-    protected function shouldRenderException($response)
-    {
+    protected function shouldRenderException($response) {
         if ($response instanceof RedirectResponse) {
-            return true;
+            return false;
         }
 
         if ($response instanceof JsonResponse) {
-            return true;
+            return false;
         }
 
         if ($response->getContent() instanceof View) {
-            return true;
+            return false;
         }
 
         if ($response instanceof Response && $response->getOriginalContent() instanceof View) {
-            return true;
+            return false;
         }
 
-        return false;
+        return true;
     }
 }
