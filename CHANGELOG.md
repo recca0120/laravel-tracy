@@ -2,7 +2,7 @@
 
 All notable changes to `laravel-tracy` will be documented in this file
 
-## 1.8.9
+## 1.8.10
 - 修復例外並指定回傳view時的bug
 
 ## 1.8.7

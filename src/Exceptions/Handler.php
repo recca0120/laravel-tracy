@@ -85,7 +85,8 @@ class Handler implements ExceptionHandler
      * @param \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response $response
      * @return bool
      */
-    protected function shouldRenderException($response) {
+    protected function shouldRenderException($response)
+    {
         if ($response instanceof RedirectResponse) {
             return false;
         }
