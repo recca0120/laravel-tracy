@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-tracy` will be documented in this file
 
+## 1.8.9
+- 修復例外並指定回傳view時的bug
+
 ## 1.8.7
 - 當找不到 route name [tracy.xxx] 時將丟出例外錯誤
 
