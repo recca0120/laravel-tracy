@@ -4,6 +4,7 @@ namespace Recca0120\LaravelTracy\Tests\Exceptions;
 
 use Exception;
 use Mockery as m;
+use Illuminate\Http\Response;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 
@@ -13,6 +14,29 @@ class HandlerTest extends TestCase
     {
         parent::tearDown();
         m::close();
+    }
+
+    public function testRenderResponseWithViewReturnsView()
+    {
+        $handler = new Handler(
+            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
+            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
+        );
+
+        $view = m::mock('Illuminate\View\View');
+        $view->shouldReceive('render')->once()->andReturn('Some rendered view string');
+
+        $exceptionHandler->shouldReceive('render')
+            ->once()
+            ->with(
+                $request = m::mock('Illuminate\Http\Request'),
+                $exception = new Exception()
+            )->andReturn(
+                $response = new Response($view)
+            );
+
+        // Response returned from render,
+        $this->assertSame($response, $handler->render($request, $exception));
     }
 
     public function testReport()
