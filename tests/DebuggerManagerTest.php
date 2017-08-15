@@ -28,6 +28,9 @@ class DebuggerManagerTest extends TestCase
             'strictMode' => false,
             'currentTime' => 12345678,
             'editorMapping' => [],
+            'email' => "email@email.email",
+            'emailSnooze' => "2 days",
+            'logDirectory' => null,
         ]);
 
         $this->assertSame($config['editor'], Debugger::$editor);

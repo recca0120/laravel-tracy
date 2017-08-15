@@ -45,11 +45,12 @@ class Tracy
                 'auth' => true,
                 'terminal' => false,
             ],
+            'logDirectory' => null,
         ], $config);
 
         $mode = $config['enabled'] === true ? Debugger::DEVELOPMENT : Debugger::PRODUCTION;
         $config = DebuggerManager::init($config);
-        Debugger::enable($mode, $config['directory'], $config['email']);
+        Debugger::enable($mode, $config['logDirectory'], $config['email']);
         if (is_null($config['emailSnooze']) === false) {
             Debugger::getLogger()->emailSnooze = $config['emailSnooze'];
         }
