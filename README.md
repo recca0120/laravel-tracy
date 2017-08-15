@@ -92,6 +92,9 @@ return [
         'html-validator' => true,
         'terminal' => true,
     ],
+    'email' => 'email@domain.com',
+    'emailSnooze' => '5 min',
+    'logDirectory' => __DIR__."/../storage/logs"
 ];
 ```
 
