@@ -256,10 +256,16 @@ class DebuggerManager
         return $this->renderBuffer(function () use ($exception) {
             Helpers::improveException($exception);
             $this->blueScreen->render($exception);
-            if (is_null(Debugger::$logDirectory) === false) {
-                $this->logger->log($exception->getMessage(), \Tracy\Logger::EXCEPTION);
-            }
         });
+    }
+
+    /**
+     * @param Exception $exception
+     */
+    public function loggerExceptionHandler(Exception $exception) {
+        if (is_null(Debugger::$logDirectory) === false) {
+            $this->logger->log($exception->getMessage(), \Tracy\Logger::EXCEPTION);
+        }
     }
 
     /**

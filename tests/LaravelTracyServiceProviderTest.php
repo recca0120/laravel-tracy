@@ -95,7 +95,7 @@ class LaravelTracyServiceProviderTest extends TestCase
                 return $closure($expression) === "<?php \Tracy\Debugger::barDump({$expression}); ?>";
             }));
 
-        $app->shouldReceive('extend')->once()->with('Illuminate\Contracts\Debug\ExceptionHandler', m::on(function ($closure) use ($app) {
+        $app->shouldReceive('extend')->times(2)->with('Illuminate\Contracts\Debug\ExceptionHandler', m::on(function ($closure) use ($app) {
             $app->shouldReceive('offsetGet')->once()->with('Recca0120\LaravelTracy\DebuggerManager')->andReturn(
                 $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
             );
@@ -103,9 +103,9 @@ class LaravelTracyServiceProviderTest extends TestCase
                 $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
                 $app
             );
-            $this->assertInstanceOf(\Recca0120\LaravelTracy\Exceptions\Handler::class, $handler);
+            $this->assertInstanceOf(\Recca0120\LaravelTracy\Contracts\IHandler::class, $handler);
 
-            return $handler instanceof \Recca0120\LaravelTracy\Exceptions\Handler;
+            return $handler instanceof \Recca0120\LaravelTracy\Exceptions\Handler || $handler instanceof \Recca0120\LaravelTracy\Exceptions\LoggerHandler;
         }));
 
         $kernel = m::mock('Illuminate\Contracts\Http\Kernel');

@@ -2,6 +2,7 @@
 
 namespace Recca0120\LaravelTracy;
 
+use Recca0120\LaravelTracy\Exceptions\LoggerHandler;
 use Tracy\Bar;
 use Tracy\Debugger;
 use Tracy\BlueScreen;
@@ -62,6 +63,12 @@ class LaravelTracyServiceProvider extends ServiceProvider
             });
             $this->handleRoutes($router, Arr::get($config, 'route', []));
             $kernel->prependMiddleware(RenderBar::class);
+        }
+        $enabledMailError = is_null(Arr::get($config, 'email', true)) === false;
+        if ($enabledMailError === true) {
+            $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
+                return new LoggerHandler($exceptionHandler, $app[DebuggerManager::class]);
+            });
         }
     }
 
