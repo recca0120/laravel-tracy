@@ -199,7 +199,9 @@ class DebuggerManager
             ini_set('session.use_trans_sid', '0');
             ini_set('session.cookie_path', '/');
             ini_set('session.cookie_httponly', '1');
-            ini_set('session.save_path', storage_path('framework/sessions'));
+            if (function_exists("storage_path")) {
+                ini_set('session.save_path', storage_path('framework/sessions'));
+            }
             session_start();
         }
 
