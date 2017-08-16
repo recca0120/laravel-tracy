@@ -96,7 +96,7 @@ class DebuggerManager
         Debugger::$time = $config['currentTime'];
         Debugger::$email = $config['email'];
         Debugger::getLogger()->emailSnooze = $config['emailSnooze'];
-        Debugger::$logDirectory = $config["logDirectory"];
+        Debugger::$logDirectory = $config['logDirectory'];
 
         if (isset(Debugger::$editorMapping) === true) {
             Debugger::$editorMapping = $config['editorMapping'];
@@ -199,6 +199,7 @@ class DebuggerManager
             ini_set('session.use_trans_sid', '0');
             ini_set('session.cookie_path', '/');
             ini_set('session.cookie_httponly', '1');
+            ini_set('session.save_path', storage_path('framework/sessions'));
             session_start();
         }
 
@@ -254,7 +255,7 @@ class DebuggerManager
             Helpers::improveException($exception);
             $this->blueScreen->render($exception);
             if (is_null(Debugger::$logDirectory) === false) {
-                $this->logger->log($exception->getMessage(),\Tracy\Logger::EXCEPTION);
+                $this->logger->log($exception->getMessage(), \Tracy\Logger::EXCEPTION);
             }
         });
     }

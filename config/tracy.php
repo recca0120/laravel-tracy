@@ -31,5 +31,5 @@ return [
     ],
     'email' => 'email@domain.com',
     'emailSnooze' => '5 min',
-    'logDirectory' => __DIR__."/../storage/logs"
+    'logDirectory' => __DIR__.'/../storage/logs'
 ];
