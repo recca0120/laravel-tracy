@@ -11,7 +11,7 @@ use Illuminate\Contracts\Debug\ExceptionHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class Handler implements ExceptionHandler, IHandler
+class LoggerHandler implements ExceptionHandler, IHandler
 {
     /**
      * app exception handler.
@@ -50,7 +50,7 @@ class Handler implements ExceptionHandler, IHandler
     }
 
     /**
-     * Render an exception into an HTTP response.
+     * inject sending of email with error and render an exception into an HTTP response.
      *
      * @param \Illuminate\Http\Request $request
      * @param \Exception $e
@@ -60,11 +60,7 @@ class Handler implements ExceptionHandler, IHandler
     {
         $response = $this->exceptionHandler->render($request, $e);
 
-        if ($this->shouldRenderException($response) === true) {
-            $response->setContent(
-                $this->debuggerManager->exceptionHandler($e)
-            );
-        }
+        $this->debuggerManager->loggerExceptionHandler($e);
 
         return $response;
     }

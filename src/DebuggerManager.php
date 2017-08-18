@@ -43,6 +43,11 @@ class DebuggerManager
     protected $urlGenerator;
 
     /**
+     * @var \Tracy\Logger
+     */
+    protected $logger;
+
+    /**
      * __construct.
      *
      * @param array $config
@@ -54,6 +59,7 @@ class DebuggerManager
         $this->config = $config;
         $this->bar = $bar ?: Debugger::getBar();
         $this->blueScreen = $blueScreen ?: Debugger::getBlueScreen();
+        $this->logger = Debugger::getLogger();
     }
 
     /**
@@ -76,6 +82,9 @@ class DebuggerManager
             'strictMode' => true,
             'currentTime' => $_SERVER['REQUEST_TIME_FLOAT'] ?: microtime(true),
             'editorMapping' => isset(Debugger::$editorMapping) === true ? Debugger::$editorMapping : [],
+            'email' => null,
+            'emailSnooze' => Debugger::getLogger()->emailSnooze,
+            'logDirectory' => null,
         ], $config);
 
         Debugger::$editor = $config['editor'];
@@ -85,6 +94,9 @@ class DebuggerManager
         Debugger::$showLocation = $config['showLocation'];
         Debugger::$strictMode = $config['strictMode'];
         Debugger::$time = $config['currentTime'];
+        Debugger::$email = $config['email'];
+        Debugger::getLogger()->emailSnooze = $config['emailSnooze'];
+        Debugger::$logDirectory = $config['logDirectory'];
 
         if (isset(Debugger::$editorMapping) === true) {
             Debugger::$editorMapping = $config['editorMapping'];
@@ -187,6 +199,9 @@ class DebuggerManager
             ini_set('session.use_trans_sid', '0');
             ini_set('session.cookie_path', '/');
             ini_set('session.cookie_httponly', '1');
+            if (function_exists("storage_path")) {
+                ini_set('session.save_path', storage_path('framework/sessions'));
+            }
             session_start();
         }
 
@@ -242,6 +257,15 @@ class DebuggerManager
             Helpers::improveException($exception);
             $this->blueScreen->render($exception);
         });
+    }
+
+    /**
+     * @param Exception $exception
+     */
+    public function loggerExceptionHandler(Exception $exception) {
+        if (is_null(Debugger::$logDirectory) === false) {
+            $this->logger->log($exception->getMessage(), \Tracy\Logger::EXCEPTION);
+        }
     }
 
     /**
