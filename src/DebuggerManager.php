@@ -164,6 +164,8 @@ class DebuggerManager
                 break;
         }
 
+        $content = $this->replacePath($content);
+
         return [
             array_merge($headers, [
                 'Content-Length' => strlen($content),
@@ -205,9 +207,9 @@ class DebuggerManager
             );
         }
 
-        return $this->renderBar(
-            $this->renderLoader($content)
-        );
+        return array_reduce(['renderLoader', 'renderBar', 'replacePath'], function ($content, $method) {
+            return call_user_func([$this, $method], $content);
+        }, $content);
     }
 
     /**
@@ -218,10 +220,12 @@ class DebuggerManager
      */
     public function exceptionHandler(Exception $exception)
     {
-        return $this->renderBuffer(function () use ($exception) {
-            Helpers::improveException($exception);
-            $this->blueScreen->render($exception);
-        });
+        return $this->replacePath(
+            $this->renderBuffer(function () use ($exception) {
+                Helpers::improveException($exception);
+                $this->blueScreen->render($exception);
+            })
+        );
     }
 
     /**
@@ -236,7 +240,7 @@ class DebuggerManager
             return $content;
         }
 
-        return $this->render($content, 'renderLoader', 'head');
+        return $this->render($content, 'renderLoader', ['head', 'body']);
     }
 
     /**
@@ -247,7 +251,11 @@ class DebuggerManager
      */
     protected function renderBar($content)
     {
-        return $this->render($content, 'render', Arr::get($this->config, 'appendTo', 'body'));
+        return $this->render(
+            $content,
+            'render',
+            [Arr::get($this->config, 'appendTo', 'body'), 'body']
+        );
     }
 
     /**
@@ -255,20 +263,26 @@ class DebuggerManager
      *
      * @param string $content
      * @param string $method
-     * @param string $appendTo
+     * @param array $appendTo
      * @return string
      */
-    protected function render($content, $method, $appendTo = 'body')
+    protected function render($content, $method, $appendTags = ['body'])
     {
-        $html = $this->renderBuffer(function () use ($method) {
+        $appendHtml = $this->renderBuffer(function () use ($method) {
             call_user_func([$this->bar, $method]);
         });
 
-        $pos = strripos($content, '</'.$appendTo.'>');
+        $appendTags = array_unique($appendTags);
 
-        return $pos !== false
-            ? substr($content, 0, $pos).$html.substr($content, $pos)
-            : $content.$html;
+        foreach ($appendTags as $appendTag) {
+            $pos = strripos($content, '</'.$appendTag.'>');
+
+            if ($pos !== false) {
+                return substr($content, 0, $pos).$appendHtml.substr($content, $pos);
+            }
+        }
+
+        return $content.$appendHtml;
     }
 
     /**
@@ -282,7 +296,7 @@ class DebuggerManager
         ob_start();
         $callback();
 
-        return $this->replacePath(ob_get_clean());
+        return ob_get_clean();
     }
 
     /**
