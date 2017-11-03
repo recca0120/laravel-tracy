@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-tracy` will be documented in this file
 
+## 1.8.12
+- Tracy 2.4.10
+- Tracy renderLoader
+- Session Class
+
 ## 1.8.10
 - 修復例外並指定回傳view時的bug
 
