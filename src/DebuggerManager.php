@@ -49,11 +49,12 @@ class DebuggerManager
      * @param \Tracy\Bar $bar
      * @param \Tracy\BlueScreen $blueScreen
      */
-    public function __construct($config = [], Bar $bar = null, BlueScreen $blueScreen = null)
+    public function __construct($config = [], Bar $bar = null, BlueScreen $blueScreen = null, Session $session = null)
     {
         $this->config = $config;
         $this->bar = $bar ?: Debugger::getBar();
         $this->blueScreen = $blueScreen ?: Debugger::getBlueScreen();
+        $this->session = $session ?: new Session;
     }
 
     /**
@@ -178,13 +179,8 @@ class DebuggerManager
      */
     public function dispatch()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            ini_set('session.use_cookies', '1');
-            ini_set('session.use_only_cookies', '1');
-            ini_set('session.use_trans_sid', '0');
-            ini_set('session.cookie_path', '/');
-            ini_set('session.cookie_httponly', '1');
-            session_start();
+        if ($this->session->isStarted() === false) {
+            $this->session->start();
         }
 
         return $this->renderBuffer(function () {
@@ -236,6 +232,10 @@ class DebuggerManager
      */
     protected function renderLoader($content)
     {
+        if ($this->session->isStarted() === false) {
+            return $content;
+        }
+
         return $this->render($content, 'renderLoader', 'head');
     }
 

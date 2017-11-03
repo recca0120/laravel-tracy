@@ -48,7 +48,8 @@ class DebuggerManagerTest extends TestCase
         $debuggerManager = new DebuggerManager(
             $config = ['enabled' => true],
             $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen')
+            $blueScreen = m::mock('Tracy\BlueScreen'),
+            $session = m::mock('Recca0120\LaravelTracy\Session')
         );
 
         $this->assertSame($config['enabled'], $debuggerManager->enabled());
@@ -59,7 +60,8 @@ class DebuggerManagerTest extends TestCase
         $debuggerManager = new DebuggerManager(
             $config = ['showBar' => true],
             $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen')
+            $blueScreen = m::mock('Tracy\BlueScreen'),
+            $session = m::mock('Recca0120\LaravelTracy\Session')
         );
 
         $this->assertSame($config['showBar'], $debuggerManager->showBar());
@@ -70,7 +72,8 @@ class DebuggerManagerTest extends TestCase
         $debuggerManager = new DebuggerManager(
             $config = ['accepts' => ['foo']],
             $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen')
+            $blueScreen = m::mock('Tracy\BlueScreen'),
+            $session = m::mock('Recca0120\LaravelTracy\Session')
         );
 
         $this->assertSame($config['accepts'], $debuggerManager->accepts());
@@ -81,7 +84,8 @@ class DebuggerManagerTest extends TestCase
         $debuggerManager = new DebuggerManager(
             $config = [],
             $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen')
+            $blueScreen = m::mock('Tracy\BlueScreen'),
+            $session = m::mock('Recca0120\LaravelTracy\Session')
         );
 
         $content = 'foo';
@@ -104,7 +108,8 @@ class DebuggerManagerTest extends TestCase
         $debuggerManager = new DebuggerManager(
             $config = ['accepts' => ['foo']],
             $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen')
+            $blueScreen = m::mock('Tracy\BlueScreen'),
+            $session = m::mock('Recca0120\LaravelTracy\Session')
         );
 
         $content = 'foo';
@@ -122,19 +127,19 @@ class DebuggerManagerTest extends TestCase
         ], $debuggerManager->dispatchAssets('js'));
     }
 
-    /**
-     * @runInSeparateProcess
-     */
     public function testDispatchAssetsContentId()
     {
         $debuggerManager = new DebuggerManager(
             $config = [],
             $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen')
+            $blueScreen = m::mock('Tracy\BlueScreen'),
+            $session = m::mock('Recca0120\LaravelTracy\Session')
         );
 
-        $content = 'foo';
+        $session->shouldReceive('isStarted')->once()->andReturn(false);
+        $session->shouldReceive('start')->once();
 
+        $content = 'foo';
         $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
             echo $content;
         });
@@ -148,13 +153,37 @@ class DebuggerManagerTest extends TestCase
         ], $debuggerManager->dispatchAssets(uniqid()));
     }
 
+    public function testShutdownHandlerAndSessionIsClose()
+    {
+        $debuggerManager = new DebuggerManager(
+            $config = [],
+            $bar = m::mock('Tracy\Bar'),
+            $blueScreen = m::mock('Tracy\BlueScreen'),
+            $session = m::mock('Recca0120\LaravelTracy\Session')
+        );
+
+        $session->shouldReceive('isStarted')->once()->andReturn(false);
+
+        $barRender = 'foo';
+        $bar->shouldReceive('render')->once()->andReturnUsing(function () use ($barRender) {
+            echo $barRender;
+        });
+
+        $content = '<html><head></head><body></body></html>';
+
+        $this->assertSame('<html><head></head><body>'.$barRender.'</body></html>', $debuggerManager->shutdownHandler($content));
+    }
+
     public function testShutdownHandler()
     {
         $debuggerManager = new DebuggerManager(
             $config = [],
             $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen')
+            $blueScreen = m::mock('Tracy\BlueScreen'),
+            $session = m::mock('Recca0120\LaravelTracy\Session')
         );
+
+        $session->shouldReceive('isStarted')->once()->andReturn(true);
 
         $loader = '<script async></script>';
         $bar->shouldReceive('renderLoader')->once()->andReturnUsing(function () use ($loader) {
@@ -176,8 +205,11 @@ class DebuggerManagerTest extends TestCase
         $debuggerManager = new DebuggerManager(
             $config = ['appendTo' => 'html'],
             $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen')
+            $blueScreen = m::mock('Tracy\BlueScreen'),
+            $session = m::mock('Recca0120\LaravelTracy\Session')
         );
+
+        $session->shouldReceive('isStarted')->once()->andReturn(true);
 
         $loader = '<script async></script>';
         $bar->shouldReceive('renderLoader')->once()->andReturnUsing(function () use ($loader) {
@@ -199,7 +231,8 @@ class DebuggerManagerTest extends TestCase
         $debuggerManager = new DebuggerManager(
             $config = [],
             $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen')
+            $blueScreen = m::mock('Tracy\BlueScreen'),
+            $session = m::mock('Recca0120\LaravelTracy\Session')
         );
         $content = '';
         $error = [
@@ -229,7 +262,8 @@ class DebuggerManagerTest extends TestCase
         $debuggerManager = new DebuggerManager(
             $config = ['accepts' => ['foo']],
             $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen')
+            $blueScreen = m::mock('Tracy\BlueScreen'),
+            $session = m::mock('Recca0120\LaravelTracy\Session')
         );
 
         $exception = new Exception();
@@ -245,8 +279,11 @@ class DebuggerManagerTest extends TestCase
         $debuggerManager = new DebuggerManager(
             $config = ['accepts' => ['foo']],
             $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen')
+            $blueScreen = m::mock('Tracy\BlueScreen'),
+            $session = m::mock('Recca0120\LaravelTracy\Session')
         );
+
+        $session->shouldReceive('isStarted')->once()->andReturn(true);
 
         $debuggerManager->setUrlGenerator(
             $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator')
