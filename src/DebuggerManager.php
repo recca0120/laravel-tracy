@@ -284,7 +284,7 @@ class DebuggerManager
             $pos = strripos($content, '</'.$appendTag.'>');
 
             if ($pos !== false) {
-                return substr($content, 0, $pos).$appendHtml.substr($content, $pos);
+                return substr_replace($content, $appendHtml, $pos, 0);
             }
         }
 
