@@ -35,6 +35,13 @@ class DebuggerManager
     protected $blueScreen;
 
     /**
+     * $session.
+     *
+     * @var \Recca0120\LaravelTracy\Session
+     */
+    protected $session;
+
+    /**
      * $urlGenerator.
      *
      * @var \Illuminate\Contracts\Routing\UrlGenerator
