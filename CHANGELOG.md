@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-tracy` will be documented in this file
 
+## 1.8.13
+- 移除 ServiceProvider.php
+- 優化部份程式碼
+
 ## 1.8.12
 - Tracy 2.4.10
 - Tracy renderLoader
