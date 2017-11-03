@@ -122,29 +122,6 @@ class DebuggerManagerTest extends TestCase
         ], $debuggerManager->dispatchAssets('js'));
     }
 
-    public function testDispatchAssetsAssets()
-    {
-        $debuggerManager = new DebuggerManager(
-            $config = [],
-            $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen')
-        );
-
-        $content = 'foo';
-        $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
-            echo $content;
-        });
-
-        $this->assertSame([
-            [
-                'Content-Type' => 'text/javascript; charset=utf-8',
-                'Cache-Control' => 'max-age=86400',
-                'Content-Length' => strlen($content),
-            ],
-            $content,
-        ], $debuggerManager->dispatchAssets('assets'));
-    }
-
     /**
      * @runInSeparateProcess
      */
@@ -158,15 +135,9 @@ class DebuggerManagerTest extends TestCase
 
         $content = 'foo';
 
-        if (version_compare(Debugger::VERSION, '2.4.4', '<')) {
-            $bar->shouldReceive('dispatchContent')->once()->andReturnUsing(function () use ($content) {
-                echo $content;
-            });
-        } else {
-            $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
-                echo $content;
-            });
-        }
+        $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
+            echo $content;
+        });
 
         $this->assertSame([
             [
@@ -185,14 +156,19 @@ class DebuggerManagerTest extends TestCase
             $blueScreen = m::mock('Tracy\BlueScreen')
         );
 
+        $loader = '<script async></script>';
+        $bar->shouldReceive('renderLoader')->once()->andReturnUsing(function () use ($loader) {
+            echo $loader;
+        });
+
         $barRender = 'foo';
         $bar->shouldReceive('render')->once()->andReturnUsing(function () use ($barRender) {
             echo $barRender;
         });
 
-        $content = '<html><body></body></html>';
+        $content = '<html><head></head><body></body></html>';
 
-        $this->assertSame('<html><body>'.$barRender.'</body></html>', $debuggerManager->shutdownHandler($content));
+        $this->assertSame('<html><head>'.$loader.'</head><body>'.$barRender.'</body></html>', $debuggerManager->shutdownHandler($content));
     }
 
     public function testShutdownHandlerAppendToHtml()
@@ -203,14 +179,19 @@ class DebuggerManagerTest extends TestCase
             $blueScreen = m::mock('Tracy\BlueScreen')
         );
 
+        $loader = '<script async></script>';
+        $bar->shouldReceive('renderLoader')->once()->andReturnUsing(function () use ($loader) {
+            echo $loader;
+        });
+
         $barRender = 'foo';
         $bar->shouldReceive('render')->once()->andReturnUsing(function () use ($barRender) {
             echo $barRender;
         });
 
-        $content = '<html><body></body></html>';
+        $content = '<html><head></head><body></body></html>';
 
-        $this->assertSame('<html><body></body>'.$barRender.'</html>', $debuggerManager->shutdownHandler($content));
+        $this->assertSame('<html><head>'.$loader.'</head><body></body>'.$barRender.'</html>', $debuggerManager->shutdownHandler($content));
     }
 
     public function testShutdownHandlerHasError()
@@ -271,12 +252,16 @@ class DebuggerManagerTest extends TestCase
             $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator')
         );
 
+        $urlGenerator->shouldReceive('route')->twice()->andReturn($root = 'foo');
+
+        $bar->shouldReceive('renderLoader')->once()->andReturnUsing(function () {
+            echo '<script src="?_tracy_bar=foo" async></script>';
+        });
+
         $bar->shouldReceive('render')->once()->andReturnUsing(function () {
             echo '?_tracy_bar=foo';
         });
 
-        $urlGenerator->shouldReceive('route')->once()->andReturn($root = 'foo');
-
-        $this->assertSame('<body>foo?_tracy_bar=foo</body>', $debuggerManager->shutdownHandler('<body></body>'));
+        $this->assertSame('<head><script src="foo?_tracy_bar=foo" async></script></head><body>foo?_tracy_bar=foo</body>', $debuggerManager->shutdownHandler('<head></head><body></body>'));
     }
 }

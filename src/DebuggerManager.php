@@ -147,16 +147,13 @@ class DebuggerManager
         switch ($type) {
             case 'css':
             case 'js':
-            case 'assets':
                 $headers = [
                     'Content-Type' => $type === 'css' ? 'text/css; charset=utf-8' : 'text/javascript; charset=utf-8',
                     'Cache-Control' => 'max-age=86400',
                 ];
-                $content = $this->replacePath(
-                    $this->renderBuffer(function () {
-                        return $this->bar->dispatchAssets();
-                    })
-                );
+                $content = $this->renderBuffer(function () {
+                    return $this->bar->dispatchAssets();
+                });
                 break;
             default:
                 $headers = [
@@ -190,13 +187,9 @@ class DebuggerManager
             session_start();
         }
 
-        return $this->replacePath(
-            $this->renderBuffer(function () {
-                return method_exists($this->bar, 'dispatchContent') === true
-                    ? $this->bar->dispatchContent()
-                    : $this->bar->dispatchAssets();
-            })
-        );
+        return $this->renderBuffer(function () {
+            return $this->bar->dispatchAssets();
+        });
     }
 
     /**
@@ -216,18 +209,9 @@ class DebuggerManager
             );
         }
 
-        $bar = $this->replacePath(
-            $this->renderBuffer(function () {
-                $this->bar->render();
-            })
+        return $this->renderBar(
+            $this->renderLoader($content)
         );
-
-        $appendTo = Arr::get($this->config, 'appendTo', 'body');
-        $pos = strripos($content, '</'.$appendTo.'>');
-
-        return $pos !== false
-            ? substr($content, 0, $pos).$bar.substr($content, $pos)
-            : $content.$bar;
     }
 
     /**
@@ -245,6 +229,49 @@ class DebuggerManager
     }
 
     /**
+     * renderLoader.
+     *
+     * @param string $content
+     * @return string
+     */
+    protected function renderLoader($content)
+    {
+        return $this->render($content, 'renderLoader', 'head');
+    }
+
+    /**
+     * renderBar.
+     *
+     * @param string $content
+     * @return string
+     */
+    protected function renderBar($content)
+    {
+        return $this->render($content, 'render', Arr::get($this->config, 'appendTo', 'body'));
+    }
+
+    /**
+     * render.
+     *
+     * @param string $content
+     * @param string $method
+     * @param string $appendTo
+     * @return string
+     */
+    protected function render($content, $method, $appendTo = 'body')
+    {
+        $html = $this->renderBuffer(function () use ($method) {
+            call_user_func([$this->bar, $method]);
+        });
+
+        $pos = strripos($content, '</'.$appendTo.'>');
+
+        return $pos !== false
+            ? substr($content, 0, $pos).$html.substr($content, $pos)
+            : $content.$html;
+    }
+
+    /**
      * renderBuffer.
      *
      * @param \Closure $callback
@@ -255,7 +282,7 @@ class DebuggerManager
         ob_start();
         $callback();
 
-        return ob_get_clean();
+        return $this->replacePath(ob_get_clean());
     }
 
     /**
