@@ -2,7 +2,6 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Closure;
 use Exception;
 use Tracy\Bar;
 use Tracy\Helpers;
@@ -288,10 +287,10 @@ class DebuggerManager
     /**
      * renderBuffer.
      *
-     * @param \Closure $callback
+     * @param callable $callback
      * @return string
      */
-    protected function renderBuffer(Closure $callback)
+    protected function renderBuffer(callable $callback)
     {
         ob_start();
         $callback();
