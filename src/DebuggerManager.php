@@ -170,8 +170,6 @@ class DebuggerManager
                 break;
         }
 
-        $content = $this->replacePath($content);
-
         return [
             array_merge($headers, [
                 'Content-Length' => strlen($content),
@@ -200,9 +198,11 @@ class DebuggerManager
      * shutdownHandler.
      *
      * @param string $content
+     * @param bool $ajax
+     * @param int $error
      * @return string
      */
-    public function shutdownHandler($content, $error = null)
+    public function shutdownHandler($content, $ajax = false, $error = null)
     {
         $error = $error ?: error_get_last();
         if (in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE, E_RECOVERABLE_ERROR, E_USER_ERROR], true)) {
@@ -213,8 +213,8 @@ class DebuggerManager
             );
         }
 
-        return array_reduce(['renderLoader', 'renderBar', 'replacePath'], function ($content, $method) {
-            return call_user_func([$this, $method], $content);
+        return array_reduce(['renderLoader', 'renderBar'], function ($content, $method) use ($ajax) {
+            return call_user_func([$this, $method], $content, $ajax);
         }, $content);
     }
 
@@ -226,23 +226,22 @@ class DebuggerManager
      */
     public function exceptionHandler(Exception $exception)
     {
-        return $this->replacePath(
-            $this->renderBuffer(function () use ($exception) {
-                Helpers::improveException($exception);
-                $this->blueScreen->render($exception);
-            })
-        );
+        return $this->renderBuffer(function () use ($exception) {
+            Helpers::improveException($exception);
+            $this->blueScreen->render($exception);
+        });
     }
 
     /**
      * renderLoader.
      *
      * @param string $content
+     * @param bool $ajax
      * @return string
      */
-    protected function renderLoader($content)
+    protected function renderLoader($content, $ajax = false)
     {
-        if ($this->session->isStarted() === false) {
+        if ($ajax === true || $this->session->isStarted() === false) {
             return $content;
         }
 
@@ -302,7 +301,7 @@ class DebuggerManager
         ob_start();
         $callback();
 
-        return ob_get_clean();
+        return $this->replacePath(ob_get_clean());
     }
 
     /**
@@ -313,11 +312,15 @@ class DebuggerManager
      */
     protected function replacePath($content)
     {
-        $path = is_null($this->urlGenerator) === false
-            ? $this->urlGenerator->route(Arr::get($this->config, 'route.as').'bar')
-            : null;
+        static $path;
 
-        return empty($path) === false
+        if (is_null($path) === true) {
+            $path = is_null($this->urlGenerator) === false
+                ? $this->urlGenerator->route(Arr::get($this->config, 'route.as').'bar')
+                : null;
+        }
+
+        return is_null($path) === false
             ? str_replace('?_tracy_bar', $path.'?_tracy_bar', $content)
             : $content;
     }

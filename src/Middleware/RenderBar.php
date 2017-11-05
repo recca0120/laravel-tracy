@@ -50,42 +50,43 @@ class RenderBar
     public function handle($request, $next)
     {
         return $request->has('_tracy_bar') === true
-            ? $this->renderBar($request, $next)
-            : $this->appendBar($request, $next);
+            ? $this->barContent($request, $next)
+            : $this->render($request, $next);
     }
 
     /**
-     * appendBar.
+     * barContent.
      *
      * @param \Illuminate\Http\Request $request
      * @param \Closure $next
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function renderBar($request, $next)
+    protected function barContent($request, $next)
     {
-        $response = $next($request);
         $type = $request->get('_tracy_bar');
         if ($request->hasSession() === true && in_array($type, ['js', 'css'], true) === false) {
             $request->session()->reflash();
         }
 
-        return $response;
+        return $next($request);
     }
 
     /**
-     * appendBar.
+     * render.
      *
      * @param \Illuminate\Http\Request $request
      * @param \Closure $next
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function appendBar($request, $next)
+    protected function render($request, $next)
     {
         $this->debuggerManager->dispatch();
 
         $response = $next($request);
 
-        if ($this->shouldNotRenderBar($response, $request) === true) {
+        $ajax = $request->ajax();
+
+        if ($this->reject($response, $request, $ajax) === true) {
             return $response;
         }
 
@@ -93,7 +94,7 @@ class RenderBar
 
         $response->setContent(
             $this->debuggerManager->shutdownHandler(
-                $response->getContent()
+                $response->getContent(), $ajax
             )
         );
 
@@ -101,14 +102,15 @@ class RenderBar
     }
 
     /**
-     * shouldNotRenderBar.
+     * reject.
      *
      * @param \Symfony\Component\HttpFoundation\Response $response
      * @param \Illuminate\Http\Request $request
+     * @param bool $ajax
      *
      * @return bool
      */
-    protected function shouldNotRenderBar(Response $response, Request $request)
+    protected function reject(Response $response, Request $request, $ajax)
     {
         if ($this->debuggerManager->showBar() === false ||
             $response instanceof BinaryFileResponse ||
@@ -118,7 +120,7 @@ class RenderBar
             return true;
         }
 
-        if ($request->ajax() === true) {
+        if ($ajax === true) {
             return false;
         }
 

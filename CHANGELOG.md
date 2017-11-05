@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-tracy` will be documented in this file
 
+## 1.8.14
+- ajax 時不執行 renderLoader
+
 ## 1.8.13
 - 移除 ServiceProvider.php
 - 優化部份程式碼

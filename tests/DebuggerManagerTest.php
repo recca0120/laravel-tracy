@@ -254,7 +254,7 @@ class DebuggerManagerTest extends TestCase
             echo $content;
         });
 
-        $this->assertSame($content, $debuggerManager->shutdownHandler($content, $error));
+        $this->assertSame($content, $debuggerManager->shutdownHandler($content, false, $error));
     }
 
     public function testExceptionHandler()
