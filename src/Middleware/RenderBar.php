@@ -50,18 +50,18 @@ class RenderBar
     public function handle($request, $next)
     {
         return $request->has('_tracy_bar') === true
-            ? $this->barContent($request, $next)
+            ? $this->keepFlashSession($request, $next)
             : $this->render($request, $next);
     }
 
     /**
-     * barContent.
+     * keepFlashSession.
      *
      * @param \Illuminate\Http\Request $request
      * @param \Closure $next
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function barContent($request, $next)
+    protected function keepFlashSession($request, $next)
     {
         $type = $request->get('_tracy_bar');
         if ($request->hasSession() === true && in_array($type, ['js', 'css'], true) === false) {
