@@ -42,7 +42,7 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
      */
     public function logQuery($sql, $bindings = [], $time = 0, $name = null, PDO $pdo = null, $driver = 'mysql')
     {
-        ++$this->counter;
+        $this->counter++;
         $this->totalTime += $time;
         $source = static::findSource();
         $editorLink = static::editorLink($source);
