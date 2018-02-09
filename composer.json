@@ -17,12 +17,12 @@
         "illuminate/session": "^5.1",
         "illuminate/support": "^5.1",
         "illuminate/view": "^5.1",
-        "recca0120/terminal": "^1.6.7",
+        "recca0120/terminal": "^1.6.18",
         "tracy/tracy": "^2.4.10"
     },
     "require-dev": {
-        "mockery/mockery": "~0.9.4",
-        "phpunit/phpunit": "~4.8|~5.4|~6.1",
+        "mockery/mockery": "~0.9.4|~1.0",
+        "phpunit/phpunit": "~4.8|~5.4|~6.1|~7.0",
         "nesbot/carbon": "~1.20"
     },
     "autoload": {
@@ -43,6 +43,8 @@
         "sort-packages": true,
         "optimize-autoloader": true
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "extra": {
         "laravel": {
             "providers": [
