@@ -4,6 +4,7 @@ namespace Recca0120\LaravelTracy\Tests\Exceptions;
 
 use Exception;
 use Mockery as m;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Exceptions\Handler;
@@ -170,17 +171,19 @@ class HandlerTest extends TestCase
         $exceptionHandler->shouldReceive('render')
             ->once()
             ->with(
-                $request = m::mock('Illuminate\Http\Request'),
+                $request = Request::capture(),
                 $exception = new Exception()
             )->andReturn(
                 $response = m::mock('Symfony\Component\HttpFoundation\Response')
             );
         $response->shouldReceive('getContent')->once()->andReturn(null);
-
         $debuggerManager->shouldReceive('exceptionHandler')->once()->with($exception)->andReturn($content = 'foo');
         $response->shouldReceive('setContent')->once()->with($content);
 
+        $_SERVER['foo'] = 'bar';
+
         $this->assertSame($response, $handler->render($request, $exception));
+        $this->assertSame($_SERVER, $request->server());
     }
 
     public function testRenderForConsoleMethod()

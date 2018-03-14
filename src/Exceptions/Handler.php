@@ -60,6 +60,7 @@ class Handler implements ExceptionHandler
         $response = $this->exceptionHandler->render($request, $e);
 
         if ($this->shouldRenderException($response) === true) {
+            $_SERVER = $request->server();
             $response->setContent(
                 $this->debuggerManager->exceptionHandler($e)
             );
