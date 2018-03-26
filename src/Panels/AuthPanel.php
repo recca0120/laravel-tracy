@@ -35,16 +35,15 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
      */
     protected function getAttributes()
     {
-        $userData = [];
-
+        $attributes = [];
         if (is_null($this->userResolver) === false) {
-            $userData['rows'] = call_user_func($this->userResolver);
+            $attributes['rows'] = call_user_func($this->userResolver);
         } elseif ($this->hasLaravel() === true) {
-            $userData = isset($this->laravel['sentinel']) === true ?
+            $attributes = isset($this->laravel['sentinel']) === true ?
                 $this->fromSentinel() : $this->fromGuard();
         }
 
-        return $this->identifier($userData);
+        return $this->identifier($attributes);
     }
 
     /**
@@ -54,19 +53,13 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
      */
     protected function fromGuard()
     {
-        $userData = [];
-        $session = $this->laravel['session'];
         $auth = $this->laravel['auth'];
-        $user = $session->has($auth->getName()) === true ? $auth->user() : null;
+        $user = $auth->user();
 
-        if (is_null($user) === false) {
-            $userData = [
-                'id' => $user->getAuthIdentifier(),
-                'rows' => $user->toArray(),
-            ];
-        }
-
-        return $userData;
+        return is_null($user) === true ? [] : [
+            'id' => $user->getAuthIdentifier(),
+            'rows' => $user->toArray(),
+        ];
     }
 
     /**
@@ -76,31 +69,27 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
      */
     protected function fromSentinel()
     {
-        $userData = [];
         $user = $this->laravel['sentinel']->check();
 
-        if (empty($user) === false) {
-            $userData['rows'] = $user->toArray();
-            $userData['id'] = null;
-        }
-
-        return $userData;
+        return empty($user) === true ? [] : [
+            'id' => null,
+            'rows' => $user->toArray(),
+        ];
     }
 
     /**
      * identifier.
      *
-     * @param array $userData
+     * @param array $attributes
      * @return array
      */
-    protected function identifier($userData = [])
+    protected function identifier($attributes = [])
     {
-        $id = Arr::get($userData, 'id');
-        $rows = Arr::get($userData, 'rows', []);
+        $id = Arr::get($attributes, 'id');
+        $rows = Arr::get($attributes, 'rows', []);
 
         if (empty($rows) === true) {
             $id = 'Guest';
-            $rows = [];
         } elseif (is_numeric($id) === true || empty($id) === true) {
             $id = 'UnKnown';
             foreach (['username', 'account', 'email', 'name', 'id'] as $key) {
