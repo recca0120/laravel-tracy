@@ -25,14 +25,10 @@ class AuthPanelTest extends TestCase
 
         $laravel->shouldReceive('offsetExists')->once()->with('sentinel')->andReturn(false);
 
-        $laravel->shouldReceive('offsetGet')->once()->with('session')->andReturn(
-            $sessionManager = m::mock('Illuminate\Session\SessionManager')
-        );
         $laravel->shouldReceive('offsetGet')->once()->with('auth')->andReturn(
             $auth = m::mock('Illuminate\Contracts\Auth\Guard')
         );
-        $auth->shouldReceive('getName')->once()->andReturn($name = 'foo');
-        $sessionManager->shouldReceive('has')->once()->with($name)->andReturn(true);
+
         $auth->shouldReceive('user')->once()->andReturn(
             $user = m::mock('stdClass')
         );
