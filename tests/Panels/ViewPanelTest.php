@@ -2,18 +2,14 @@
 
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
-use stdClass;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\ViewPanel;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class ViewPanelTest extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     public function testRender()
     {

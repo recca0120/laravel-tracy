@@ -7,14 +7,11 @@ use stdClass;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\DatabasePanel;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class DatabasePanelTest extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     public function testRender()
     {

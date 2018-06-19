@@ -6,14 +6,11 @@ use DateTime;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\Helper;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class HelperTest extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     public function testHighlight()
     {

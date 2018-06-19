@@ -3,17 +3,13 @@
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
 use Mockery as m;
-use Illuminate\Http\Request;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\RequestPanel;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class RequestPanelTest extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     public function testRender()
     {

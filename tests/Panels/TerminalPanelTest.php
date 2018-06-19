@@ -6,14 +6,11 @@ use Exception;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\TerminalPanel;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class TerminalPanelTest extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     public function testRender()
     {

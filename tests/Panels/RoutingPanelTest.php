@@ -5,14 +5,11 @@ namespace Recca0120\LaravelTracy\Tests\Panels;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\RoutingPanel;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class RoutingPanelTest extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     public function testRender()
     {

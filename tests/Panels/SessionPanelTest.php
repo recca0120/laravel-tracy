@@ -5,14 +5,11 @@ namespace Recca0120\LaravelTracy\Tests\Panels;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\SessionPanel;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class SessionPanelTest extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     /**
      * @runInSeparateProcess

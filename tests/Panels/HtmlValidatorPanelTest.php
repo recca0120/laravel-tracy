@@ -6,14 +6,11 @@ use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Events\BeforeBarRender;
 use Recca0120\LaravelTracy\Panels\HtmlValidatorPanel;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class HtmlValidatorPanelTest extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     public function testRender()
     {

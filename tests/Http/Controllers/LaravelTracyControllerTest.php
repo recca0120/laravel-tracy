@@ -4,15 +4,12 @@ namespace Recca0120\LaravelTracy\Tests\Http\Controllers;
 
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Recca0120\LaravelTracy\Http\Controllers\LaravelTracyController;
 
 class LaravelTracyControllerTest extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     /**
      * @runInSeparateProcess
@@ -39,8 +36,8 @@ class LaravelTracyControllerTest extends TestCase
             $callback();
             $output = ob_get_clean();
 
-            if (function_exists('xdebug_get_headers') === true) {
-                $this->assertTrue(in_array('foo: bar', xdebug_get_headers(), true));
+            if (function_exists('xdebug_get_headers') === true && in_array('foo: bar', xdebug_get_headers(), true) === false) {
+                return false;
             }
 
             return $content === $output;

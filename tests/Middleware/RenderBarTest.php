@@ -6,14 +6,11 @@ use Mockery as m;
 use Illuminate\Http\Request;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Middleware\RenderBar;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class RenderBarTest extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     public function testHandleAssets()
     {

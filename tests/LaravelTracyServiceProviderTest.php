@@ -5,22 +5,19 @@ namespace Recca0120\LaravelTracy\Tests;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Illuminate\Container\Container;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Recca0120\LaravelTracy\LaravelTracyServiceProvider;
 
 class LaravelTracyServiceProviderTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     protected function setUp()
     {
         parent::setUp();
         $container = new Container;
         $container->instance('path.config', __DIR__);
         Container::setInstance($container);
-    }
-
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
     }
 
     public function testRegister()
@@ -52,7 +49,6 @@ class LaravelTracyServiceProviderTest extends TestCase
             );
             $request->shouldReceive('ajax')->once()->andReturn(false);
             $bar = $closure($app);
-            $this->assertInstanceOf(\Tracy\Bar::class, $bar);
 
             return $bar instanceof \Tracy\Bar;
         }));
@@ -103,7 +99,6 @@ class LaravelTracyServiceProviderTest extends TestCase
                 $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
                 $app
             );
-            $this->assertInstanceOf(\Recca0120\LaravelTracy\Exceptions\Handler::class, $handler);
 
             return $handler instanceof \Recca0120\LaravelTracy\Exceptions\Handler;
         }));
@@ -148,7 +143,6 @@ class LaravelTracyServiceProviderTest extends TestCase
             ->shouldReceive('directive')->once()->with('bdump', m::on(function ($closure) {
                 $expression = '$foo';
                 $compiled = $closure($expression);
-                $this->assertSame("<?php \Tracy\Debugger::barDump({$expression}); ?>", $compiled);
 
                 return $compiled === "<?php \Tracy\Debugger::barDump({$expression}); ?>";
             }));

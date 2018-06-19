@@ -8,14 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Exceptions\Handler;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class HandlerTest extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     public function testRenderResponseWithViewReturnsView()
     {

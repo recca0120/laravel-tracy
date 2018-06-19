@@ -2,18 +2,11 @@
 
 namespace Recca0120\LaravelTracy\Tests;
 
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Tracy;
 
 class TracyTest extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
-    }
-
     /**
      * @runInSeparateProcess
      */

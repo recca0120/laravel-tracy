@@ -7,14 +7,11 @@ use Mockery as m;
 use Tracy\Debugger;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\DebuggerManager;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class DebuggerManagerTest extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        m::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     public function testInit()
     {
@@ -243,13 +240,11 @@ class DebuggerManagerTest extends TestCase
         ];
 
         $blueScreen->shouldReceive('render')->once()->with(m::on(function ($errorException) use ($error) {
-            $this->assertSame($error['type'], $errorException->getSeverity());
-            $this->assertSame($error['message'], $errorException->getMessage());
-            $this->assertSame(0, $errorException->getCode());
-            $this->assertSame($error['file'], $errorException->getFile());
-            $this->assertSame($error['line'], $errorException->getLine());
-
-            return true;
+            return  $error['type'] === $errorException->getSeverity() &&
+            $error['message'] === $errorException->getMessage() &&
+            0 === $errorException->getCode() &&
+            $error['file'] === $errorException->getFile() &&
+            $error['line'] === $errorException->getLine();
         }))->andReturnUsing(function () use ($content) {
             echo $content;
         });
