@@ -11,14 +11,16 @@
 <h1>Document HTML validation (<?php echo $counter; ?> errors)</h1>
 
 <div class="tracy-inner Laravel-HtmlValidatorPanel">
-    <table>
-        <?php foreach ($errors as $error): ?>
-        <tr><td><span class="severenity-<?php echo (int) $error->level; ?>">
-            <?php echo htmlspecialchars($severenity[$error->level].' on column '.$error->column.': '.$error->message); ?>
-        </span></td></tr>
-        <tr><td>
-            <?php echo \Tracy\BlueScreen::highlightPhp($html, $error->line, 10); ?>
-        </td></tr>
-        <?php endforeach ?>
-	</table>
+    <div class="tracy-inner-container">
+        <table>
+            <?php foreach ($errors as $error): ?>
+            <tr><td><span class="severenity-<?php echo (int) $error->level; ?>">
+                <?php echo htmlspecialchars($severenity[$error->level].' on column '.$error->column.': '.$error->message); ?>
+            </span></td></tr>
+            <tr><td>
+                <?php echo \Tracy\BlueScreen::highlightPhp($html, $error->line, 10); ?>
+            </td></tr>
+            <?php endforeach ?>
+        </table>
+    </div>
 </div>
