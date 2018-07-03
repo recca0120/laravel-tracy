@@ -36,27 +36,6 @@ class RenderBarTest extends TestCase
         $this->assertSame($response, $renderBar->handle($request, $next));
     }
 
-    public function testHandleShowBarIsFalse()
-    {
-        $renderBar = new RenderBar(
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager'),
-            $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
-        );
-
-        $request = m::mock('Illuminate\Http\Request');
-        $response = m::mock('Symfony\Component\HttpFoundation\Response');
-        $next = function (Request $request) use ($response) {
-            return $response;
-        };
-
-        $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
-        $request->shouldReceive('ajax')->once()->andReturn(false);
-        $debuggerManager->shouldReceive('dispatch')->once();
-        $debuggerManager->shouldReceive('showBar')->once()->andReturn(false);
-
-        $this->assertSame($response, $renderBar->handle($request, $next));
-    }
-
     public function testHandleBinaryFileResponse()
     {
         $renderBar = new RenderBar(
@@ -73,7 +52,6 @@ class RenderBarTest extends TestCase
         $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
         $request->shouldReceive('ajax')->once()->andReturn(false);
         $debuggerManager->shouldReceive('dispatch')->once();
-        $debuggerManager->shouldReceive('showBar')->once()->andReturn(true);
 
         $this->assertSame($response, $renderBar->handle($request, $next));
     }
@@ -94,7 +72,6 @@ class RenderBarTest extends TestCase
         $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
         $request->shouldReceive('ajax')->once()->andReturn(false);
         $debuggerManager->shouldReceive('dispatch')->once();
-        $debuggerManager->shouldReceive('showBar')->once()->andReturn(true);
 
         $this->assertSame($response, $renderBar->handle($request, $next));
     }
@@ -115,7 +92,6 @@ class RenderBarTest extends TestCase
         $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
         $request->shouldReceive('ajax')->once()->andReturn(false);
         $debuggerManager->shouldReceive('dispatch')->once();
-        $debuggerManager->shouldReceive('showBar')->once()->andReturn(true);
 
         $this->assertSame($response, $renderBar->handle($request, $next));
     }
@@ -136,7 +112,6 @@ class RenderBarTest extends TestCase
 
         $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
         $debuggerManager->shouldReceive('dispatch')->once();
-        $debuggerManager->shouldReceive('showBar')->once()->andReturn(true);
         $request->shouldReceive('ajax')->once()->andReturn(false);
         $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn($contentType = '');
         $debuggerManager->shouldReceive('accepts')->once()->andReturn($accepts = ['text/html']);
@@ -161,7 +136,6 @@ class RenderBarTest extends TestCase
 
         $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
         $debuggerManager->shouldReceive('dispatch')->once();
-        $debuggerManager->shouldReceive('showBar')->once()->andReturn(true);
         $request->shouldReceive('ajax')->once()->andReturn($ajax = true);
 
         $events->shouldReceive('fire')->once()->with(m::type('Recca0120\LaravelTracy\Events\BeforeBarRender'));
@@ -189,7 +163,6 @@ class RenderBarTest extends TestCase
 
         $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
         $debuggerManager->shouldReceive('dispatch')->once();
-        $debuggerManager->shouldReceive('showBar')->once()->andReturn(true);
         $request->shouldReceive('ajax')->once()->andReturn($ajax = false);
 
         $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn($contentType = '');
@@ -221,7 +194,6 @@ class RenderBarTest extends TestCase
 
         $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
         $debuggerManager->shouldReceive('dispatch')->once();
-        $debuggerManager->shouldReceive('showBar')->once()->andReturn(true);
         $request->shouldReceive('ajax')->once()->andReturn($ajax = false);
 
         $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn($contentType = '');
@@ -253,7 +225,6 @@ class RenderBarTest extends TestCase
 
         $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
         $debuggerManager->shouldReceive('dispatch')->once();
-        $debuggerManager->shouldReceive('showBar')->once()->andReturn(true);
         $request->shouldReceive('ajax')->once()->andReturn($ajax = false);
 
         $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn($contentType = 'text/html');

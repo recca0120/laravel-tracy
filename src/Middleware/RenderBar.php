@@ -112,7 +112,7 @@ class RenderBar
      */
     protected function reject(Response $response, Request $request, $ajax)
     {
-        if ($this->debuggerManager->showBar() === false ||
+        if (
             $response instanceof BinaryFileResponse ||
             $response instanceof StreamedResponse ||
             $response instanceof RedirectResponse

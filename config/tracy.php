@@ -3,6 +3,7 @@
 return [
     'enabled' => env('APP_DEBUG') === true,
     'showBar' => env('APP_ENV') !== 'production',
+    'showException' => true,
     'route' => [
         'prefix' => 'tracy',
         'as' => 'tracy.',

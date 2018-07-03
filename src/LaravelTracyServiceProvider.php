@@ -56,10 +56,19 @@ class LaravelTracyServiceProvider extends ServiceProvider
 
         $config = $this->app['config']['tracy'];
         $enabled = Arr::get($config, 'enabled', true) === true;
-        if ($enabled === true) {
+        if ($enabled === false) {
+            return;
+        }
+
+        $showException = Arr::get($config, 'showException', true);
+        if ($showException === true) {
             $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
                 return new Handler($exceptionHandler, $app[DebuggerManager::class]);
             });
+        }
+
+        $showBar = Arr::get($config, 'showBar', true);
+        if ($showBar === true) {
             $this->handleRoutes($router, Arr::get($config, 'route', []));
             $kernel->prependMiddleware(RenderBar::class);
         }
