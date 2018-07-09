@@ -30,14 +30,14 @@ Better Laravel Exception Handler
 To get the latest version of Laravel Exceptions, simply require the project using [Composer](https://getcomposer.org):
 
 ```bash
-composer require recca0120/laravel-tracy
+composer require recca0120/laravel-tracy --dev
 ```
 
 Instead, you may of course manually update your require block and run `composer update` if you so choose:
 
 ```json
 {
-    "require": {
+    "require-dev": {
         "recca0120/laravel-tracy": "^1.8.14"
     }
 }
