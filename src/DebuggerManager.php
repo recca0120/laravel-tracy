@@ -274,7 +274,10 @@ class DebuggerManager
     protected function render($content, $method, $appendTags = ['body'])
     {
         $appendHtml = $this->renderBuffer(function () use ($method) {
+            $requestUri = $_SERVER['REQUEST_URI'];
+            $_SERVER['REQUEST_URI'] = '';
             call_user_func([$this->bar, $method]);
+            $_SERVER['REQUEST_URI'] = $requestUri;
         });
 
         $appendTags = array_unique($appendTags);
