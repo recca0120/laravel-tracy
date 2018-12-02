@@ -103,6 +103,7 @@ copy <vendor path>/recca0120/laravel-tracy/tools/subl-handler/subl-handler.vbs t
 
 double click subl-handler.vbs and select editor (support eclipse, sublime, notepad++, else...)
 ```
+If you use Vagrant and have issues with the incorrect path being called, you can create a symlink as illustrated at: https://prnt.sc/lpswki
 
 OSX
 ```
