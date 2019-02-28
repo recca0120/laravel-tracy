@@ -88,6 +88,8 @@ class DebuggerManagerTest extends TestCase
         $content = 'foo';
         $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
             echo $content;
+
+            return true;
         });
 
         $this->assertSame([
@@ -112,6 +114,8 @@ class DebuggerManagerTest extends TestCase
         $content = 'foo';
         $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
             echo $content;
+
+            return true;
         });
 
         $this->assertSame([
@@ -139,6 +143,8 @@ class DebuggerManagerTest extends TestCase
         $content = 'foo';
         $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
             echo $content;
+
+            return true;
         });
 
         $this->assertSame([

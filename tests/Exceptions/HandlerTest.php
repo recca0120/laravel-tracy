@@ -48,6 +48,18 @@ class HandlerTest extends TestCase
         $this->assertNull($handler->report($exception));
     }
 
+    public function testShouldReport()
+    {
+        $handler = new Handler(
+            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
+            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
+        );
+        $exception = new Exception();
+        $exceptionHandler->shouldReceive('shouldReport')->once()->with($exception)->andReturn(true);
+
+        $this->assertTrue($handler->shouldReport($exception));
+    }
+
     public function testRednerWithResponseIsRedirectResponse()
     {
         $handler = new Handler(
