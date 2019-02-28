@@ -47,19 +47,19 @@ class HandlerTest extends TestCase
         $exceptionHandler->shouldReceive('report')->once()->with($exception);
         $this->assertNull($handler->report($exception));
     }
-    
+
     public function testShouldReport()
     {
         $handler = new Handler(
             $exceptionHandler = m::spy('Illuminate\Contracts\Debug\ExceptionHandler'),
             $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
         );
-        
+
         $exceptionHandler->shouldReceive('shouldReport')->andReturn(true);
-        
+
         $exception = new Exception();
         $this->assertTrue($handler->shouldReport($exception));
-        
+
         $exceptionHandler->shoulHavedReceived('shouldReport')->once()->with($exception);
     }
 
