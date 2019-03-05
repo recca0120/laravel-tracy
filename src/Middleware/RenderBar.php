@@ -90,7 +90,8 @@ class RenderBar
             return $response;
         }
 
-        $this->events->fire(new BeforeBarRender($request, $response));
+        $method = method_exists($this->events, 'dispatch') ? 'dispatch' : 'fire';
+        $this->events->{$method}(new BeforeBarRender($request, $response));
 
         $response->setContent(
             $this->debuggerManager->shutdownHandler(

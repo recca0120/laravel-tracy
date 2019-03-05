@@ -138,7 +138,7 @@ class RenderBarTest extends TestCase
         $debuggerManager->shouldReceive('dispatch')->once();
         $request->shouldReceive('ajax')->once()->andReturn($ajax = true);
 
-        $events->shouldReceive('fire')->once()->with(m::type('Recca0120\LaravelTracy\Events\BeforeBarRender'));
+        $events->shouldReceive(method_exists($events, 'dispatch') ? 'dispatch' : 'fire')->once()->with(m::type('Recca0120\LaravelTracy\Events\BeforeBarRender'));
 
         $response->shouldReceive('getContent')->once()->andReturn($content = 'foo');
         $debuggerManager->shouldReceive('shutdownHandler')->once()->with($content, $ajax)->andReturn($content);
@@ -169,7 +169,7 @@ class RenderBarTest extends TestCase
         $debuggerManager->shouldReceive('accepts')->once()->andReturn($accepts = ['text/html']);
         $response->shouldReceive('getStatusCode')->once()->andReturn(400);
 
-        $events->shouldReceive('fire')->once()->with(m::type('Recca0120\LaravelTracy\Events\BeforeBarRender'));
+        $events->shouldReceive(method_exists($events, 'dispatch') ? 'dispatch' : 'fire')->once()->with(m::type('Recca0120\LaravelTracy\Events\BeforeBarRender'));
 
         $response->shouldReceive('getContent')->once()->andReturn($content = 'foo');
         $debuggerManager->shouldReceive('shutdownHandler')->once()->with($content, $ajax)->andReturn($content);
@@ -200,7 +200,7 @@ class RenderBarTest extends TestCase
         $debuggerManager->shouldReceive('accepts')->once()->andReturn($accepts = []);
         $response->shouldReceive('getStatusCode')->once()->andReturn(200);
 
-        $events->shouldReceive('fire')->once()->with(m::type('Recca0120\LaravelTracy\Events\BeforeBarRender'));
+        $events->shouldReceive(method_exists($events, 'dispatch') ? 'dispatch' : 'fire')->once()->with(m::type('Recca0120\LaravelTracy\Events\BeforeBarRender'));
 
         $response->shouldReceive('getContent')->once()->andReturn($content = 'foo');
         $debuggerManager->shouldReceive('shutdownHandler')->once()->with($content, $ajax)->andReturn($content);
@@ -230,7 +230,7 @@ class RenderBarTest extends TestCase
         $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn($contentType = 'text/html');
         $debuggerManager->shouldReceive('accepts')->once()->andReturn($accepts = ['text/html']);
 
-        $events->shouldReceive('fire')->once()->with(m::type('Recca0120\LaravelTracy\Events\BeforeBarRender'));
+        $events->shouldReceive(method_exists($events, 'dispatch') ? 'dispatch' : 'fire')->with(m::type('Recca0120\LaravelTracy\Events\BeforeBarRender'));
 
         $response->shouldReceive('getContent')->once()->andReturn($content = 'foo');
         $debuggerManager->shouldReceive('shutdownHandler')->once()->with($content, $ajax)->andReturn($content);
