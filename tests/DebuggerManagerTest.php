@@ -290,7 +290,7 @@ class DebuggerManagerTest extends TestCase
             $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator')
         );
 
-        $urlGenerator->shouldReceive('route')->once()->andReturn($root = 'foo');
+        $urlGenerator->shouldReceive('route')->twice()->andReturn($root = 'foo');
 
         $bar->shouldReceive('renderLoader')->once()->andReturnUsing(function () {
             echo '<script src="?_tracy_bar=foo" async></script>';

@@ -133,19 +133,19 @@ class LaravelTracyServiceProviderTest extends TestCase
             $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
         );
 
+        $app->shouldReceive('offsetGet')->once()->with('config')->andReturn($config = [
+            'tracy' => [
+                'panels' => [
+                    'terminal' => true,
+                ],
+            ],
+        ]);
+
+        $app->shouldReceive('routesAreCached')->once()->andReturn(true);
+
         $app->shouldReceive('runningInConsole')->once()->andReturn(true);
 
         $view = m::mock('Illuminate\Contracts\View\Factory');
-        $view
-            ->shouldReceive('getEngineResolver')->once()->andReturnSelf()
-            ->shouldReceive('resolve')->once()->with('blade')->andReturnSelf()
-            ->shouldReceive('getCompiler')->once()->andReturnSelf()
-            ->shouldReceive('directive')->once()->with('bdump', m::on(function ($closure) {
-                $expression = '$foo';
-                $compiled = $closure($expression);
-
-                return $compiled === "<?php \Tracy\Debugger::barDump({$expression}); ?>";
-            }));
 
         $serviceProvider->boot(
             $kernel = m::mock('Illuminate\Contracts\Http\Kernel'),

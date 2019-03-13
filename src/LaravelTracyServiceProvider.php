@@ -41,12 +41,8 @@ class LaravelTracyServiceProvider extends ServiceProvider
      */
     public function boot(Kernel $kernel, View $view, Router $router)
     {
-        $view->getEngineResolver()
-            ->resolve('blade')
-            ->getCompiler()
-            ->directive('bdump', function ($expression) {
-                return "<?php \Tracy\Debugger::barDump({$expression}); ?>";
-            });
+        $config = $this->app['config']['tracy'];
+        $this->handleRoutes($router, Arr::get($config, 'route', []));
 
         if ($this->app->runningInConsole() === true) {
             $this->publishes([__DIR__.'/../config/tracy.php' => config_path('tracy.php')], 'config');
@@ -54,7 +50,13 @@ class LaravelTracyServiceProvider extends ServiceProvider
             return;
         }
 
-        $config = $this->app['config']['tracy'];
+        $view->getEngineResolver()
+            ->resolve('blade')
+            ->getCompiler()
+            ->directive('bdump', function ($expression) {
+                return "<?php \Tracy\Debugger::barDump({$expression}); ?>";
+            });
+
         $enabled = Arr::get($config, 'enabled', true) === true;
         if ($enabled === false) {
             return;
@@ -69,7 +71,6 @@ class LaravelTracyServiceProvider extends ServiceProvider
 
         $showBar = Arr::get($config, 'showBar', true);
         if ($showBar === true) {
-            $this->handleRoutes($router, Arr::get($config, 'route', []));
             $kernel->prependMiddleware(RenderBar::class);
         }
     }

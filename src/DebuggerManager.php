@@ -315,13 +315,9 @@ class DebuggerManager
      */
     protected function replacePath($content)
     {
-        static $path;
-
-        if (is_null($path) === true) {
-            $path = is_null($this->urlGenerator) === false
-                ? $this->urlGenerator->route(Arr::get($this->config, 'route.as').'bar')
-                : null;
-        }
+        $path = is_null($this->urlGenerator) === false
+            ? $this->urlGenerator->route(Arr::get($this->config, 'route.as').'bar')
+            : null;
 
         return is_null($path) === false
             ? str_replace('?_tracy_bar', $path.'?_tracy_bar', $content)
