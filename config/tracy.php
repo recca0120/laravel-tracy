@@ -12,7 +12,7 @@ return [
         'text/html',
     ],
     'appendTo' => 'body',
-    'editor' => 'subl://open?url=file://%file&line=%line',
+    'editor' => Recca0120\LaravelTracy\Editor::use('subl'),
     'maxDepth' => 4,
     'maxLength' => 1000,
     'scream' => true,

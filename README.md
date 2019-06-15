@@ -75,7 +75,9 @@ return [
     ],
     // appendTo: body | html
     'appendTo' => 'body',
-    'editor' => 'subl://open?url=file://%file&line=%line',
+    // Editor protocol: subl | phpstorm | vscode | mvim | txmt
+    //'editor' => 'subl://open?url=file://%file&line=%line',
+    'editor' => Recca0120\LaravelTracy\Editor::use('subl'),
     'maxDepth' => 4,
     'maxLength' => 1000,
     'scream' => true,
@@ -113,6 +115,15 @@ Prefer PhpStorm, you can edit `config/tracy.php`'s key of `editor` like this:
 ```php
 'editor' => 'phpstorm://open?file=%file&line=%line',
 ```
+
+You may also use `Editor::use()` to setup your preferred editor.
+
+e.g.:
+```php
+'editor' => Recca0120\LaravelTracy\Editor::use('phpstorm'),
+```
+
+More editor options: `subl`, `vscode`, `mvim`, `txmt`
 
 ## Debugger Bar
 
