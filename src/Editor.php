@@ -5,7 +5,7 @@ namespace Recca0120\LaravelTracy;
 class Editor
 {
     /**
-     * Editor protocol
+     * Editor protocol.
      *
      * Usage:
      *      Editor::use('vscode')
@@ -17,8 +17,7 @@ class Editor
      */
     public static function use($editor = 'sublime')
     {
-        switch ($editor)
-        {
+        switch ($editor) {
             case 'phpstorm':
                 return 'phpstorm://open?file=%file&line=%line';
 
