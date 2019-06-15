@@ -15,9 +15,9 @@ class Editor
      * @param string $editor (sublime|subl, phpstorm, vscode, macvim|mvim, textmate|txmt)
      * @return string
      */
-    public static function openWith($editor = 'sublime')
+    public static function openWith($editor = 'subl')
     {
-        switch ($editor) {
+        switch (strtolower($editor)) {
             case 'phpstorm':
                 return 'phpstorm://open?file=%file&line=%line';
 
@@ -35,9 +35,8 @@ class Editor
             case 'subl':
             case 'sublime':
                 return 'subl://open?url=file://%file&line=%line';
-
-            defualt:
-                return 'editor://open/?file=%file&line=%line';
         }
+
+        return 'editor://open/?file=%file&line=%line';
     }
 }
