@@ -8,14 +8,14 @@ class Editor
      * Editor protocol.
      *
      * Usage:
-     *      Editor::use('vscode')
+     *      Editor::openWith('vscode')
      *
      * https://tracy.nette.org/en/open-files-in-ide
      *
      * @param string $editor (sublime|subl, phpstorm, vscode, macvim|mvim, textmate|txmt)
-     * @return string|null
+     * @return string
      */
-    public static function use($editor = 'sublime')
+    public static function openWith($editor = 'sublime')
     {
         switch ($editor) {
             case 'phpstorm':
