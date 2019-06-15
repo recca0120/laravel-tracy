@@ -3,7 +3,6 @@
 namespace Recca0120\LaravelTracy\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Recca0120\LaravelTracy\Tracy;
 use Recca0120\LaravelTracy\Editor;
 
 class EditorTest extends TestCase
