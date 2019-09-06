@@ -12,7 +12,7 @@ class LaravelTracyServiceProviderTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $container = new Container;
@@ -43,6 +43,9 @@ class LaravelTracyServiceProviderTest extends TestCase
         $app->shouldReceive('singleton')->once()->with('Tracy\BlueScreen', m::on(function ($closure) use ($app) {
             return $closure($app) instanceof \Tracy\BlueScreen;
         }));
+
+        $app->shouldReceive('configurationIsCached')->andReturn(false);
+
         $app->shouldReceive('singleton')->once()->with('Tracy\Bar', m::on(function ($closure) use ($app) {
             $app->shouldReceive('offsetGet')->once()->with('request')->andReturn(
                 $request = m::mock('Illuminate\Http\Request')
