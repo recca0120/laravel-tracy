@@ -2,10 +2,10 @@
 
 namespace Recca0120\LaravelTracy\Http\Controllers;
 
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Recca0120\LaravelTracy\DebuggerManager;
-use Illuminate\Contracts\Routing\ResponseFactory;
 
 class LaravelTracyController extends Controller
 {

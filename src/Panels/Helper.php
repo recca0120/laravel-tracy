@@ -2,8 +2,8 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use PDO;
 use DateTime;
+use PDO;
 
 class Helper
 {

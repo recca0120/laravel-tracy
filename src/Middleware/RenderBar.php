@@ -2,14 +2,14 @@
 
 namespace Recca0120\LaravelTracy\Middleware;
 
-use Illuminate\Http\Request;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Http\Request;
 use Recca0120\LaravelTracy\DebuggerManager;
-use Symfony\Component\HttpFoundation\Response;
 use Recca0120\LaravelTracy\Events\BeforeBarRender;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RenderBar
 {

@@ -2,8 +2,8 @@
 
 namespace Recca0120\LaravelTracy\Panels;
 
-use PDO;
 use Exception;
+use PDO;
 use Recca0120\LaravelTracy\Contracts\IAjaxPanel;
 
 class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel

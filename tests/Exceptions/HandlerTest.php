@@ -3,12 +3,12 @@
 namespace Recca0120\LaravelTracy\Tests\Exceptions;
 
 use Exception;
-use Mockery as m;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Exceptions\Handler;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class HandlerTest extends TestCase
 {

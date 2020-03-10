@@ -3,10 +3,10 @@
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
 use Exception;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\TerminalPanel;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class TerminalPanelTest extends TestCase
 {

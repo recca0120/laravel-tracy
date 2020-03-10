@@ -2,12 +2,12 @@
 
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
-use PDO;
-use stdClass;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
+use PDO;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\DatabasePanel;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use stdClass;
 
 class DatabasePanelTest extends TestCase
 {

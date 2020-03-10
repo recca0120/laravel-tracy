@@ -2,18 +2,18 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Tracy\Bar;
-use Tracy\Debugger;
-use Tracy\BlueScreen;
-use Illuminate\Support\Arr;
-use Illuminate\Routing\Router;
-use Illuminate\Contracts\Http\Kernel;
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Contracts\View\Factory as View;
-use Recca0120\LaravelTracy\Exceptions\Handler;
-use Recca0120\Terminal\TerminalServiceProvider;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Contracts\View\Factory as View;
+use Illuminate\Routing\Router;
+use Illuminate\Support\Arr;
+use Illuminate\Support\ServiceProvider;
+use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\LaravelTracy\Middleware\RenderBar;
+use Recca0120\Terminal\TerminalServiceProvider;
+use Tracy\Bar;
+use Tracy\BlueScreen;
+use Tracy\Debugger;
 
 class LaravelTracyServiceProvider extends ServiceProvider
 {

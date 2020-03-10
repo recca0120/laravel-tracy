@@ -3,10 +3,10 @@
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
 use DateTime;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\Helper;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class HelperTest extends TestCase
 {

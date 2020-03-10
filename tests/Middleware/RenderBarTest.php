@@ -2,11 +2,11 @@
 
 namespace Recca0120\LaravelTracy\Tests\Middleware;
 
-use Mockery as m;
 use Illuminate\Http\Request;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Middleware\RenderBar;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class RenderBarTest extends TestCase
 {

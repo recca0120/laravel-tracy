@@ -3,11 +3,11 @@
 namespace Recca0120\LaravelTracy\Tests;
 
 use Exception;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
-use Tracy\Debugger;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\DebuggerManager;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Tracy\Debugger;
 
 class DebuggerManagerTest extends TestCase
 {

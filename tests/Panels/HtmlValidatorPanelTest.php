@@ -2,11 +2,11 @@
 
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Events\BeforeBarRender;
 use Recca0120\LaravelTracy\Panels\HtmlValidatorPanel;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class HtmlValidatorPanelTest extends TestCase
 {

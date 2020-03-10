@@ -2,10 +2,10 @@
 
 namespace Recca0120\LaravelTracy\Tests;
 
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\BarManager;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class BarManagerTest extends TestCase
 {

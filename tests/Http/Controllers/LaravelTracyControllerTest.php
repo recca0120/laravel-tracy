@@ -2,9 +2,9 @@
 
 namespace Recca0120\LaravelTracy\Tests\Http\Controllers;
 
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Recca0120\LaravelTracy\Http\Controllers\LaravelTracyController;
 
 class LaravelTracyControllerTest extends TestCase

@@ -2,14 +2,14 @@
 
 namespace Recca0120\LaravelTracy;
 
-use Exception;
-use Tracy\Bar;
-use Tracy\Helpers;
 use ErrorException;
-use Tracy\Debugger;
-use Tracy\BlueScreen;
-use Illuminate\Support\Arr;
+use Exception;
 use Illuminate\Contracts\Routing\UrlGenerator;
+use Illuminate\Support\Arr;
+use Tracy\Bar;
+use Tracy\BlueScreen;
+use Tracy\Debugger;
+use Tracy\Helpers;
 
 class DebuggerManager
 {
