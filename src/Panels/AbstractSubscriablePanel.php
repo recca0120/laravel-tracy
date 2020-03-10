@@ -3,9 +3,8 @@
 namespace Recca0120\LaravelTracy\Panels;
 
 use Illuminate\Contracts\Foundation\Application;
-use Recca0120\LaravelTracy\Contracts\ISubscriablePanel;
 
-abstract class AbstractSubscriablePanel extends AbstractPanel implements ISubscriablePanel
+abstract class AbstractSubscriablePanel extends AbstractPanel
 {
     /**
      * setLaravel.
