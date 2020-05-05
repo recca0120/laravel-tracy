@@ -3,9 +3,9 @@
 namespace Recca0120\LaravelTracy;
 
 use ErrorException;
-use Exception;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Arr;
+use Throwable;
 use Tracy\Bar;
 use Tracy\BlueScreen;
 use Tracy\Debugger;
@@ -224,7 +224,7 @@ class DebuggerManager
      * @param \Exception $exception
      * @return string
      */
-    public function exceptionHandler(Exception $exception)
+    public function exceptionHandler(Throwable $exception)
     {
         return $this->renderBuffer(function () use ($exception) {
             Helpers::improveException($exception);
