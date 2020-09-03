@@ -21,20 +21,20 @@
     ],
     "require": {
         "php": ">=5.5.9",
-        "illuminate/contracts": "^5.1|^6.0|^7.0",
-        "illuminate/database": "^5.1|^6.0|^7.0",
-        "illuminate/routing": "^5.1|^6.0|^7.0",
-        "illuminate/session": "^5.1|^6.0|^7.0",
-        "illuminate/support": "^5.1|^6.0|^7.0",
-        "illuminate/view": "^5.1|^6.0|^7.0",
-        "recca0120/terminal": "^1.0",
-        "tracy/tracy": "^2.4|^2.5|^2.6|^2.7"
+        "illuminate/contracts": "^5.1|^6.0|^7.0|^8.0",
+        "illuminate/database": "^5.1|^6.0|^7.0|^8.0",
+        "illuminate/routing": "^5.1|^6.0|^7.0|^8.0",
+        "illuminate/session": "^5.1|^6.0|^7.0|^8.0",
+        "illuminate/support": "^5.1|^6.0|^7.0|^8.0",
+        "illuminate/view": "^5.1|^6.0|^7.0|^8.0",
+        "recca0120/terminal": "^1.9",
+        "tracy/tracy": "^2.4|^2.5|^2.6|^2.7|^3.0"
     },
     "require-dev": {
         "mockery/mockery": "^0.9.4|^1.0",
         "nesbot/carbon": "^1.20|^2.0",
-        "phpunit/phpunit": "^4.8|^5.4|^6.1|^7.0|^8.0",
-        "vlucas/phpdotenv": "^4.1"
+        "phpunit/phpunit": "^4.8|^5.4|^6.1|^7.0|^8.0|^9.0",
+        "vlucas/phpdotenv": "^4.1|^5.0"
     },
     "autoload": {
         "files": [

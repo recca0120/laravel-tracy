@@ -25,18 +25,14 @@ class LaravelTracyServiceProviderTest extends TestCase
         $serviceProvider = new LaravelTracyServiceProvider(
             $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
         );
-        $app->shouldReceive('offsetGet')->twice()->with('config')->andReturn(
-            $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess')
-        );
+        $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess');
+        $app->shouldReceive('make')->with('config')->andReturn($config);
+        // $app->shouldReceive('offsetGet')->with('config')->andReturn($config);
         $config->shouldReceive('get')->once()->with('tracy', [])->andReturn([]);
         $config->shouldReceive('set')->once()->with('tracy', m::type('array'));
 
         $app->shouldReceive('offsetGet')->once()->with('config')->andReturn($config = [
-            'tracy' => [
-                'panels' => [
-                    'terminal' => true,
-                ],
-            ],
+            'tracy' => ['panels' => ['terminal' => true]],
         ]);
 
         $app->shouldReceive('register')->once()->with('Recca0120\Terminal\TerminalServiceProvider');
@@ -55,6 +51,7 @@ class LaravelTracyServiceProviderTest extends TestCase
 
             return $bar instanceof \Tracy\Bar;
         }));
+
         $app->shouldReceive('singleton')->once()->with('Recca0120\LaravelTracy\DebuggerManager', m::on(function ($closure) use ($app) {
             $app->shouldReceive('offsetGet')->once()->with('url')->andReturn(
                 $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator')
