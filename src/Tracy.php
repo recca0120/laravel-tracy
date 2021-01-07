@@ -38,6 +38,7 @@ class Tracy
             'panels' => [
                 'routing' => false,
                 'database' => true,
+                'model' => false,
                 'view' => false,
                 'event' => false,
                 'session' => true,
