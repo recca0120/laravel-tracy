@@ -12,7 +12,7 @@
                     <th>
                         <span class="tracy-dump-object"><?php echo \Illuminate\Support\Arr::get($value,'key') ?></span><br />
                         <?php echo \Illuminate\Support\Arr::get($value, 'editorLink') ?><br />
-                        <?php echo round(\Illuminate\Support\Arr::get($value,'execTime'), 0 * 100, 2) ?> ms
+                        <?php echo round(\Illuminate\Support\Arr::get($value,'execTime', 0) * 100, 2) ?> ms
                     </th>
                     <td>
                         <?php
