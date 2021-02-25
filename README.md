@@ -84,6 +84,7 @@ return [
     'panels' => [
         'routing' => true,
         'database' => true,
+        'model' => true,
         'view' => true,
         'event' => false,
         'session' => true,
