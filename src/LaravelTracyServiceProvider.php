@@ -34,7 +34,6 @@ class LaravelTracyServiceProvider extends ServiceProvider
     /**
      * boot.
      *
-     * @param DebuggerManager $debuggerManager
      * @param \Illuminate\Contracts\Http\Kernel $kernel
      * @param \Illuminate\Contracts\View\Factory $view
      * @param \Illuminate\Routing\Router $router
@@ -50,12 +49,9 @@ class LaravelTracyServiceProvider extends ServiceProvider
             return;
         }
 
-        $view->getEngineResolver()
-            ->resolve('blade')
-            ->getCompiler()
-            ->directive('bdump', function ($expression) {
-                return "<?php \Tracy\Debugger::barDump({$expression}); ?>";
-            });
+        $view->getEngineResolver()->resolve('blade')->getCompiler()->directive('bdump', function ($expression) {
+            return "<?php \Tracy\Debugger::barDump({$expression}); ?>";
+        });
 
         $enabled = Arr::get($config, 'enabled', true) === true;
         if ($enabled === false) {
@@ -88,22 +84,19 @@ class LaravelTracyServiceProvider extends ServiceProvider
             $this->app->register(TerminalServiceProvider::class);
         }
 
-        $this->app->singleton(BlueScreen::class, function () {
+        $this->app->bind(BlueScreen::class, function () {
             return Debugger::getBlueScreen();
         });
 
-        $this->app->singleton(Bar::class, function ($app) use ($config) {
+        $this->app->bind(Bar::class, function ($app) use ($config) {
             return (new BarManager(Debugger::getBar(), $app['request'], $app))
                 ->loadPanels(Arr::get($config, 'panels', []))
                 ->getBar();
         });
 
-        $this->app->singleton(DebuggerManager::class, function ($app) use ($config) {
+        $this->app->bind(DebuggerManager::class, function ($app) use ($config) {
             return (new DebuggerManager(
-                DebuggerManager::init($config),
-                $app[Bar::class],
-                $app[BlueScreen::class],
-                new Session
+                DebuggerManager::init($config), $app[Bar::class], $app[BlueScreen::class], new Session
             ))->setUrlGenerator($app['url']);
         });
     }

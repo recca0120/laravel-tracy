@@ -36,13 +36,13 @@ class LaravelTracyServiceProviderTest extends TestCase
         ]);
 
         $app->shouldReceive('register')->once()->with('Recca0120\Terminal\TerminalServiceProvider');
-        $app->shouldReceive('singleton')->once()->with('Tracy\BlueScreen', m::on(function ($closure) use ($app) {
+        $app->shouldReceive('bind')->once()->with('Tracy\BlueScreen', m::on(function ($closure) use ($app) {
             return $closure($app) instanceof \Tracy\BlueScreen;
         }));
 
         $app->shouldReceive('configurationIsCached')->andReturn(false);
 
-        $app->shouldReceive('singleton')->once()->with('Tracy\Bar', m::on(function ($closure) use ($app) {
+        $app->shouldReceive('bind')->once()->with('Tracy\Bar', m::on(function ($closure) use ($app) {
             $app->shouldReceive('offsetGet')->once()->with('request')->andReturn(
                 $request = m::mock('Illuminate\Http\Request')
             );
@@ -52,22 +52,24 @@ class LaravelTracyServiceProviderTest extends TestCase
             return $bar instanceof \Tracy\Bar;
         }));
 
-        $app->shouldReceive('singleton')->once()->with('Recca0120\LaravelTracy\DebuggerManager', m::on(function ($closure) use ($app) {
-            $app->shouldReceive('offsetGet')->once()->with('url')->andReturn(
-                $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator')
-            );
+        $app->shouldReceive('bind')
+            ->once()
+            ->with('Recca0120\LaravelTracy\DebuggerManager', m::on(function ($closure) use ($app) {
+                $app->shouldReceive('offsetGet')->once()->with('url')->andReturn(
+                    $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator')
+                );
 
-            $app->shouldReceive('offsetGet')->once()->with('Tracy\Bar')->andReturn(
-                $bar = m::mock('Tracy\Bar')
-            );
-            $app->shouldReceive('offsetGet')->once()->with('Tracy\BlueScreen')->andReturn(
-                $bar = m::mock('Tracy\BlueScreen')
-            );
-            $debugbarManager = $closure($app);
-            $this->assertInstanceOf(\Recca0120\LaravelTracy\DebuggerManager::class, $debugbarManager);
+                $app->shouldReceive('offsetGet')->once()->with('Tracy\Bar')->andReturn(
+                    $bar = m::mock('Tracy\Bar')
+                );
+                $app->shouldReceive('offsetGet')->once()->with('Tracy\BlueScreen')->andReturn(
+                    $bar = m::mock('Tracy\BlueScreen')
+                );
+                $debugbarManager = $closure($app);
+                $this->assertInstanceOf(\Recca0120\LaravelTracy\DebuggerManager::class, $debugbarManager);
 
-            return $debugbarManager instanceof \Recca0120\LaravelTracy\DebuggerManager;
-        }));
+                return $debugbarManager instanceof \Recca0120\LaravelTracy\DebuggerManager;
+            }));
 
         $serviceProvider->register();
     }
@@ -91,17 +93,19 @@ class LaravelTracyServiceProviderTest extends TestCase
                 return $closure($expression) === "<?php \Tracy\Debugger::barDump({$expression}); ?>";
             }));
 
-        $app->shouldReceive('extend')->once()->with('Illuminate\Contracts\Debug\ExceptionHandler', m::on(function ($closure) use ($app) {
-            $app->shouldReceive('offsetGet')->once()->with('Recca0120\LaravelTracy\DebuggerManager')->andReturn(
-                $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
-            );
-            $handler = $closure(
-                $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
-                $app
-            );
+        $app->shouldReceive('extend')
+            ->once()
+            ->with('Illuminate\Contracts\Debug\ExceptionHandler', m::on(function ($closure) use ($app) {
+                $app->shouldReceive('offsetGet')->once()->with('Recca0120\LaravelTracy\DebuggerManager')->andReturn(
+                    $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
+                );
+                $handler = $closure(
+                    $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
+                    $app
+                );
 
-            return $handler instanceof \Recca0120\LaravelTracy\Exceptions\Handler;
-        }));
+                return $handler instanceof \Recca0120\LaravelTracy\Exceptions\Handler;
+            }));
 
         $kernel = m::mock('Illuminate\Contracts\Http\Kernel');
         $kernel->shouldReceive('prependMiddleware')->once()->with('Recca0120\LaravelTracy\Middleware\RenderBar');
