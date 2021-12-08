@@ -9,6 +9,7 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Recca0120\LaravelTracy\Exceptions\Handler;
+use Recca0120\LaravelTracy\Exceptions\HandlerForLaravel6;
 use Recca0120\LaravelTracy\Middleware\RenderBar;
 use Recca0120\Terminal\TerminalServiceProvider;
 use Tracy\Bar;
@@ -64,7 +65,9 @@ class LaravelTracyServiceProvider extends ServiceProvider
         $showException = Arr::get($config, 'showException', true);
         if ($showException === true) {
             $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
-                return new Handler($exceptionHandler, $app[DebuggerManager::class]);
+                return version_compare($this->app->version(), '7.0', '>=')
+                    ? new Handler($exceptionHandler, $app[DebuggerManager::class])
+                    : new HandlerForLaravel6($exceptionHandler, $app[DebuggerManager::class]);
             });
         }
 

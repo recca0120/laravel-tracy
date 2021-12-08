@@ -4,14 +4,16 @@ namespace Recca0120\LaravelTracy\Tests\Exceptions;
 
 use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\DebuggerManager;
 use Recca0120\LaravelTracy\Exceptions\Handler;
+use Recca0120\LaravelTracy\Exceptions\HandlerForLaravel6;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -24,7 +26,8 @@ class HandlerTest extends TestCase
     public function testRenderResponseWithViewReturnsView()
     {
         $exceptionHandler = m::spy(ExceptionHandler::class);
-        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $handler = $this->getHandler($exceptionHandler, $debuggerManager);
 
         $view = m::spy(View::class);
         $view->expects('render')->andReturns('Some rendered view string');
@@ -41,7 +44,8 @@ class HandlerTest extends TestCase
     public function testReport()
     {
         $exceptionHandler = m::spy(ExceptionHandler::class);
-        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $handler = $this->getHandler($exceptionHandler, $debuggerManager);
         $exception = new Exception();
 
         $handler->report($exception);
@@ -52,7 +56,8 @@ class HandlerTest extends TestCase
     public function testShouldReport()
     {
         $exceptionHandler = m::spy(ExceptionHandler::class);
-        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $handler = $this->getHandler($exceptionHandler, $debuggerManager);
         $exception = new Exception();
         $exceptionHandler->expects('shouldReport')->with($exception)->andReturns(true);
 
@@ -62,7 +67,8 @@ class HandlerTest extends TestCase
     public function testRenderWithResponseIsRedirectResponse()
     {
         $exceptionHandler = m::spy(ExceptionHandler::class);
-        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $handler = $this->getHandler($exceptionHandler, $debuggerManager);
 
         $request = m::spy(Request::class);
         $exception = new Exception();
@@ -75,7 +81,8 @@ class HandlerTest extends TestCase
     public function testRenderWithResponseIsJsonResponse()
     {
         $exceptionHandler = m::spy(ExceptionHandler::class);
-        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $handler = $this->getHandler($exceptionHandler, $debuggerManager);
 
         $request = m::spy(Request::class);
         $exception = new Exception();
@@ -88,7 +95,8 @@ class HandlerTest extends TestCase
     public function testRenderWithResponseContentIsView()
     {
         $exceptionHandler = m::spy(ExceptionHandler::class);
-        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $handler = $this->getHandler($exceptionHandler, $debuggerManager);
         $request = m::spy(Request::class);
         $exception = new Exception();
         $response = m::spy(SymfonyResponse::class);
@@ -102,7 +110,8 @@ class HandlerTest extends TestCase
     public function testRenderRedirectResponse()
     {
         $exceptionHandler = m::spy(ExceptionHandler::class);
-        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $handler = $this->getHandler($exceptionHandler, $debuggerManager);
 
         $request = m::spy(Request::class);
         $exception = new Exception();
@@ -115,7 +124,8 @@ class HandlerTest extends TestCase
     public function testRenderJsonResponse()
     {
         $exceptionHandler = m::spy(ExceptionHandler::class);
-        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $handler = $this->getHandler($exceptionHandler, $debuggerManager);
 
         $request = m::spy(Request::class);
         $exception = new Exception();
@@ -128,7 +138,8 @@ class HandlerTest extends TestCase
     public function testRenderView()
     {
         $exceptionHandler = m::spy(ExceptionHandler::class);
-        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $handler = $this->getHandler($exceptionHandler, $debuggerManager);
 
         $request = m::spy(Request::class);
         $exception = new Exception();
@@ -144,7 +155,7 @@ class HandlerTest extends TestCase
     {
         $exceptionHandler = m::spy(ExceptionHandler::class);
         $debuggerManager = m::spy(DebuggerManager::class);
-        $handler = new Handler($exceptionHandler, $debuggerManager);
+        $handler = $this->getHandler($exceptionHandler, $debuggerManager);
 
         $request = Request::capture();
         $exception = new Exception();
@@ -165,7 +176,7 @@ class HandlerTest extends TestCase
     {
         $exceptionHandler = m::spy(ExceptionHandler::class);
         $debuggerManager = m::spy(DebuggerManager::class);
-        $handler = new Handler($exceptionHandler, $debuggerManager);
+        $handler = $this->getHandler($exceptionHandler, $debuggerManager);
 
         $output = m::spy(OutputInterface::class);
         $exception = new Exception();
@@ -173,5 +184,19 @@ class HandlerTest extends TestCase
         $handler->renderForConsole($output, $exception);
 
         $exceptionHandler->shouldHaveReceived('renderForConsole')->with($output, $exception);
+    }
+
+    /**
+     * @param $exceptionHandler
+     * @param $debuggerManager
+     * @return Handler
+     */
+    private function getHandler($exceptionHandler, $debuggerManager)
+    {
+        $app = new Application();
+
+        return version_compare($app->version(), '7.0', '>=')
+            ? new Handler($exceptionHandler, $debuggerManager)
+            : new HandlerForLaravel6($exceptionHandler, $debuggerManager);
     }
 }

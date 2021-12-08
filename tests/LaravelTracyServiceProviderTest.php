@@ -8,11 +8,12 @@ use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
 use Illuminate\Routing\Router;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\DebuggerManager;
 use Recca0120\LaravelTracy\Exceptions\Handler;
+use Recca0120\LaravelTracy\Exceptions\HandlerForLaravel6;
 use Recca0120\LaravelTracy\LaravelTracyServiceProvider;
 use Recca0120\LaravelTracy\Middleware\RenderBar;
 use Recca0120\Terminal\TerminalServiceProvider;
@@ -42,7 +43,7 @@ class LaravelTracyServiceProviderTest extends TestCase
         $app = m::spy(new Application());
         $config = new Repository();
         $app->instance('config', $config);
-        $config->set('tracy', ['route' => ['prefix' => 'laravel-tracy']]);
+        $config->set('tracy', ['route' => ['prefix' => 'laravel-tracy', 'showException' => true]]);
         $serviceProvider = new LaravelTracyServiceProvider($app);
 
         $app->expects('routesAreCached')->andReturns(false);
@@ -58,16 +59,17 @@ class LaravelTracyServiceProviderTest extends TestCase
 
         $serviceProvider->boot($kernel, $view, $router);
 
-        $view->shouldHaveReceived('directive')
-            ->with('bdump', m::on(function ($closure) {
-                $expression = '$foo';
+        $view->shouldHaveReceived('directive')->with('bdump', m::on(function ($closure) {
+            $expression = '$foo';
 
-                return $closure($expression) === "<?php \Tracy\Debugger::barDump({$expression}); ?>";
-            }))->once();
+            return $closure($expression) === "<?php \Tracy\Debugger::barDump({$expression}); ?>";
+        }))->once();
 
         $app->shouldHaveReceived('extend')
             ->with(ExceptionHandler::class, m::on(function ($closure) use ($app) {
-                return $closure(m::spy(ExceptionHandler::class), $app) instanceof Handler;
+                $handler = $closure(m::spy(ExceptionHandler::class), $app);
+
+                return $handler instanceof Handler || $handler instanceof HandlerForLaravel6;
             }))->once();
         $kernel->shouldHaveReceived('prependMiddleware')->with(RenderBar::class);
         $router->shouldHaveReceived('group')->with(array_merge([
@@ -78,9 +80,12 @@ class LaravelTracyServiceProviderTest extends TestCase
     public function testBootRunningInConsole()
     {
         $app = m::spy(new Application());
+        $app['path.config'] = '';
+
         $config = new Repository();
-        $app->instance('config', $config);
         $config->set('tracy', ['panels' => ['terminal' => true]]);
+        $app->instance('config', $config);
+
         $serviceProvider = new LaravelTracyServiceProvider($app);
 
         $app->expects('routesAreCached')->andReturns(false);
