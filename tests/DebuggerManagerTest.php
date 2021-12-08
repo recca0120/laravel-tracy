@@ -2,11 +2,15 @@
 
 namespace Recca0120\LaravelTracy\Tests;
 
+use Closure;
 use Exception;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\DebuggerManager;
+use Recca0120\LaravelTracy\Session;
+use Tracy\Bar;
+use Tracy\BlueScreen;
 use Tracy\Debugger;
 
 class DebuggerManagerTest extends TestCase
@@ -42,135 +46,105 @@ class DebuggerManagerTest extends TestCase
 
     public function testEnabled()
     {
-        $debuggerManager = new DebuggerManager(
-            $config = ['enabled' => true],
-            $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen'),
-            $session = m::mock('Recca0120\LaravelTracy\Session')
-        );
+        $config = ['enabled' => true];
+        $bar = new Bar();
+        $blueScreen = new BlueScreen();
+        $session = new Session();
+        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
 
         $this->assertSame($config['enabled'], $debuggerManager->enabled());
     }
 
     public function testShowBar()
     {
-        $debuggerManager = new DebuggerManager(
-            $config = ['showBar' => true],
-            $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen'),
-            $session = m::mock('Recca0120\LaravelTracy\Session')
-        );
+        $config = ['showBar' => true];
+        $bar = new Bar();
+        $blueScreen = new BlueScreen();
+        $session = new Session();
+        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
 
         $this->assertSame($config['showBar'], $debuggerManager->showBar());
     }
 
     public function testAccepts()
     {
-        $debuggerManager = new DebuggerManager(
-            $config = ['accepts' => ['foo']],
-            $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen'),
-            $session = m::mock('Recca0120\LaravelTracy\Session')
-        );
+        $config = ['accepts' => ['foo']];
+        $bar = new Bar();
+        $blueScreen = new BlueScreen();
+        $session = new Session();
+        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
 
         $this->assertSame($config['accepts'], $debuggerManager->accepts());
     }
 
     public function testDispatchAssetsCss()
     {
-        $debuggerManager = new DebuggerManager(
-            $config = [],
-            $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen'),
-            $session = m::mock('Recca0120\LaravelTracy\Session')
-        );
+        $config = [];
+        $bar = m::spy(new Bar());
+        $blueScreen = new BlueScreen();
+        $session = new Session();
+        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
 
         $content = 'foo';
-        $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
-            echo $content;
+        $bar->expects('dispatchAssets')->andReturnUsing($this->echoContent($content));
 
-            return true;
-        });
-
-        $this->assertSame([
-            [
-                'Content-Type' => 'text/css; charset=utf-8',
-                'Cache-Control' => 'max-age=86400',
-                'Content-Length' => strlen($content),
-            ],
-            $content,
-        ], $debuggerManager->dispatchAssets('css'));
+        $this->assertSame([[
+            'Content-Type' => 'text/css; charset=utf-8',
+            'Cache-Control' => 'max-age=86400',
+            'Content-Length' => strlen($content),
+        ], $content], $debuggerManager->dispatchAssets('css'));
     }
 
     public function testDispatchAssetsJs()
     {
-        $debuggerManager = new DebuggerManager(
-            $config = ['accepts' => ['foo']],
-            $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen'),
-            $session = m::mock('Recca0120\LaravelTracy\Session')
-        );
+        $config = ['accepts' => ['foo']];
+        $bar = m::spy(new Bar());
+        $blueScreen = new BlueScreen();
+        $session = new Session();
+        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
 
         $content = 'foo';
-        $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
-            echo $content;
+        $bar->expects('dispatchAssets')->andReturnUsing($this->echoContent($content));
 
-            return true;
-        });
-
-        $this->assertSame([
-            [
-                'Content-Type' => 'text/javascript; charset=utf-8',
-                'Cache-Control' => 'max-age=86400',
-                'Content-Length' => strlen($content),
-            ],
-            $content,
-        ], $debuggerManager->dispatchAssets('js'));
+        $this->assertSame([[
+            'Content-Type' => 'text/javascript; charset=utf-8',
+            'Cache-Control' => 'max-age=86400',
+            'Content-Length' => strlen($content),
+        ], $content], $debuggerManager->dispatchAssets('js'));
     }
 
     public function testDispatchAssetsContentId()
     {
-        $debuggerManager = new DebuggerManager(
-            $config = [],
-            $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen'),
-            $session = m::mock('Recca0120\LaravelTracy\Session')
-        );
+        $config = ['accepts' => ['foo']];
+        $bar = m::spy(new Bar());
+        $blueScreen = new BlueScreen();
+        $session = m::spy(new Session());
+        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
 
-        $session->shouldReceive('isStarted')->once()->andReturn(false);
-        $session->shouldReceive('start')->once();
+        $session->expects('isStarted')->andReturns(false);
+        $session->expects('start');
 
         $content = 'foo';
-        $bar->shouldReceive('dispatchAssets')->once()->andReturnUsing(function () use ($content) {
-            echo $content;
+        $bar->expects('dispatchAssets')->andReturnUsing($this->echoContent($content));
 
-            return true;
-        });
-
-        $this->assertSame([
-            [
-                'Content-Type' => 'text/javascript; charset=utf-8',
-                'Content-Length' => strlen($content),
-            ],
-            $content,
-        ], $debuggerManager->dispatchAssets(uniqid()));
+        $this->assertSame([[
+            'Content-Type' => 'text/javascript; charset=utf-8',
+            'Content-Length' => strlen($content),
+        ], $content], $debuggerManager->dispatchAssets(uniqid('', true)));
     }
 
     public function testShutdownHandlerAndSessionIsClose()
     {
-        $debuggerManager = new DebuggerManager(
-            $config = [],
-            $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen'),
-            $session = m::mock('Recca0120\LaravelTracy\Session')
-        );
+        $config = [];
+        $bar = m::spy(new Bar());
+        $blueScreen = new BlueScreen();
+        $session = m::spy(new Session());
+        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
 
-        $session->shouldReceive('isStarted')->once()->andReturn(false);
+        $session->expects('isStarted')->andReturns(false);
 
         $barRender = 'foo';
-        $bar->shouldReceive('render')->once()->andReturnUsing(function () use ($barRender) {
-            echo $barRender;
-        });
+        $bar->expects('render')->andReturnUsing($this->echoContent($barRender));
 
         $content = '<html><head></head><body></body></html>';
 
@@ -179,24 +153,19 @@ class DebuggerManagerTest extends TestCase
 
     public function testShutdownHandler()
     {
-        $debuggerManager = new DebuggerManager(
-            $config = [],
-            $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen'),
-            $session = m::mock('Recca0120\LaravelTracy\Session')
-        );
+        $config = [];
+        $bar = m::spy(new Bar());
+        $blueScreen = new BlueScreen();
+        $session = m::spy(new Session());
+        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
 
-        $session->shouldReceive('isStarted')->once()->andReturn(true);
+        $session->expects('isStarted')->andReturns(true);
 
         $loader = '<script async></script>';
-        $bar->shouldReceive('renderLoader')->once()->andReturnUsing(function () use ($loader) {
-            echo $loader;
-        });
+        $bar->expects('renderLoader')->andReturnUsing($this->echoContent($loader));
 
         $barRender = 'foo';
-        $bar->shouldReceive('render')->once()->andReturnUsing(function () use ($barRender) {
-            echo $barRender;
-        });
+        $bar->expects('render')->andReturnUsing($this->echoContent($barRender));
 
         $content = '<html><head></head><body></body></html>';
 
@@ -205,24 +174,19 @@ class DebuggerManagerTest extends TestCase
 
     public function testShutdownHandlerAppendToHtml()
     {
-        $debuggerManager = new DebuggerManager(
-            $config = ['appendTo' => 'html'],
-            $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen'),
-            $session = m::mock('Recca0120\LaravelTracy\Session')
-        );
+        $config = ['appendTo' => 'html'];
+        $bar = m::spy(new Bar());
+        $blueScreen = new BlueScreen();
+        $session = m::spy(new Session());
+        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
 
-        $session->shouldReceive('isStarted')->once()->andReturn(true);
+        $session->expects('isStarted')->andReturns(true);
 
         $loader = '<script async></script>';
-        $bar->shouldReceive('renderLoader')->once()->andReturnUsing(function () use ($loader) {
-            echo $loader;
-        });
+        $bar->expects('renderLoader')->andReturnUsing($this->echoContent($loader));
 
         $barRender = 'foo';
-        $bar->shouldReceive('render')->once()->andReturnUsing(function () use ($barRender) {
-            echo $barRender;
-        });
+        $bar->expects('render')->andReturnUsing($this->echoContent($barRender));
 
         $content = '<html><head></head><body></body></html>';
 
@@ -231,12 +195,12 @@ class DebuggerManagerTest extends TestCase
 
     public function testShutdownHandlerHasError()
     {
-        $debuggerManager = new DebuggerManager(
-            $config = [],
-            $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen'),
-            $session = m::mock('Recca0120\LaravelTracy\Session')
-        );
+        $config = ['appendTo' => 'html'];
+        $bar = new Bar();
+        $blueScreen = m::spy(new BlueScreen());
+        $session = new Session();
+        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
+
         $content = '';
         $error = [
             'message' => 'testing',
@@ -245,61 +209,66 @@ class DebuggerManagerTest extends TestCase
             'line' => __LINE__,
         ];
 
-        $blueScreen->shouldReceive('render')->once()->with(m::on(function ($errorException) use ($error) {
-            return  $error['type'] === $errorException->getSeverity() &&
-            $error['message'] === $errorException->getMessage() &&
-            0 === $errorException->getCode() &&
-            $error['file'] === $errorException->getFile() &&
-            $error['line'] === $errorException->getLine();
-        }))->andReturnUsing(function () use ($content) {
-            echo $content;
-        });
+        $blueScreen->expects('render')->with(m::on(function ($errorException) use ($error) {
+            return $error['type'] === $errorException->getSeverity() &&
+                $error['message'] === $errorException->getMessage() &&
+                0 === $errorException->getCode() &&
+                $error['file'] === $errorException->getFile() &&
+                $error['line'] === $errorException->getLine();
+        }))->andReturnUsing($this->echoContent($content));
 
         $this->assertSame($content, $debuggerManager->shutdownHandler($content, false, $error));
     }
 
     public function testExceptionHandler()
     {
-        $debuggerManager = new DebuggerManager(
-            $config = ['accepts' => ['foo']],
-            $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen'),
-            $session = m::mock('Recca0120\LaravelTracy\Session')
-        );
+        $config = ['accepts' => ['foo']];
+        $bar = new Bar();
+        $blueScreen = m::spy(new BlueScreen());
+        $session = new Session();
+        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
 
         $exception = new Exception();
         $content = 'foo';
-        $blueScreen->shouldReceive('render')->once()->with($exception)->andReturnUsing(function () use ($content) {
-            echo $content;
-        });
+        $blueScreen->expects('render')->with($exception)->andReturnUsing($this->echoContent($content));
+
         $this->assertSame($content, $debuggerManager->exceptionHandler($exception));
     }
 
     public function testReplacePath()
     {
-        $debuggerManager = new DebuggerManager(
-            $config = ['accepts' => ['foo']],
-            $bar = m::mock('Tracy\Bar'),
-            $blueScreen = m::mock('Tracy\BlueScreen'),
-            $session = m::mock('Recca0120\LaravelTracy\Session')
-        );
+        $config = ['accepts' => ['foo']];
+        $bar = m::spy(new Bar());
+        $blueScreen = new BlueScreen();
+        $session = m::spy(new Session());
+        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
 
-        $session->shouldReceive('isStarted')->once()->andReturn(true);
+        $session->expects('isStarted')->andReturns(true);
 
         $debuggerManager->setUrlGenerator(
             $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator')
         );
 
-        $urlGenerator->shouldReceive('route')->twice()->andReturn($root = 'foo');
+        $urlGenerator->expects('route')->twice()->andReturns('foo');
 
-        $bar->shouldReceive('renderLoader')->once()->andReturnUsing(function () {
-            echo '<script src="?_tracy_bar=foo" async></script>';
-        });
+        $bar->expects('renderLoader')
+            ->andReturnUsing($this->echoContent('<script src="?_tracy_bar=foo" async></script>'));
 
-        $bar->shouldReceive('render')->once()->andReturnUsing(function () {
-            echo '?_tracy_bar=foo';
-        });
+        $bar->expects('render')->andReturnUsing($this->echoContent('?_tracy_bar=foo'));
 
         $this->assertSame('<head><script src="foo?_tracy_bar=foo" async></script></head><body>foo?_tracy_bar=foo</body>', $debuggerManager->shutdownHandler('<head></head><body></body>'));
+    }
+
+    /**
+     * @param $content
+     * @return Closure
+     */
+    private function echoContent($content)
+    {
+        return static function () use ($content) {
+            echo $content;
+
+            return true;
+        };
     }
 }

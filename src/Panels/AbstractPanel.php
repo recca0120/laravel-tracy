@@ -11,37 +11,26 @@ use Tracy\IBarPanel;
 abstract class AbstractPanel implements IBarPanel, ILaravelPanel
 {
     /**
-     * $attributes.
-     *
      * @var mixed
      */
     protected $attributes;
-
     /**
-     * $viewPath.
-     *
      * @var string
      */
-    protected $viewPath = null;
-
+    protected $viewPath;
     /**
-     * $template.
-     *
-     * @var \Recca0120\LaravelTracy\Template
+     * @var Template
      */
     protected $template;
-
     /**
-     * $laravel description.
-     *
-     * @var \Illuminate\Contracts\Foundation\Application
+     * @var Application
      */
     protected $laravel;
 
     /**
      * __construct.
      *
-     * @param \Recca0120\LaravelTracy\Template $template
+     * @param Template $template
      */
     public function __construct(Template $template = null)
     {
@@ -51,7 +40,7 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
     /**
      * setLaravel.
      *
-     * @param \Illuminate\Contracts\Foundation\Application $laravel
+     * @param Application $laravel
      * @return $this
      */
     public function setLaravel(Application $laravel = null)
@@ -151,9 +140,9 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
             }
 
             if (isset($row['class']) === true && (
-                is_subclass_of($row['class'], '\Tracy\IBarPanel') === true ||
-                strpos(str_replace('/', '\\', $row['file']), 'Illuminate\\') !== false
-            )) {
+                    is_subclass_of($row['class'], IBarPanel::class) === true ||
+                    strpos(str_replace('/', '\\', $row['file']), 'Illuminate\\') !== false
+                )) {
                 continue;
             }
 
@@ -175,8 +164,7 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
             $file = $source;
             $line = null;
         } else {
-            $file = $source[0];
-            $line = $source[1];
+            list($file, $line) = $source;
         }
 
         return Helpers::editorLink($file, $line);

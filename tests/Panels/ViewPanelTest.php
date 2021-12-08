@@ -2,10 +2,13 @@
 
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Collection;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\ViewPanel;
+use Recca0120\LaravelTracy\Template;
 
 class ViewPanelTest extends TestCase
 {
@@ -13,44 +16,40 @@ class ViewPanelTest extends TestCase
 
     public function testRender()
     {
-        $panel = new ViewPanel(
-            $template = m::mock('Recca0120\LaravelTracy\Template')
-        );
-        $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $laravel->shouldReceive('version')->once()->andReturn(5.4);
-        $laravel->shouldReceive('offsetGet')->once()->with('events')->andReturn(
-            $events = m::mock('Illuminate\Contracts\Event\Dispatcher')
-        );
-        $collection = m::mock('Illuminate\Support\Collection');
-        $events->shouldReceive('listen')->once()->with('composing:*', m::on(function ($closure) use ($collection) {
-            $event = m::mock('stdClass');
-            $event->shouldReceive('getName')->once()->andReturn($name = 'foo');
+        $laravel = m::spy(new Application());
+        $laravel->expects('version')->andReturns(5.4);
 
-            $collection->shouldReceive('count')->once()->andReturn(100);
-            $collection->shouldReceive('take')->once()->andReturn(50)->andReturnSelf();
+        $collection = m::spy(new Collection());
+        $events = m::spy('Illuminate\Contracts\Event\Dispatcher');
+        $events->expects('listen')->with('composing:*', m::on(function ($closure) use ($collection) {
+            $event = m::spy('stdClass');
+            $event->expects('getName')->andReturns($name = 'foo');
 
-            $event->shouldReceive('getData')->once()->andReturn($data = [
-                range(1, 100),
-                $collection,
+            $collection->expects('count')->andReturns(100);
+            $collection->expects('take')->andReturns(50)->andReturnSelf();
+
+            $event->expects('getData')->andReturns([
+                range(1, 100), $collection,
             ]);
-            $event->shouldReceive('getPath')->once()->andReturn($path = '');
+            $event->expects('getPath')->andReturns('');
             $closure('foo', [$event]);
 
             return true;
         }));
+        $laravel['events'] = $events;
+
+        $template = m::spy(new Template());
+        $panel = new ViewPanel($template);
         $panel->setLaravel($laravel);
 
-        $template->shouldReceive('setAttributes')->once()->with([
+        $template->expects('setAttributes')->with([
             'rows' => [[
                 'name' => 'foo',
-                'data' => [
-                    range(1, 50),
-                    $collection,
-                ],
+                'data' => [range(1, 50), $collection],
                 'path' => '',
             ]],
         ]);
-        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+        $template->expects('render')->twice()->with(m::type('string'))->andReturns($content = 'foo');
 
         $this->assertSame($content, $panel->getTab());
         $this->assertSame($content, $panel->getPanel());
@@ -58,46 +57,44 @@ class ViewPanelTest extends TestCase
 
     public function testRenderAndLaravel50()
     {
-        $panel = new ViewPanel(
-            $template = m::mock('Recca0120\LaravelTracy\Template')
-        );
-        $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $laravel->shouldReceive('version')->once()->andReturn(5.3);
-        $laravel->shouldReceive('offsetGet')->once()->with('events')->andReturn(
-            $events = m::mock('Illuminate\Contracts\Event\Dispatcher')
-        );
-        $collection = m::mock('Illuminate\Support\Collection');
-        $events->shouldReceive('listen')->once()->with('composing:*', m::on(function ($closure) use ($collection) {
-            $event = m::mock('stdClass');
-            $event->shouldReceive('getName')->once()->andReturn($name = 'foo');
+        $laravel = m::spy(new Application());
+        $laravel->expects('version')->andReturns(5.3);
 
-            $collection->shouldReceive('count')->once()->andReturn(100);
-            $collection->shouldReceive('take')->once()->andReturn(50)->andReturnSelf();
+        $collection = m::spy(new Collection());
+        $events = m::spy('Illuminate\Contracts\Event\Dispatcher');
+        $events->expects('listen')->with('composing:*', m::on(function ($closure) use ($collection) {
+            $event = m::spy('stdClass');
+            $event->expects('getName')->andReturns($name = 'foo');
 
-            $event->shouldReceive('getData')->once()->andReturn($data = [
+            $collection->expects('count')->andReturns(100);
+            $collection->expects('take')->andReturns(50)->andReturnSelf();
+
+            $event->expects('getData')->andReturns([
                 '__env' => [],
                 'app' => [],
                 range(1, 100),
                 $collection,
             ]);
-            $event->shouldReceive('getPath')->once()->andReturn($path = '');
+            $event->expects('getPath')->andReturns('');
             $closure($event);
 
             return true;
         }));
+
+        $laravel['events'] = $events;
+
+        $template = m::spy(new Template());
+        $panel = new ViewPanel($template);
         $panel->setLaravel($laravel);
 
-        $template->shouldReceive('setAttributes')->once()->with([
+        $template->expects('setAttributes')->with([
             'rows' => [[
                 'name' => 'foo',
-                'data' => [
-                    range(1, 50),
-                    $collection,
-                ],
+                'data' => [range(1, 50), $collection],
                 'path' => '',
             ]],
         ]);
-        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+        $template->expects('render')->twice()->with(m::type('string'))->andReturns($content = 'foo');
 
         $this->assertSame($content, $panel->getTab());
         $this->assertSame($content, $panel->getPanel());

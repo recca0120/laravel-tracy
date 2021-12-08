@@ -5,8 +5,10 @@ namespace Recca0120\LaravelTracy\Exceptions;
 use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Recca0120\LaravelTracy\DebuggerManager;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Throwable;
@@ -16,22 +18,22 @@ class Handler implements ExceptionHandler
     /**
      * app exception handler.
      *
-     * @var \Illuminate\Contracts\Debug\ExceptionHandler
+     * @var ExceptionHandler
      */
     protected $exceptionHandler;
 
     /**
      * $debuggerManager.
      *
-     * @var \Recca0120\LaravelTracy\DebuggerManager
+     * @var DebuggerManager
      */
     protected $debuggerManager;
 
     /**
      * __construct.
      *
-     * @param \Illuminate\Contracts\Debug\ExceptionHandler $exceptionHandler
-     * @param \Recca0120\LaravelTracy\DebuggerManager $debuggerManager
+     * @param ExceptionHandler $exceptionHandler
+     * @param DebuggerManager $debuggerManager
      */
     public function __construct(ExceptionHandler $exceptionHandler, DebuggerManager $debuggerManager)
     {
@@ -42,10 +44,11 @@ class Handler implements ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param  \Throwable  $e
+     * @param Throwable $e
      * @return void
      *
-     * @throws \Exception
+     * @throws Exception
+     * @throws Throwable
      */
     public function report(Throwable $e)
     {
@@ -55,7 +58,7 @@ class Handler implements ExceptionHandler
     /**
      * Determine if the exception should be reported.
      *
-     * @param  \Throwable  $e
+     * @param Throwable $e
      * @return bool
      */
     public function shouldReport(Throwable $e)
@@ -66,11 +69,11 @@ class Handler implements ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $e
+     * @param Request $request
+     * @param Throwable $e
      * @return \Symfony\Component\HttpFoundation\Response
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function render($request, Throwable $e)
     {
@@ -78,9 +81,7 @@ class Handler implements ExceptionHandler
 
         if ($this->shouldRenderException($response) === true) {
             $_SERVER = $request->server();
-            $response->setContent(
-                $this->debuggerManager->exceptionHandler($e)
-            );
+            $response->setContent($this->debuggerManager->exceptionHandler($e));
         }
 
         return $response;
@@ -89,8 +90,8 @@ class Handler implements ExceptionHandler
     /**
      * Render an exception to the console.
      *
-     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
-     * @param  \Throwable  $e
+     * @param OutputInterface $output
+     * @param Throwable $e
      * @return void
      */
     public function renderForConsole($output, Throwable $e)
@@ -101,7 +102,7 @@ class Handler implements ExceptionHandler
     /**
      * shouldRenderException.
      *
-     * @param \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response $response
+     * @param Response|\Symfony\Component\HttpFoundation\Response $response
      * @return bool
      */
     protected function shouldRenderException($response)

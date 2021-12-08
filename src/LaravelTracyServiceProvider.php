@@ -34,9 +34,9 @@ class LaravelTracyServiceProvider extends ServiceProvider
     /**
      * boot.
      *
-     * @param \Illuminate\Contracts\Http\Kernel $kernel
-     * @param \Illuminate\Contracts\View\Factory $view
-     * @param \Illuminate\Routing\Router $router
+     * @param Kernel $kernel
+     * @param View $view
+     * @param Router $router
      */
     public function boot(Kernel $kernel, View $view, Router $router)
     {
@@ -49,9 +49,12 @@ class LaravelTracyServiceProvider extends ServiceProvider
             return;
         }
 
-        $view->getEngineResolver()->resolve('blade')->getCompiler()->directive('bdump', function ($expression) {
-            return "<?php \Tracy\Debugger::barDump({$expression}); ?>";
-        });
+        $view->getEngineResolver()
+            ->resolve('blade')
+            ->getCompiler()
+            ->directive('bdump', function ($expression) {
+                return "<?php \Tracy\Debugger::barDump({$expression}); ?>";
+            });
 
         $enabled = Arr::get($config, 'enabled', true) === true;
         if ($enabled === false) {
@@ -114,7 +117,7 @@ class LaravelTracyServiceProvider extends ServiceProvider
     /**
      * register routes.
      *
-     * @param \Illuminate\Routing\Router $router
+     * @param Router $router
      * @param array $config
      */
     protected function handleRoutes(Router $router, $config = [])

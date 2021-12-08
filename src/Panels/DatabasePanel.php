@@ -3,28 +3,21 @@
 namespace Recca0120\LaravelTracy\Panels;
 
 use Exception;
+use Illuminate\Database\Events\QueryExecuted;
 use PDO;
 use Recca0120\LaravelTracy\Contracts\IAjaxPanel;
 
-class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
+class DatabasePanel extends AbstractSubscribePanel implements IAjaxPanel
 {
     /**
-     * $queries.
-     *
      * @var array
      */
     protected $queries = [];
-
     /**
-     * $totalTime.
-     *
      * @var float
      */
     protected $totalTime = 0.0;
-
     /**
-     * $counter.
-     *
      * @var int
      */
     protected $counter = 0;
@@ -68,7 +61,7 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
     {
         $events = $this->laravel['events'];
         if (version_compare($this->laravel->version(), 5.2, '>=') === true) {
-            $events->listen('Illuminate\Database\Events\QueryExecuted', function ($event) {
+            $events->listen(QueryExecuted::class, function ($event) {
                 $this->logQuery(
                     $event->sql,
                     $event->bindings,
@@ -105,7 +98,7 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
             $driver = $query['driver'];
             $version = 0;
 
-            $hightlight = Helper::hightlight($sql, $bindings, $pdo);
+            $highlight = Helper::hightlight($sql, $bindings, $pdo);
             $explains = [];
             $hints = [];
             if ($pdo instanceof PDO) {
@@ -117,7 +110,7 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
                 }
             }
 
-            $queries[] = array_merge($query, compact('hightlight', 'explains', 'hints', 'driver', 'version'));
+            $queries[] = array_merge($query, compact('highlight', 'explains', 'hints', 'driver', 'version'));
         }
 
         return [
@@ -130,7 +123,7 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
     /**
      * getDatabaseDriver.
      *
-     * @param \PDO $pdo
+     * @param PDO $pdo
      * @return string
      */
     protected function getDatabaseDriver(PDO $pdo)
@@ -147,7 +140,7 @@ class DatabasePanel extends AbstractSubscriablePanel implements IAjaxPanel
     /**
      * getDatabaseVersion.
      *
-     * @param \PDO $pdo
+     * @param PDO $pdo
      * @return string
      */
     protected function getDatabaseVersion(PDO $pdo)

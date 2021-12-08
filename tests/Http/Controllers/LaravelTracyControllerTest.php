@@ -2,10 +2,14 @@
 
 namespace Recca0120\LaravelTracy\Tests\Http\Controllers;
 
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Http\Request;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
+use Recca0120\LaravelTracy\DebuggerManager;
 use Recca0120\LaravelTracy\Http\Controllers\LaravelTracyController;
+use Symfony\Component\HttpFoundation\Response;
 
 class LaravelTracyControllerTest extends TestCase
 {
@@ -18,20 +22,17 @@ class LaravelTracyControllerTest extends TestCase
     {
         $controller = new LaravelTracyController();
 
-        $request = m::mock('Illuminate\Http\Request');
+        $request = m::spy(Request::class);
 
-        $request->shouldReceive('get')->andReturn(
-            $type = 'foo'
-        );
+        $request->allows('get')->andReturns('foo');
 
-        $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager');
-        $debuggerManager->shouldReceive('dispatchAssets')->once()->andReturn([
-            $headers = ['foo' => 'bar'],
-            $content = 'foo',
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $debuggerManager->expects('dispatchAssets')->andReturns([
+            ['foo' => 'bar'], $content = 'foo',
         ]);
 
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $responseFactory->shouldReceive('stream')->with(m::on(function ($callback) use ($content) {
+        $responseFactory = m::spy(ResponseFactory::class);
+        $responseFactory->allows('stream')->with(m::on(function ($callback) use ($content) {
             ob_start();
             $callback();
             $output = ob_get_clean();
@@ -41,14 +42,8 @@ class LaravelTracyControllerTest extends TestCase
             }
 
             return $content === $output;
-        }), 200)->andReturn(
-            $response = m::mock('Symfony\Component\HttpFoundation\Response')
-        );
+        }), 200)->andReturns($response = m::spy(Response::class));
 
-        $this->assertSame($response, $controller->bar(
-            $debuggerManager,
-            $request,
-            $responseFactory
-        ));
+        $this->assertSame($response, $controller->bar($debuggerManager, $request, $responseFactory));
     }
 }

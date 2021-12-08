@@ -2,10 +2,13 @@
 
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
+use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\RequestPanel;
+use Recca0120\LaravelTracy\Template;
 
 class RequestPanelTest extends TestCase
 {
@@ -13,28 +16,25 @@ class RequestPanelTest extends TestCase
 
     public function testRender()
     {
-        $panel = new RequestPanel(
-            $template = m::mock('Recca0120\LaravelTracy\Template')
-        );
-        $panel->setLaravel(
-            $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
-        );
-        $laravel->shouldReceive('offsetGet')->once()->with('request')->andReturn(
-            $request = m::mock('Illuminate\Http\Request')
-        );
+        $laravel = m::spy(new Application());
+        $request = m::spy(Request::class);
+        $request->expects('ip')->andReturns('foo.ip');
+        $request->expects('ips')->andReturns('foo.ips');
+        $request->expects('query')->andReturns('foo.query');
+        $request->expects('all')->andReturns('foo.request');
+        $request->expects('file')->andReturns('foo.file');
+        $request->expects('cookie')->andReturns('foo.cookies');
+        $request->expects('format')->andReturns('foo.format');
+        $request->expects('path')->andReturns('foo.path');
+        $request->expects('server')->andReturns('foo.server');
 
-        $request
-            ->shouldReceive('ip')->once()->andReturn('foo.ip')
-            ->shouldReceive('ips')->once()->andReturn('foo.ips')
-            ->shouldReceive('query')->once()->andReturn('foo.query')
-            ->shouldReceive('all')->once()->andReturn('foo.request')
-            ->shouldReceive('file')->once()->andReturn('foo.file')
-            ->shouldReceive('cookie')->once()->andReturn('foo.cookies')
-            ->shouldReceive('format')->once()->andReturn('foo.format')
-            ->shouldReceive('path')->once()->andReturn('foo.path')
-            ->shouldReceive('server')->once()->andReturn('foo.server');
+        $laravel['request'] = $request;
 
-        $template->shouldReceive('setAttributes')->once()->with([
+        $template = m::spy(new Template());
+        $panel = new RequestPanel($template);
+        $panel->setLaravel($laravel);
+
+        $template->expects('setAttributes')->with([
             'rows' => [
                 'ip' => 'foo.ip',
                 'ips' => 'foo.ips',
@@ -47,7 +47,7 @@ class RequestPanelTest extends TestCase
                 'server' => 'foo.server',
             ],
         ]);
-        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+        $template->expects('render')->twice()->with(m::type('string'))->andReturns($content = 'foo');
 
         $this->assertSame($content, $panel->getTab());
         $this->assertSame($content, $panel->getPanel());

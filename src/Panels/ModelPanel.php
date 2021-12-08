@@ -5,18 +5,13 @@ namespace Recca0120\LaravelTracy\Panels;
 use Illuminate\Support\Str;
 use Recca0120\LaravelTracy\Contracts\IAjaxPanel;
 
-class ModelPanel extends AbstractSubscriablePanel implements IAjaxPanel
+class ModelPanel extends AbstractSubscribePanel implements IAjaxPanel
 {
     /**
-     * $models.
-     *
      * @var array
      */
     protected $models = [];
-
     /**
-     * $total number of models.
-     *
      * @var int
      */
     protected $total = 0;

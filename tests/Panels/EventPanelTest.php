@@ -2,10 +2,13 @@
 
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Foundation\Application;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\EventPanel;
+use Recca0120\LaravelTracy\Template;
 
 class EventPanelTest extends TestCase
 {
@@ -13,26 +16,21 @@ class EventPanelTest extends TestCase
 
     public function testRender()
     {
-        $panel = new EventPanel(
-            $template = m::mock('Recca0120\LaravelTracy\Template')
-        );
-        $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $laravel->shouldReceive('offsetGet')->once()->with('events')->andReturn(
-            $events = m::mock('lluminate\Contracts\Event\Dispatcher')
-        );
-        $laravel->shouldReceive('version')->once()->andReturn(5.4);
-        $events->shouldReceive('listen')->once()->with('*', m::on(function ($closure) {
-            $closure(
-                'foo',
-                ['foo' => 'bar']
-            );
+        $template = m::spy(new Template());
+        $panel = new EventPanel($template);
+        $events = m::spy(Dispatcher::class);
+        $laravel = m::spy(new Application());
+        $laravel['events'] = $events;
+        $laravel->expects('version')->andReturns(5.4);
+        $events->expects('listen')->with('*', m::on(function ($closure) {
+            $closure('foo', ['foo' => 'bar']);
 
             return true;
         }));
         $panel->setLaravel($laravel);
 
-        $template->shouldReceive('setAttributes')->once()->with(m::type('array'));
-        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+        $template->expects('setAttributes')->with(m::type('array'));
+        $template->expects('render')->twice()->with(m::type('string'))->andReturns($content = 'foo');
 
         $this->assertSame($content, $panel->getTab());
         $this->assertSame($content, $panel->getPanel());
@@ -40,24 +38,24 @@ class EventPanelTest extends TestCase
 
     public function testRenderAndLaravel53()
     {
-        $panel = new EventPanel(
-            $template = m::mock('Recca0120\LaravelTracy\Template')
-        );
-        $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $laravel->shouldReceive('offsetGet')->once()->with('events')->andReturn(
-            $events = m::mock('lluminate\Contracts\Event\Dispatcher')
-        );
-        $laravel->shouldReceive('version')->once()->andReturn(5.3);
-        $events->shouldReceive('firing')->once()->andReturn('foo');
-        $events->shouldReceive('listen')->once()->with('*', m::on(function ($closure) {
+        $laravel = m::spy(new Application());
+        $laravel->expects('version')->andReturns(5.3);
+
+        $events = m::spy(Dispatcher::class);
+        $laravel['events'] = $events;
+        $events->expects('firing')->andReturns('foo');
+        $events->expects('listen')->with('*', m::on(function ($closure) {
             $closure(['foo' => 'bar']);
 
             return true;
         }));
+
+        $template = m::spy(new Template());
+        $panel = new EventPanel($template);
         $panel->setLaravel($laravel);
 
-        $template->shouldReceive('setAttributes')->once()->with(m::type('array'));
-        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+        $template->expects('setAttributes')->with(m::type('array'));
+        $template->expects('render')->twice()->with(m::type('string'))->andReturns($content = 'foo');
 
         $this->assertSame($content, $panel->getTab());
         $this->assertSame($content, $panel->getPanel());

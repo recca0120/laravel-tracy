@@ -23,30 +23,28 @@ class BarManager
     /**
      * $bar.
      *
-     * @var \Tracy\Bar
+     * @var Bar
      */
     protected $bar;
 
     /**
      * $request.
      *
-     * @var \Illuminate\Http\Request
+     * @var Request
      */
     protected $request;
 
     /**
-     * $app.
-     *
-     * @var \Illuminate\Contracts\Foundation\Application
+     * @var Application
      */
     protected $app;
 
     /**
      * __construct.
      *
-     * @param \Tracy\Bar $bar
-     * @param \Illuminate\Http\Request $request
-     * @param \Illuminate\Contracts\Foundation\Application $app
+     * @param Bar $bar
+     * @param Request $request
+     * @param Application $app
      */
     public function __construct(Bar $bar = null, Request $request = null, Application $app = null)
     {
@@ -58,7 +56,7 @@ class BarManager
     /**
      * getBar.
      *
-     * @return \Tracy\Bar
+     * @return Bar
      */
     public function getBar()
     {
@@ -99,20 +97,19 @@ class BarManager
      * make.
      *
      * @param string $id
-     * @return \Tracy\IBarPanel
+     * @return IBarPanel
      */
     public static function make($id)
     {
         $className = static::name($id);
-        $panel = new $className(new Template());
 
-        return $panel;
+        return new $className(new Template());
     }
 
     /**
      * set.
      *
-     * @param \Tracy\IBarPanel $panel
+     * @param IBarPanel $panel
      * @param string $id
      * @return $this
      */
@@ -129,7 +126,7 @@ class BarManager
      * get.
      *
      * @param string $id
-     * @return \Tracy\IBarPanel
+     * @return IBarPanel
      */
     public function get($id)
     {

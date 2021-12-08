@@ -5,25 +5,19 @@ namespace Recca0120\LaravelTracy\Panels;
 use Recca0120\LaravelTracy\Contracts\IAjaxPanel;
 use Tracy\Debugger;
 
-class EventPanel extends AbstractSubscriablePanel implements IAjaxPanel
+class EventPanel extends AbstractSubscribePanel implements IAjaxPanel
 {
     /**
-     * $counter.
-     *
      * @var int
      */
     protected $counter = 0;
 
     /**
-     * $totalTime.
-     *
      * @var float
      */
     protected $totalTime = 0.0;
 
     /**
-     * $events.
-     *
      * @var array
      */
     protected $events = [];

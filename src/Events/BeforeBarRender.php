@@ -10,22 +10,22 @@ class BeforeBarRender
     /**
      * The request instance.
      *
-     * @var \Illuminate\Http\Request
+     * @var Request
      */
     public $request;
 
     /**
      * The response instance.
      *
-     * @var \Symfony\Component\HttpFoundation\Response
+     * @var Response
      */
     public $response;
 
     /**
      * Create a new event instance.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Symfony\Component\HttpFoundation\Response $response
+     * @param Request $request
+     * @param Response $response
      */
     public function __construct(Request $request, Response $response)
     {

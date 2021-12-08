@@ -2,11 +2,17 @@
 
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Database\Connection;
+use Illuminate\Database\DatabaseManager;
+use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Foundation\Application;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\DatabasePanel;
+use Recca0120\LaravelTracy\Template;
 use stdClass;
 
 class DatabasePanelTest extends TestCase
@@ -15,44 +21,47 @@ class DatabasePanelTest extends TestCase
 
     public function testRender()
     {
-        $panel = new DatabasePanel(
-            $template = m::mock('Recca0120\LaravelTracy\Template')
-        );
-        $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $laravel->shouldReceive('offsetGet')->once()->with('events')->andReturn(
-            $events = m::mock('Illuminate\Contracts\Event\Dispatcher')
-        );
-        $laravel->shouldReceive('version')->once()->andReturn(5.2);
+        $laravel = m::spy(new Application());
+        $laravel->expects('version')->andReturns(5.2);
 
-        $events->shouldReceive('listen')->once()->with('Illuminate\Database\Events\QueryExecuted', m::on(function ($closure) {
-            $event = new stdClass;
-            $event->sql = $sql = 'SELECT * FROM users WHERE foo = ?';
-            $event->bindings = $bindings = ['bar'];
-            $event->time = 1;
-            $event->connectionName = 'foo';
-            $event->connection = $connection = m::mock('Illuminate\Database\Connection');
-            $connection->shouldReceive('getPdo')->once()->andReturn(
-                $pdo = m::mock('PDO')
-            );
-            $pdo->shouldReceive('quote')->andReturnUsing(function ($param) {
-                return addslashes($param);
-            });
+        $events = m::spy(Dispatcher::class);
+        $events
+            ->expects('listen')
+            ->with(QueryExecuted::class, m::on(function ($closure) {
+                $connection = m::spy(Connection::class);
+                $pdo = m::spy('PDO');
+                $connection->expects('getPdo')->andReturns($pdo);
+                $pdo->allows('quote')->andReturnUsing(function ($param) {
+                    return addslashes($param);
+                });
+                $pdo->expects('getAttribute')->with(PDO::ATTR_DRIVER_NAME)->andReturns('mysql');
 
-            $pdo->shouldReceive('getAttribute')->once()->with(PDO::ATTR_DRIVER_NAME)->andReturn('mysql');
-            $pdo->shouldReceive('prepare')->once()->with('EXPLAIN '.$sql)->andReturn(
-                $statement = m::mock('PDOStatement')
-            );
-            $statement->shouldReceive('execute')->once()->with($bindings);
-            $statement->shouldReceive('fetchAll')->once()->with(PDO::FETCH_CLASS);
+                $sql = 'SELECT * FROM users WHERE foo = ?';
+                $bindings = ['bar'];
+                $statement = m::mock('PDOStatement');
+                $statement->expects('execute')->with($bindings);
+                $statement->expects('fetchAll')->with(PDO::FETCH_CLASS);
+                $pdo->expects('prepare')->with('EXPLAIN '.$sql)->andReturns($statement);
 
-            $closure($event);
+                $event = new stdClass;
+                $event->sql = $sql;
+                $event->bindings = $bindings;
+                $event->time = 1;
+                $event->connectionName = 'foo';
+                $event->connection = $connection;
 
-            return true;
-        }));
+                $closure($event);
+
+                return true;
+            }));
+        $laravel['events'] = $events;
+
+        $template = m::spy(new Template());
+        $panel = new DatabasePanel($template);
         $panel->setLaravel($laravel);
 
-        $template->shouldReceive('setAttributes')->once()->with(m::type('array'));
-        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+        $template->expects('setAttributes')->with(m::type('array'));
+        $template->expects('render')->twice()->with(m::type('string'))->andReturns($content = 'foo');
 
         $this->assertSame($content, $panel->getTab());
         $this->assertSame($content, $panel->getPanel());
@@ -60,40 +69,37 @@ class DatabasePanelTest extends TestCase
 
     public function testRenderAndLaravel50()
     {
-        $panel = new DatabasePanel(
-            $template = m::mock('Recca0120\LaravelTracy\Template')
-        );
-        $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $laravel->shouldReceive('offsetGet')->once()->with('events')->andReturn(
-            $events = m::mock('Illuminate\Contracts\Event\Dispatcher')
-        );
-        $laravel->shouldReceive('version')->once()->andReturn(5.1);
+        $laravel = m::spy(new Application());
+        $laravel->expects('version')->andReturns(5.1);
 
-        $events->shouldReceive('listen')->once()->with('illuminate.query', m::on(function ($closure) use ($laravel) {
+        $events = m::spy(Dispatcher::class);
+        $events->expects('listen')->with('illuminate.query', m::on(function ($closure) use ($laravel) {
             $sql = 'SELECT * FROM users WHERE foo = ?';
             $bindings = ['bar'];
             $time = 1;
             $connectionName = 'foo';
-
-            $laravel->shouldReceive('offsetGet')->once()->with('db')->andReturn(
-                $db = m::mock('Illuminate\Database\DatabaseManager')
-            );
-            $db->shouldReceive('connection')->once()->with($connectionName)->andReturnSelf()
-                ->shouldReceive('getPdo')->once()->andReturn(
-                    $pdo = m::mock('PDO')
-                );
-            $pdo->shouldReceive('quote')->andReturnUsing(function ($param) {
+            $db = m::spy(DatabaseManager::class);
+            $pdo = m::spy('PDO');
+            $db->expects('connection')->with($connectionName)->andReturnSelf();
+            $db->expects('getPdo')->andReturns($pdo);
+            $pdo->allows('quote')->andReturnUsing(function ($param) {
                 return addslashes($param);
             });
+
+            $laravel->instance('db', $db);
 
             $closure($sql, $bindings, $time, $connectionName, $pdo);
 
             return true;
         }));
+        $laravel['events'] = $events;
+
+        $template = m::spy(new Template());
+        $panel = new DatabasePanel($template);
         $panel->setLaravel($laravel);
 
-        $template->shouldReceive('setAttributes')->once()->with(m::type('array'));
-        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+        $template->expects('setAttributes')->with(m::type('array'));
+        $template->expects('render')->twice()->with(m::type('string'))->andReturns($content = 'foo');
 
         $this->assertSame($content, $panel->getTab());
         $this->assertSame($content, $panel->getPanel());

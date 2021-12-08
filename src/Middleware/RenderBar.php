@@ -2,6 +2,7 @@
 
 namespace Recca0120\LaravelTracy\Middleware;
 
+use Closure;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 use Recca0120\LaravelTracy\DebuggerManager;
@@ -14,25 +15,19 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class RenderBar
 {
     /**
-     * $debuggerManager.
-     *
-     * @var \Recca0120\LaravelTracy\DebuggerManager
+     * @var DebuggerManager
      */
     protected $debuggerManager;
-
     /**
-     * $events.
-     *
-     * @var \Illuminate\Contracts\Events\Dispatcher
+     * @var Dispatcher
      */
     protected $events;
 
     /**
      * __construct.
      *
-     *
-     * @param \Recca0120\LaravelTracy\DebuggerManager $debuggerManager
-     * @param \Illuminate\Contracts\Events\Dispatcher $events
+     * @param DebuggerManager $debuggerManager
+     * @param Dispatcher $events
      */
     public function __construct(DebuggerManager $debuggerManager, Dispatcher $events)
     {
@@ -43,9 +38,9 @@ class RenderBar
     /**
      * handle.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param Request $request
+     * @param Closure $next
+     * @return Response
      */
     public function handle($request, $next)
     {
@@ -57,9 +52,9 @@ class RenderBar
     /**
      * keepFlashSession.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param Request $request
+     * @param Closure $next
+     * @return Response
      */
     protected function keepFlashSession($request, $next)
     {
@@ -74,9 +69,9 @@ class RenderBar
     /**
      * render.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param Request $request
+     * @param Closure $next
+     * @return Response
      */
     protected function render($request, $next)
     {
@@ -105,8 +100,8 @@ class RenderBar
     /**
      * reject.
      *
-     * @param \Symfony\Component\HttpFoundation\Response $response
-     * @param \Illuminate\Http\Request $request
+     * @param Response $response
+     * @param Request $request
      * @param bool $ajax
      *
      * @return bool

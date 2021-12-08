@@ -7,7 +7,7 @@ use LibXMLError;
 use Recca0120\LaravelTracy\Contracts\IAjaxPanel;
 use Recca0120\LaravelTracy\Events\BeforeBarRender;
 
-class HtmlValidatorPanel extends AbstractSubscriablePanel implements IAjaxPanel
+class HtmlValidatorPanel extends AbstractSubscribePanel implements IAjaxPanel
 {
     /**
      * $html.

@@ -5,15 +5,10 @@ namespace Recca0120\LaravelTracy;
 class Template
 {
     /**
-     * $attributes.
-     *
      * @var array
      */
     protected $attributes = [];
-
     /**
-     * $minify.
-     *
      * @var bool
      */
     protected $minify = true;

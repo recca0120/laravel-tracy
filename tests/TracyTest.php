@@ -17,22 +17,19 @@ class TracyTest extends TestCase
             'emailSnooze' => '3 days',
             'enabled' => true,
         ]);
-        $tracy = Tracy::instance();
         $databasePanel = $tracy->getPanel('database');
         $databasePanel->logQuery('select * from users');
         $databasePanel->logQuery('select * from news');
         $databasePanel->logQuery('select * from products');
 
-        $this->assertTrue(is_string($databasePanel->getPanel()));
+        $this->assertIsString($databasePanel->getPanel());
 
         $authPanel = $tracy->getPanel('auth');
         $authPanel->setUserResolver(function () {
-            return [
-                'username' => 'foo',
-            ];
+            return ['username' => 'foo'];
         });
 
-        $this->assertTrue(is_string($authPanel->getPanel()));
+        $this->assertIsString($authPanel->getPanel());
         $this->assertTrue($tracy->isEnabled());
     }
 }

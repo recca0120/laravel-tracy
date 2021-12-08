@@ -4,12 +4,12 @@ namespace Recca0120\LaravelTracy\Panels;
 
 use Illuminate\Contracts\Foundation\Application;
 
-abstract class AbstractSubscriablePanel extends AbstractPanel
+abstract class AbstractSubscribePanel extends AbstractPanel
 {
     /**
      * setLaravel.
      *
-     * @param \Illuminate\Contracts\Foundation\Application $laravel
+     * @param Application $laravel
      * @return $this
      */
     public function setLaravel(Application $laravel = null)

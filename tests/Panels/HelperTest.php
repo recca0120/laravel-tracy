@@ -15,7 +15,7 @@ class HelperTest extends TestCase
     public function testHighlight()
     {
         $pdo = m::mock('PDO');
-        $pdo->shouldReceive('quote')->andReturnUsing(function ($param) {
+        $pdo->allows('quote')->andReturnUsing(function ($param) {
             return addslashes($param);
         });
 
@@ -23,7 +23,9 @@ class HelperTest extends TestCase
         $fp = fopen(__FILE__, 'r');
         $this->assertSame(
             'SELECT *, id, name, NOW() AS n FROM users WHERE name LIKE "%foo%" AND id = (1, 2) AND created_at = \''.$now->format('Y-m-d H:i:s').'\' AND resource = &lt;stream resource&gt; ORDER BY RAND(); /** **/ **foo**',
-            preg_replace("/\n/", '',
+            preg_replace(
+                "/\n/",
+                '',
                 strip_tags(
                     Helper::hightlight(
                         'SELECT *, id, name, NOW() AS n FROM users WHERE name LIKE "%?%" AND id = ? AND created_at = ? AND resource = ? ORDER BY RAND(); /** **/ **foo**',

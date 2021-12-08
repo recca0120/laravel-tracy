@@ -3,10 +3,14 @@
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
 use Exception;
+use Illuminate\Foundation\Application;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\TerminalPanel;
+use Recca0120\LaravelTracy\Template;
+use Recca0120\Terminal\Http\Controllers\TerminalController;
+use Symfony\Component\HttpFoundation\Response;
 
 class TerminalPanelTest extends TestCase
 {
@@ -14,28 +18,22 @@ class TerminalPanelTest extends TestCase
 
     public function testRender()
     {
-        $panel = new TerminalPanel(
-            $template = m::mock('Recca0120\LaravelTracy\Template')
-        );
-        $panel->setLaravel(
-            $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
-        );
-        $laravel->shouldReceive('make')->once()->with('Recca0120\Terminal\Http\Controllers\TerminalController')->andReturn(
-             $controller = m::mock('Recca0120\Terminal\Http\Controllers\TerminalController')
-        );
-        $laravel->shouldReceive('call')->once()->with([$controller, 'index'], ['view' => 'panel'])->andReturn(
-            $response = m::mock('Symfony\Component\HttpFoundation\Response')
-        );
-        $response->shouldReceive('getContent')->once()->andReturn(
-            $terminal = 'foo'
-        );
+        $laravel = m::spy(new Application());
+        $controller = m::spy(TerminalController::class);
+        $terminal = 'foo';
+        $response = m::spy(Response::class);
+        $response->expects('getContent')->andReturns($terminal);
 
-        $template->shouldReceive('setAttributes')->once()->with([
-            'terminal' => $terminal,
-        ]);
+        $laravel->expects('make')->with(TerminalController::class)->andReturns($controller);
+        $laravel->expects('call')->with([$controller, 'index'], ['view' => 'panel'])->andReturns($response);
 
-        $template->shouldReceive('minify')->once()->with(false);
-        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+        $template = m::spy(new Template());
+        $panel = new TerminalPanel($template);
+        $panel->setLaravel($laravel);
+
+        $template->expects('setAttributes')->with(['terminal' => $terminal]);
+        $template->expects('minify')->with(false);
+        $template->expects('render')->twice()->with(m::type('string'))->andReturns($content = 'foo');
 
         $this->assertSame($content, $panel->getTab());
         $this->assertSame($content, $panel->getPanel());
@@ -43,22 +41,16 @@ class TerminalPanelTest extends TestCase
 
     public function testException()
     {
-        $panel = new TerminalPanel(
-            $template = m::mock('Recca0120\LaravelTracy\Template')
-        );
+        $laravel = m::spy(new Application());
+        $laravel->expects('make')->andThrow(new Exception('foo'));
 
-        $panel->setLaravel(
-            $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
-        );
+        $template = m::spy(new Template());
+        $panel = new TerminalPanel($template);
+        $panel->setLaravel($laravel);
 
-        $laravel->shouldReceive('make')->once()->andThrow(new Exception('foo'));
-
-        $template->shouldReceive('setAttributes')->once()->with([
-            'terminal' => 'foo',
-        ]);
-
-        $template->shouldReceive('minify')->once()->with(false);
-        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+        $template->expects('setAttributes')->with(['terminal' => 'foo']);
+        $template->expects('minify')->with(false);
+        $template->expects('render')->twice()->with(m::type('string'))->andReturns($content = 'foo');
 
         $this->assertSame($content, $panel->getTab());
         $this->assertSame($content, $panel->getPanel());

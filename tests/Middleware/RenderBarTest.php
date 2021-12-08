@@ -2,11 +2,18 @@
 
 namespace Recca0120\LaravelTracy\Tests\Middleware;
 
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
+use Recca0120\LaravelTracy\DebuggerManager;
+use Recca0120\LaravelTracy\Events\BeforeBarRender;
 use Recca0120\LaravelTracy\Middleware\RenderBar;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RenderBarTest extends TestCase
 {
@@ -14,20 +21,17 @@ class RenderBarTest extends TestCase
 
     public function testHandleAssets()
     {
-        $renderBar = new RenderBar(
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager'),
-            $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
-        );
+        $renderBar = new RenderBar(m::spy(DebuggerManager::class), m::spy(Dispatcher::class));
 
-        $request = m::mock('Illuminate\Http\Request');
+        $request = m::spy(Request::class);
 
-        $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(true);
-        $request->shouldReceive('get')->once()->with('_tracy_bar')->andReturn('foo');
+        $request->expects('has')->with('_tracy_bar')->andReturns(true);
+        $request->expects('get')->with('_tracy_bar')->andReturns('foo');
 
-        $request->shouldReceive('hasSession')->once()->andReturn(true);
-        $request->shouldReceive('session->reflash')->once();
+        $request->expects('hasSession')->andReturns(true);
+        $request->expects('session->reflash');
 
-        $response = m::mock('Symfony\Component\HttpFoundation\Response');
+        $response = m::spy(Response::class);
 
         $next = function (Request $request) use ($response) {
             return $response;
@@ -38,203 +42,198 @@ class RenderBarTest extends TestCase
 
     public function testHandleBinaryFileResponse()
     {
-        $renderBar = new RenderBar(
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager'),
-            $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
-        );
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $renderBar = new RenderBar($debuggerManager, m::spy(Dispatcher::class));
 
-        $request = m::mock('Illuminate\Http\Request');
-        $response = m::mock('Symfony\Component\HttpFoundation\BinaryFileResponse');
+        $request = m::spy(Request::class);
+        $response = m::spy(BinaryFileResponse::class);
         $next = function (Request $request) use ($response) {
             return $response;
         };
 
-        $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
-        $request->shouldReceive('ajax')->once()->andReturn(false);
-        $debuggerManager->shouldReceive('dispatch')->once();
+        $request->expects('has')->with('_tracy_bar')->andReturns(false);
+        $request->expects('ajax')->andReturns(false);
+        $debuggerManager->expects('dispatch');
 
         $this->assertSame($response, $renderBar->handle($request, $next));
     }
 
     public function testHandleStreamedResponse()
     {
-        $renderBar = new RenderBar(
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager'),
-            $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
-        );
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $renderBar = new RenderBar($debuggerManager, m::spy(Dispatcher::class));
 
-        $request = m::mock('Illuminate\Http\Request');
-        $response = m::mock('Symfony\Component\HttpFoundation\StreamedResponse');
+        $request = m::spy(Request::class);
+        $response = m::spy(StreamedResponse::class);
         $next = function (Request $request) use ($response) {
             return $response;
         };
 
-        $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
-        $request->shouldReceive('ajax')->once()->andReturn(false);
-        $debuggerManager->shouldReceive('dispatch')->once();
+        $request->expects('has')->with('_tracy_bar')->andReturns(false);
+        $request->expects('ajax')->andReturns(false);
+        $debuggerManager->expects('dispatch');
 
         $this->assertSame($response, $renderBar->handle($request, $next));
     }
 
     public function testHandleRedirectResponse()
     {
-        $renderBar = new RenderBar(
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager'),
-            $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
-        );
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $renderBar = new RenderBar($debuggerManager, m::spy(Dispatcher::class));
 
-        $request = m::mock('Illuminate\Http\Request');
-        $response = m::mock('Symfony\Component\HttpFoundation\RedirectResponse');
+        $request = m::spy(Request::class);
+        $response = m::spy(RedirectResponse::class);
         $next = function (Request $request) use ($response) {
             return $response;
         };
 
-        $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
-        $request->shouldReceive('ajax')->once()->andReturn(false);
-        $debuggerManager->shouldReceive('dispatch')->once();
+        $request->expects('has')->with('_tracy_bar')->andReturns(false);
+        $request->expects('ajax')->andReturns(false);
+        $debuggerManager->expects('dispatch');
 
         $this->assertSame($response, $renderBar->handle($request, $next));
     }
 
     public function testHandleElse()
     {
-        $renderBar = new RenderBar(
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager'),
-            $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
-        );
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $renderBar = new RenderBar($debuggerManager, m::spy(Dispatcher::class));
 
-        $request = m::mock('Illuminate\Http\Request');
-        $response = m::mock('Symfony\Component\HttpFoundation\Response');
-        $response->headers = $headers = m::mock('stdClass');
+        $headers = m::spy('stdClass');
+        $request = m::spy(Request::class);
+        $response = m::spy(Response::class);
+        $response->headers = $headers;
         $next = function (Request $request) use ($response) {
             return $response;
         };
 
-        $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
-        $debuggerManager->shouldReceive('dispatch')->once();
-        $request->shouldReceive('ajax')->once()->andReturn(false);
-        $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn($contentType = '');
-        $debuggerManager->shouldReceive('accepts')->once()->andReturn($accepts = ['text/html']);
-        $response->shouldReceive('getStatusCode')->once()->andReturn(200);
+        $request->expects('has')->with('_tracy_bar')->andReturns(false);
+        $debuggerManager->expects('dispatch');
+        $request->expects('ajax')->andReturns(false);
+        $headers->expects('get')->with('Content-Type')->andReturns($contentType = '');
+        $debuggerManager->expects('accepts')->andReturns($accepts = ['text/html']);
+        $response->expects('getStatusCode')->andReturns(200);
 
         $this->assertSame($response, $renderBar->handle($request, $next));
     }
 
     public function testHandleAjax()
     {
-        $renderBar = new RenderBar(
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager'),
-            $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
-        );
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $renderBar = new RenderBar($debuggerManager, $events = m::spy(Dispatcher::class));
 
-        $request = m::mock('Illuminate\Http\Request');
-        $response = m::mock('Symfony\Component\HttpFoundation\Response');
-        $response->headers = $headers = m::mock('stdClass');
+        $request = m::spy(Request::class);
+        $response = m::spy(Response::class);
+        $response->headers = m::spy('stdClass');
         $next = function (Request $request) use ($response) {
             return $response;
         };
 
-        $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
-        $debuggerManager->shouldReceive('dispatch')->once();
-        $request->shouldReceive('ajax')->once()->andReturn($ajax = true);
+        $request->expects('has')->with('_tracy_bar')->andReturns(false);
+        $debuggerManager->expects('dispatch');
+        $request->expects('ajax')->andReturns($ajax = true);
 
-        $events->shouldReceive(method_exists($events, 'dispatch') ? 'dispatch' : 'fire')->once()->with(m::type('Recca0120\LaravelTracy\Events\BeforeBarRender'));
+        $events->expects(method_exists($events, 'dispatch') ? 'dispatch' : 'fire')
+            ->with(m::type(BeforeBarRender::class));
 
-        $response->shouldReceive('getContent')->once()->andReturn($content = 'foo');
-        $debuggerManager->shouldReceive('shutdownHandler')->once()->with($content, $ajax)->andReturn($content);
-        $response->shouldReceive('setContent')->once()->with($content);
+        $response->expects('getContent')->andReturns($content = 'foo');
+        $debuggerManager->expects('shutdownHandler')->with($content, $ajax)->andReturns($content);
+        $response->expects('setContent')->with($content);
 
         $this->assertSame($response, $renderBar->handle($request, $next));
     }
 
     public function testHandleStatusCodeBiggerThan400()
     {
-        $renderBar = new RenderBar(
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager'),
-            $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
-        );
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $events = m::spy(Dispatcher::class);
+        $renderBar = new RenderBar($debuggerManager, $events);
 
-        $request = m::mock('Illuminate\Http\Request');
-        $response = m::mock('Symfony\Component\HttpFoundation\Response');
-        $response->headers = $headers = m::mock('stdClass');
+        $headers = m::spy('stdClass');
+        $request = m::spy(Request::class);
+        $response = m::spy(Response::class);
+        $response->headers = $headers;
         $next = function (Request $request) use ($response) {
             return $response;
         };
 
-        $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
-        $debuggerManager->shouldReceive('dispatch')->once();
-        $request->shouldReceive('ajax')->once()->andReturn($ajax = false);
+        $request->expects('has')->with('_tracy_bar')->andReturns(false);
+        $debuggerManager->expects('dispatch');
+        $request->expects('ajax')->andReturns($ajax = false);
 
-        $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn($contentType = '');
-        $debuggerManager->shouldReceive('accepts')->once()->andReturn($accepts = ['text/html']);
-        $response->shouldReceive('getStatusCode')->once()->andReturn(400);
+        $headers->expects('get')->with('Content-Type')->andReturns('');
+        $debuggerManager->expects('accepts')->andReturns($accepts = ['text/html']);
+        $response->expects('getStatusCode')->andReturns(400);
 
-        $events->shouldReceive(method_exists($events, 'dispatch') ? 'dispatch' : 'fire')->once()->with(m::type('Recca0120\LaravelTracy\Events\BeforeBarRender'));
+        $events->expects(method_exists($events, 'dispatch') ? 'dispatch' : 'fire')
+            ->with(m::type(BeforeBarRender::class));
 
-        $response->shouldReceive('getContent')->once()->andReturn($content = 'foo');
-        $debuggerManager->shouldReceive('shutdownHandler')->once()->with($content, $ajax)->andReturn($content);
-        $response->shouldReceive('setContent')->once()->with($content);
+        $response->expects('getContent')->andReturns($content = 'foo');
+        $debuggerManager->expects('shutdownHandler')->with($content, $ajax)->andReturns($content);
+        $response->expects('setContent')->with($content);
 
         $this->assertSame($response, $renderBar->handle($request, $next));
     }
 
     public function testHandleEmptyAccepts()
     {
-        $renderBar = new RenderBar(
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager'),
-            $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
-        );
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $events = m::spy(Dispatcher::class);
+        $renderBar = new RenderBar($debuggerManager, $events);
 
-        $request = m::mock('Illuminate\Http\Request');
-        $response = m::mock('Symfony\Component\HttpFoundation\Response');
-        $response->headers = $headers = m::mock('stdClass');
+        $headers = m::spy('stdClass');
+        $request = m::spy(Request::class);
+        $response = m::spy(Response::class);
+        $response->headers = $headers;
         $next = function (Request $request) use ($response) {
             return $response;
         };
 
-        $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
-        $debuggerManager->shouldReceive('dispatch')->once();
-        $request->shouldReceive('ajax')->once()->andReturn($ajax = false);
+        $request->expects('has')->with('_tracy_bar')->andReturns(false);
+        $debuggerManager->expects('dispatch');
+        $request->expects('ajax')->andReturns($ajax = false);
 
-        $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn($contentType = '');
-        $debuggerManager->shouldReceive('accepts')->once()->andReturn($accepts = []);
-        $response->shouldReceive('getStatusCode')->once()->andReturn(200);
+        $headers->expects('get')->with('Content-Type')->andReturns($contentType = '');
+        $debuggerManager->expects('accepts')->andReturns($accepts = []);
+        $response->expects('getStatusCode')->andReturns(200);
 
-        $events->shouldReceive(method_exists($events, 'dispatch') ? 'dispatch' : 'fire')->once()->with(m::type('Recca0120\LaravelTracy\Events\BeforeBarRender'));
+        $events->expects(method_exists($events, 'dispatch') ? 'dispatch' : 'fire')
+            ->with(m::type(BeforeBarRender::class));
 
-        $response->shouldReceive('getContent')->once()->andReturn($content = 'foo');
-        $debuggerManager->shouldReceive('shutdownHandler')->once()->with($content, $ajax)->andReturn($content);
-        $response->shouldReceive('setContent')->once()->with($content);
+        $response->expects('getContent')->andReturns($content = 'foo');
+        $debuggerManager->expects('shutdownHandler')->with($content, $ajax)->andReturns($content);
+        $response->expects('setContent')->with($content);
 
         $this->assertSame($response, $renderBar->handle($request, $next));
     }
 
     public function testHandleAcceptContentType()
     {
-        $renderBar = new RenderBar(
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager'),
-            $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
-        );
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $events = m::spy(Dispatcher::class);
+        $renderBar = new RenderBar($debuggerManager, $events);
 
-        $request = m::mock('Illuminate\Http\Request');
-        $response = m::mock('Symfony\Component\HttpFoundation\Response');
-        $response->headers = $headers = m::mock('stdClass');
+        $headers = m::spy('stdClass');
+        $request = m::spy(Request::class);
+        $response = m::spy(Response::class);
+        $response->headers = $headers;
         $next = function (Request $request) use ($response) {
             return $response;
         };
 
-        $request->shouldReceive('has')->once()->with('_tracy_bar')->andReturn(false);
-        $debuggerManager->shouldReceive('dispatch')->once();
-        $request->shouldReceive('ajax')->once()->andReturn($ajax = false);
+        $request->expects('has')->with('_tracy_bar')->andReturns(false);
+        $debuggerManager->expects('dispatch');
+        $request->expects('ajax')->andReturns($ajax = false);
 
-        $headers->shouldReceive('get')->once()->with('Content-Type')->andReturn($contentType = 'text/html');
-        $debuggerManager->shouldReceive('accepts')->once()->andReturn($accepts = ['text/html']);
+        $headers->expects('get')->with('Content-Type')->andReturns($contentType = 'text/html');
+        $debuggerManager->expects('accepts')->andReturns($accepts = ['text/html']);
 
-        $events->shouldReceive(method_exists($events, 'dispatch') ? 'dispatch' : 'fire')->with(m::type('Recca0120\LaravelTracy\Events\BeforeBarRender'));
+        $events->allows(method_exists($events, 'dispatch') ? 'dispatch' : 'fire')
+            ->with(m::type(BeforeBarRender::class));
 
-        $response->shouldReceive('getContent')->once()->andReturn($content = 'foo');
-        $debuggerManager->shouldReceive('shutdownHandler')->once()->with($content, $ajax)->andReturn($content);
-        $response->shouldReceive('setContent')->once()->with($content);
+        $response->expects('getContent')->andReturns($content = 'foo');
+        $debuggerManager->expects('shutdownHandler')->with($content, $ajax)->andReturns($content);
+        $response->expects('setContent')->with($content);
 
         $this->assertSame($response, $renderBar->handle($request, $next));
     }

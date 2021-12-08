@@ -3,12 +3,19 @@
 namespace Recca0120\LaravelTracy\Tests\Exceptions;
 
 use Exception;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\View\View;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
+use Recca0120\LaravelTracy\DebuggerManager;
 use Recca0120\LaravelTracy\Exceptions\Handler;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class HandlerTest extends TestCase
 {
@@ -16,22 +23,16 @@ class HandlerTest extends TestCase
 
     public function testRenderResponseWithViewReturnsView()
     {
-        $handler = new Handler(
-            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
-        );
+        $exceptionHandler = m::spy(ExceptionHandler::class);
+        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
 
-        $view = m::mock('Illuminate\View\View');
-        $view->shouldReceive('render')->once()->andReturn('Some rendered view string');
+        $view = m::spy(View::class);
+        $view->expects('render')->andReturns('Some rendered view string');
 
-        $exceptionHandler->shouldReceive('render')
-            ->once()
-            ->with(
-                $request = m::mock('Illuminate\Http\Request'),
-                $exception = new Exception()
-            )->andReturn(
-                $response = new Response($view)
-            );
+        $request = m::spy(Request::class);
+        $exception = new Exception();
+        $response = new Response($view);
+        $exceptionHandler->expects('render')->with($request, $exception)->andReturns($response);
 
         // Response returned from render,
         $this->assertSame($response, $handler->render($request, $exception));
@@ -39,155 +40,120 @@ class HandlerTest extends TestCase
 
     public function testReport()
     {
-        $handler = new Handler(
-            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
-        );
+        $exceptionHandler = m::spy(ExceptionHandler::class);
+        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
         $exception = new Exception();
-        $exceptionHandler->shouldReceive('report')->once()->with($exception);
-        $this->assertNull($handler->report($exception));
+
+        $handler->report($exception);
+
+        $exceptionHandler->shouldHaveReceived('report')->with($exception);
     }
 
     public function testShouldReport()
     {
-        $handler = new Handler(
-            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
-        );
+        $exceptionHandler = m::spy(ExceptionHandler::class);
+        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
         $exception = new Exception();
-        $exceptionHandler->shouldReceive('shouldReport')->once()->with($exception)->andReturn(true);
+        $exceptionHandler->expects('shouldReport')->with($exception)->andReturns(true);
 
         $this->assertTrue($handler->shouldReport($exception));
     }
 
-    public function testRednerWithResponseIsRedirectResponse()
+    public function testRenderWithResponseIsRedirectResponse()
     {
-        $handler = new Handler(
-            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
-        );
-        $exceptionHandler->shouldReceive('render')
-            ->once()
-            ->with(
-                $request = m::mock('Illuminate\Http\Request'),
-                $exception = new Exception()
-            )->andReturn(
-                $response = m::mock('Symfony\Component\HttpFoundation\RedirectResponse')
-            );
+        $exceptionHandler = m::spy(ExceptionHandler::class);
+        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+
+        $request = m::spy(Request::class);
+        $exception = new Exception();
+        $response = m::spy(RedirectResponse::class);
+        $exceptionHandler->expects('render')->with($request, $exception)->andReturns($response);
+
         $this->assertSame($response, $handler->render($request, $exception));
     }
 
-    public function testRednerWithResponseIsJsonResponse()
+    public function testRenderWithResponseIsJsonResponse()
     {
-        $handler = new Handler(
-            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
-        );
-        $exceptionHandler->shouldReceive('render')
-            ->once()
-            ->with(
-                $request = m::mock('Illuminate\Http\Request'),
-                $exception = new Exception()
-            )->andReturn(
-                $response = m::mock('Symfony\Component\HttpFoundation\JsonResponse')
-            );
+        $exceptionHandler = m::spy(ExceptionHandler::class);
+        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+
+        $request = m::spy(Request::class);
+        $exception = new Exception();
+        $response = m::spy(JsonResponse::class);
+        $exceptionHandler->expects('render')->with($request, $exception)->andReturns($response);
+
         $this->assertSame($response, $handler->render($request, $exception));
     }
 
-    public function testRednerWithResponseContentIsView()
+    public function testRenderWithResponseContentIsView()
     {
-        $handler = new Handler(
-            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
-        );
-        $exceptionHandler->shouldReceive('render')
-            ->once()
-            ->with(
-                $request = m::mock('Illuminate\Http\Request'),
-                $exception = new Exception()
-            )->andReturn(
-                $response = m::mock('Symfony\Component\HttpFoundation\Response')
-            );
-        $response->shouldReceive('getContent')->once()->andReturn(
-            m::mock('Illuminate\Contracts\View\View')
-        );
+        $exceptionHandler = m::spy(ExceptionHandler::class);
+        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+        $request = m::spy(Request::class);
+        $exception = new Exception();
+        $response = m::spy(SymfonyResponse::class);
+
+        $exceptionHandler->expects('render')->with($request, $exception)->andReturns($response);
+        $response->expects('getContent')->andReturns(m::spy(\Illuminate\Contracts\View\View::class));
+
         $this->assertSame($response, $handler->render($request, $exception));
     }
 
     public function testRenderRedirectResponse()
     {
-        $handler = new Handler(
-            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
-        );
-        $exceptionHandler->shouldReceive('render')
-            ->once()
-            ->with(
-                $request = m::mock('Illuminate\Http\Request'),
-                $exception = new Exception()
-            )->andReturn(
-                $response = m::mock('Symfony\Component\HttpFoundation\RedirectResponse')
-            );
+        $exceptionHandler = m::spy(ExceptionHandler::class);
+        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+
+        $request = m::spy(Request::class);
+        $exception = new Exception();
+        $response = m::spy(RedirectResponse::class);
+        $exceptionHandler->expects('render')->with($request, $exception)->andReturns($response);
 
         $this->assertSame($response, $handler->render($request, $exception));
     }
 
     public function testRenderJsonResponse()
     {
-        $handler = new Handler(
-            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
-        );
-        $exceptionHandler->shouldReceive('render')
-            ->once()
-            ->with(
-                $request = m::mock('Illuminate\Http\Request'),
-                $exception = new Exception()
-            )->andReturn(
-                $response = m::mock('Symfony\Component\HttpFoundation\JsonResponse')
-            );
+        $exceptionHandler = m::spy(ExceptionHandler::class);
+        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+
+        $request = m::spy(Request::class);
+        $exception = new Exception();
+        $response = m::spy(JsonResponse::class);
+        $exceptionHandler->expects('render')->with($request, $exception)->andReturns($response);
 
         $this->assertSame($response, $handler->render($request, $exception));
     }
 
     public function testRenderView()
     {
-        $handler = new Handler(
-            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
-        );
-        $exceptionHandler->shouldReceive('render')
-            ->once()
-            ->with(
-                $request = m::mock('Illuminate\Http\Request'),
-                $exception = new Exception()
-            )->andReturn(
-                $response = m::mock('Symfony\Component\HttpFoundation\Response')
-            );
-        $response->shouldReceive('getContent')->once()->andReturn(
-            $view = m::mock('Illuminate\Contracts\View\View')
-        );
+        $exceptionHandler = m::spy(ExceptionHandler::class);
+        $handler = new Handler($exceptionHandler, m::spy(DebuggerManager::class));
+
+        $request = m::spy(Request::class);
+        $exception = new Exception();
+        $response = m::spy(SymfonyResponse::class);
+        $view = m::spy(\Illuminate\Contracts\View\View::class);
+        $exceptionHandler->expects('render')->with($request, $exception)->andReturns($response);
+        $response->expects('getContent')->andReturns($view);
 
         $this->assertSame($response, $handler->render($request, $exception));
     }
 
     public function testRender()
     {
-        $handler = new Handler(
-            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
-        );
-        $exceptionHandler->shouldReceive('render')
-            ->once()
-            ->with(
-                $request = Request::capture(),
-                $exception = new Exception()
-            )->andReturn(
-                $response = m::mock('Symfony\Component\HttpFoundation\Response')
-            );
-        $response->shouldReceive('getContent')->once()->andReturn(null);
-        $debuggerManager->shouldReceive('exceptionHandler')->once()->with($exception)->andReturn($content = 'foo');
-        $response->shouldReceive('setContent')->once()->with($content);
+        $exceptionHandler = m::spy(ExceptionHandler::class);
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $handler = new Handler($exceptionHandler, $debuggerManager);
+
+        $request = Request::capture();
+        $exception = new Exception();
+        $response = m::spy(SymfonyResponse::class);
+        $exceptionHandler->expects('render')->with($request, $exception)->andReturns($response);
+
+        $response->expects('getContent')->andReturns(null);
+        $debuggerManager->expects('exceptionHandler')->with($exception)->andReturns($content = 'foo');
+        $response->expects('setContent')->with($content);
 
         $_SERVER['foo'] = 'bar';
 
@@ -197,14 +163,15 @@ class HandlerTest extends TestCase
 
     public function testRenderForConsoleMethod()
     {
-        $handler = new Handler(
-            $exceptionHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler'),
-            $debuggerManager = m::mock('Recca0120\LaravelTracy\DebuggerManager')
-        );
-        $exceptionHandler->shouldReceive('renderForConsole')->once()->with(
-            $output = m::mock('Symfony\Component\Console\Output\OutputInterface'),
-            $exception = new Exception()
-        );
-        $this->assertNull($handler->renderForConsole($output, $exception));
+        $exceptionHandler = m::spy(ExceptionHandler::class);
+        $debuggerManager = m::spy(DebuggerManager::class);
+        $handler = new Handler($exceptionHandler, $debuggerManager);
+
+        $output = m::spy(OutputInterface::class);
+        $exception = new Exception();
+
+        $handler->renderForConsole($output, $exception);
+
+        $exceptionHandler->shouldHaveReceived('renderForConsole')->with($output, $exception);
     }
 }

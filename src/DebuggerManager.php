@@ -3,6 +3,7 @@
 namespace Recca0120\LaravelTracy;
 
 use ErrorException;
+use Exception;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Arr;
 use Throwable;
@@ -14,8 +15,6 @@ use Tracy\Helpers;
 class DebuggerManager
 {
     /**
-     * $config.
-     *
      * @var array
      */
     protected $config;
@@ -23,28 +22,26 @@ class DebuggerManager
     /**
      * $bar.
      *
-     * @var \Tracy\Bar
+     * @var Bar
      */
     protected $bar;
 
     /**
-     * $blueScreen.
-     *
-     * @var \Tracy\BlueScreen
+     * @var BlueScreen
      */
     protected $blueScreen;
 
     /**
      * $session.
      *
-     * @var \Recca0120\LaravelTracy\Session
+     * @var Session
      */
     protected $session;
 
     /**
      * $urlGenerator.
      *
-     * @var \Illuminate\Contracts\Routing\UrlGenerator
+     * @var UrlGenerator
      */
     protected $urlGenerator;
 
@@ -52,8 +49,9 @@ class DebuggerManager
      * __construct.
      *
      * @param array $config
-     * @param \Tracy\Bar $bar
-     * @param \Tracy\BlueScreen $blueScreen
+     * @param Bar $bar
+     * @param BlueScreen $blueScreen
+     * @param Session|null $session
      */
     public function __construct($config = [], Bar $bar = null, BlueScreen $blueScreen = null, Session $session = null)
     {
@@ -133,7 +131,7 @@ class DebuggerManager
     /**
      * setUrlGenerator.
      *
-     * @param \Illuminate\Contracts\Routing\UrlGenerator $urlGenerator
+     * @param UrlGenerator $urlGenerator
      * @return $this
      */
     public function setUrlGenerator(UrlGenerator $urlGenerator)
@@ -171,9 +169,7 @@ class DebuggerManager
         }
 
         return [
-            array_merge($headers, [
-                'Content-Length' => strlen($content),
-            ]),
+            array_merge($headers, ['Content-Length' => strlen($content)]),
             $content,
         ];
     }
@@ -221,7 +217,7 @@ class DebuggerManager
     /**
      * exceptionHandler.
      *
-     * @param \Exception $exception
+     * @param Exception $exception
      * @return string
      */
     public function exceptionHandler(Throwable $exception)
@@ -268,7 +264,7 @@ class DebuggerManager
      *
      * @param string $content
      * @param string $method
-     * @param array $appendTo
+     * @param string[] $appendTags
      * @return string
      */
     protected function render($content, $method, $appendTags = ['body'])

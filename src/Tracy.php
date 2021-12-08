@@ -5,12 +5,14 @@ namespace Recca0120\LaravelTracy;
 use Tracy\Bar;
 use Tracy\Debugger;
 
+/**
+ * @method getPanel(string $string)
+ * @method isEnabled()
+ */
 class Tracy
 {
     /**
-     * $bar.
-     *
-     * @var \Tracy\Bar
+     * @var Bar
      */
     protected $bar;
 
@@ -19,7 +21,7 @@ class Tracy
      *
      * @param array $config
      * @param BarManager $barManager
-     * @param \Tracy\Bar $bar
+     * @param Bar $bar
      */
     public function __construct($config = [], BarManager $barManager = null, Bar $bar = null)
     {
@@ -66,7 +68,7 @@ class Tracy
      *
      * @param string $method
      * @param array $parameters
-     * @return mix
+     * @return mixed
      */
     public function __call($method, $parameters)
     {
@@ -74,13 +76,13 @@ class Tracy
             return call_user_func_array([$this->bar, $method], $parameters);
         }
 
-        return call_user_func_array(['\Tracy\Debugger', $method], $parameters);
+        return call_user_func_array([Debugger::class, $method], $parameters);
     }
 
     /**
      * instance.
      *
-     * @param  array$config
+     * @param array $config
      * @return static
      */
     public static function instance($config = [], BarManager $barManager = null, Bar $bar = null)

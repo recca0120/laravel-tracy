@@ -2,10 +2,13 @@
 
 namespace Recca0120\LaravelTracy\Tests\Panels;
 
+use Illuminate\Foundation\Application;
+use Illuminate\Session\SessionManager;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\SessionPanel;
+use Recca0120\LaravelTracy\Template;
 
 class SessionPanelTest extends TestCase
 {
@@ -19,20 +22,20 @@ class SessionPanelTest extends TestCase
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
-        $panel = new SessionPanel(
-            $template = m::mock('Recca0120\LaravelTracy\Template')
-        );
-        $panel->setLaravel(
-            $laravel = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess')
-        );
-        $laravel->shouldReceive('offsetGet')->once()->with('session')->andReturn(
-             $sessionManager = m::mock('Illuminate\Session\SessionManager')
-        );
-        $sessionManager->shouldReceive('getId')->once()->andReturn($id = 'foo');
-        $sessionManager->shouldReceive('getSessionConfig')->once()->andReturn($sessionConfig = ['foo']);
-        $sessionManager->shouldReceive('all')->once()->andReturn($laravelSession = ['foo']);
 
-        $template->shouldReceive('setAttributes')->once()->with([
+        $session = m::spy(SessionManager::class);
+        $session->expects('getId')->andReturns($id = 'foo');
+        $session->expects('getSessionConfig')->andReturns($sessionConfig = ['foo']);
+        $session->expects('all')->andReturns($laravelSession = ['foo']);
+
+        $laravel = m::spy(new Application());
+        $laravel['session'] = $session;
+
+        $template = m::spy(new Template());
+        $panel = new SessionPanel($template);
+        $panel->setLaravel($laravel);
+
+        $template->expects('setAttributes')->with([
             'rows' => [
                 'sessionId' => $id,
                 'sessionConfig' => $sessionConfig,
@@ -41,7 +44,7 @@ class SessionPanelTest extends TestCase
                 'nativeSession' => $_SESSION,
             ],
         ]);
-        $template->shouldReceive('render')->twice()->with(m::type('string'))->andReturn($content = 'foo');
+        $template->expects('render')->twice()->with(m::type('string'))->andReturns($content = 'foo');
 
         $this->assertSame($content, $panel->getTab());
         $this->assertSame($content, $panel->getPanel());

@@ -6,7 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Recca0120\LaravelTracy\Contracts\IAjaxPanel;
 
-class ViewPanel extends AbstractSubscriablePanel implements IAjaxPanel
+class ViewPanel extends AbstractSubscribePanel implements IAjaxPanel
 {
     /**
      * $limit.
