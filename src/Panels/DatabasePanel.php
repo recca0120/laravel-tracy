@@ -48,7 +48,7 @@ class DatabasePanel extends AbstractSubscribePanel implements IAjaxPanel
             'driver' => $driver,
             'source' => $source,
             'editorLink' => $editorLink,
-            'hightlight' => null,
+            'highlight' => null,
         ];
 
         return $this;
@@ -98,7 +98,7 @@ class DatabasePanel extends AbstractSubscribePanel implements IAjaxPanel
             $driver = $query['driver'];
             $version = 0;
 
-            $highlight = Helper::hightlight($sql, $bindings, $pdo);
+            $highlight = Helper::highlight($sql, $bindings, $pdo);
             $explains = [];
             $hints = [];
             if ($pdo instanceof PDO) {

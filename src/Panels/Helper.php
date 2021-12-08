@@ -30,7 +30,7 @@ class Helper
      * @param \PDO $pdo
      * @return string
      */
-    public static function hightlight($sql, array $bindings = [], PDO $pdo = null)
+    public static function highlight($sql, array $bindings = [], PDO $pdo = null)
     {
         // insert new lines
         $sql = " $sql ";
@@ -44,11 +44,11 @@ class Helper
         $sql = preg_replace_callback('#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])('.static::KEYWORDS1.')(?=[\\s,)])|(?<=[\\s,(=])('.static::KEYWORDS2.')(?=[\\s,)=])#is', function ($matches) {
             if (! empty($matches[1])) { // comment
                 return '<em style="color:gray">'.$matches[1].'</em>';
-            } elseif (! empty($matches[2])) { // error
+            } else if (! empty($matches[2])) { // error
                 return '<strong style="color:red">'.$matches[2].'</strong>';
-            } elseif (! empty($matches[3])) { // most important keywords
+            } else if (! empty($matches[3])) { // most important keywords
                 return '<strong style="color:blue; text-transform: uppercase;">'.$matches[3].'</strong>';
-            } elseif (! empty($matches[4])) { // other keywords
+            } else if (! empty($matches[4])) { // other keywords
                 return '<strong style="color:green">'.$matches[4].'</strong>';
             }
         }, $sql);
@@ -149,7 +149,22 @@ class Helper
         if (preg_match('#\s*\(?\s*SELECT\s#iA', $sql)) {
             $statement = $pdo->prepare('EXPLAIN '.$sql);
             $statement->execute($bindings);
-            $explains = $statement->fetchAll(PDO::FETCH_CLASS);
+            $explains = self::filterExplains($statement->fetchAll(PDO::FETCH_CLASS));
+        }
+
+        return $explains;
+    }
+
+    /**
+     * @param array $explains
+     * @return array
+     */
+    private static function filterExplains($explains)
+    {
+        if (! empty($explains) && ! empty($explains[0])) {
+            $explains[0] = array_filter($explains[0], static function ($explain) {
+                return ! empty($explain);
+            });
         }
 
         return $explains;

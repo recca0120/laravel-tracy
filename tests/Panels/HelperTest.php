@@ -27,7 +27,7 @@ class HelperTest extends TestCase
                 "/\n/",
                 '',
                 strip_tags(
-                    Helper::hightlight(
+                    Helper::highlight(
                         'SELECT *, id, name, NOW() AS n FROM users WHERE name LIKE "%?%" AND id = ? AND created_at = ? AND resource = ? ORDER BY RAND(); /** **/ **foo**',
                         ['foo', [1, 2], $now, $fp],
                         $pdo
