@@ -1,10 +1,11 @@
+/.idea
 /vendor
 /resources/assets/vendor
 /node_modules
 /build
 composer.phar
 composer.lock
-.php_cs.cache
+.php-cs-fixer.cache
 .phpunit.result.cache
 .DS_Store
 Thumbs.db
