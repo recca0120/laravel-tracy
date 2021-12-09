@@ -127,7 +127,7 @@ class DatabasePanelTest extends TestCase
             $sql = 'SELECT * FROM users WHERE foo = ?';
             $bindings = ['bar'];
 
-            $pdo = $this->givenExplains($sql, $bindings, [['foo' => null]]);
+            $pdo = $this->givenExplains($sql, $bindings, json_decode('[{"id":1,"select_type":"SIMPLE","table":"users","partitions":null,"type":"ALL","possible_keys":null,"key":null,"key_len":null,"ref":null,"rows":3,"filtered":100,"Extra":null}]'));
 
             $connection = m::spy(Connection::class);
             $connection->expects('getPdo')->andReturns($pdo);

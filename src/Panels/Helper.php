@@ -149,22 +149,7 @@ class Helper
         if (preg_match('#\s*\(?\s*SELECT\s#iA', $sql)) {
             $statement = $pdo->prepare('EXPLAIN '.$sql);
             $statement->execute($bindings);
-            $explains = self::filterExplains($statement->fetchAll(PDO::FETCH_CLASS));
-        }
-
-        return $explains;
-    }
-
-    /**
-     * @param array $explains
-     * @return array
-     */
-    private static function filterExplains($explains)
-    {
-        if (! empty($explains) && ! empty($explains[0])) {
-            $explains[0] = array_filter($explains[0], static function ($explain) {
-                return ! empty($explain);
-            });
+            $explains = $statement->fetchAll(PDO::FETCH_CLASS);
         }
 
         return $explains;

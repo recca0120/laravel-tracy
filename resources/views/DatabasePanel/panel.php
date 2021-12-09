@@ -55,8 +55,8 @@
                                 </tr>
                                 <?php foreach ($query['explains'] as $row): ?>
                                     <tr>
-                                        <?php foreach ($row as $col): ?>
-                                            <td><?php echo htmlspecialchars($col, ENT_NOQUOTES, 'UTF-8') ?></td>
+                                        <?php foreach ($row as $value): ?>
+                                            <td><?php echo htmlspecialchars((string) $value, ENT_NOQUOTES, 'UTF-8') ?></td>
                                         <?php endforeach ?>
                                     </tr>
                                 <?php endforeach ?>
