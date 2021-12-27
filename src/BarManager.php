@@ -18,26 +18,26 @@ class BarManager
      *
      * @var array
      */
-    protected $panels = [];
+    private $panels = [];
 
     /**
      * $bar.
      *
      * @var Bar
      */
-    protected $bar;
+    private $bar;
 
     /**
      * $request.
      *
      * @var Request
      */
-    protected $request;
+    private $request;
 
     /**
      * @var Application
      */
-    protected $app;
+    private $app;
 
     /**
      * __construct.
@@ -99,7 +99,7 @@ class BarManager
      * @param string $id
      * @return IBarPanel
      */
-    public static function make($id)
+    private static function make($id)
     {
         $className = static::name($id);
 
@@ -139,7 +139,7 @@ class BarManager
      * @param string $id
      * @return bool
      */
-    protected function isAjaxPanel($id)
+    private function isAjaxPanel($id)
     {
         return is_subclass_of(static::name($id), IAjaxPanel::class) === true;
     }
@@ -150,7 +150,7 @@ class BarManager
      * @param string $id
      * @return string
      */
-    protected static function name($id)
+    private static function name($id)
     {
         return '\\'.__NAMESPACE__.'\Panels\\'.Str::studly($id).'Panel';
     }

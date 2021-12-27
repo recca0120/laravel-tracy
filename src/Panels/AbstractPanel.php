@@ -13,11 +13,11 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
     /**
      * @var mixed
      */
-    protected $attributes;
+    private $attributes;
     /**
      * @var string
      */
-    protected $viewPath;
+    private $viewPath;
     /**
      * @var Template
      */
@@ -105,7 +105,7 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
      *
      * @return string
      */
-    protected function getViewPath()
+    private function getViewPath()
     {
         if (is_null($this->viewPath) === false) {
             return $this->viewPath;
@@ -140,9 +140,9 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
             }
 
             if (isset($row['class']) === true && (
-                    is_subclass_of($row['class'], IBarPanel::class) === true ||
+                is_subclass_of($row['class'], IBarPanel::class) === true ||
                     strpos(str_replace('/', '\\', $row['file']), 'Illuminate\\') !== false
-                )) {
+            )) {
                 continue;
             }
 

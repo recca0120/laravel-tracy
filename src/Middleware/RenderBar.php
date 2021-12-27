@@ -17,11 +17,11 @@ class RenderBar
     /**
      * @var DebuggerManager
      */
-    protected $debuggerManager;
+    private $debuggerManager;
     /**
      * @var Dispatcher
      */
-    protected $events;
+    private $events;
 
     /**
      * __construct.
@@ -56,7 +56,7 @@ class RenderBar
      * @param Closure $next
      * @return Response
      */
-    protected function keepFlashSession($request, $next)
+    private function keepFlashSession($request, $next)
     {
         $type = $request->get('_tracy_bar');
         if ($request->hasSession() === true && in_array($type, ['js', 'css'], true) === false) {
@@ -73,7 +73,7 @@ class RenderBar
      * @param Closure $next
      * @return Response
      */
-    protected function render($request, $next)
+    private function render($request, $next)
     {
         $this->debuggerManager->dispatch();
 
@@ -81,7 +81,7 @@ class RenderBar
 
         $ajax = $request->ajax();
 
-        if ($this->reject($response, $request, $ajax) === true) {
+        if ($this->reject($response, $ajax) === true) {
             return $response;
         }
 
@@ -90,7 +90,8 @@ class RenderBar
 
         $response->setContent(
             $this->debuggerManager->shutdownHandler(
-                $response->getContent(), $ajax
+                $response->getContent(),
+                $ajax
             )
         );
 
@@ -101,12 +102,11 @@ class RenderBar
      * reject.
      *
      * @param Response $response
-     * @param Request $request
      * @param bool $ajax
      *
      * @return bool
      */
-    protected function reject(Response $response, Request $request, $ajax)
+    private function reject(Response $response, $ajax)
     {
         if (
             $response instanceof BinaryFileResponse ||

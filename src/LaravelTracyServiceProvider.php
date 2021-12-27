@@ -101,9 +101,13 @@ class LaravelTracyServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(DebuggerManager::class, function ($app) use ($config) {
-            return (new DebuggerManager(
-                DebuggerManager::init($config), $app[Bar::class], $app[BlueScreen::class], new Session
-            ))->setUrlGenerator($app['url']);
+            return new DebuggerManager(
+                DebuggerManager::init($config),
+                $app[Bar::class],
+                $app[BlueScreen::class],
+                new Session,
+                $app['url']->route(Arr::get($config, 'route.as').'bar')
+            );
         });
     }
 

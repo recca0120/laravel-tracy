@@ -4,7 +4,6 @@ namespace Recca0120\LaravelTracy;
 
 use ErrorException;
 use Exception;
-use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Arr;
 use Throwable;
 use Tracy\Bar;
@@ -17,33 +16,30 @@ class DebuggerManager
     /**
      * @var array
      */
-    protected $config;
+    private $config;
 
     /**
      * $bar.
      *
      * @var Bar
      */
-    protected $bar;
+    private $bar;
 
     /**
      * @var BlueScreen
      */
-    protected $blueScreen;
+    private $blueScreen;
 
     /**
      * $session.
      *
      * @var Session
      */
-    protected $session;
-
+    private $session;
     /**
-     * $urlGenerator.
-     *
-     * @var UrlGenerator
+     * @var null
      */
-    protected $urlGenerator;
+    private $url;
 
     /**
      * __construct.
@@ -52,13 +48,15 @@ class DebuggerManager
      * @param Bar $bar
      * @param BlueScreen $blueScreen
      * @param Session|null $session
+     * @param null $url
      */
-    public function __construct($config = [], Bar $bar = null, BlueScreen $blueScreen = null, Session $session = null)
+    public function __construct($config = [], Bar $bar = null, BlueScreen $blueScreen = null, Session $session = null, $url = null)
     {
         $this->config = $config;
         $this->bar = $bar ?: Debugger::getBar();
         $this->blueScreen = $blueScreen ?: Debugger::getBlueScreen();
         $this->session = $session ?: new Session;
+        $this->url = $url;
     }
 
     /**
@@ -126,19 +124,6 @@ class DebuggerManager
     public function accepts()
     {
         return Arr::get($this->config, 'accepts', []);
-    }
-
-    /**
-     * setUrlGenerator.
-     *
-     * @param UrlGenerator $urlGenerator
-     * @return $this
-     */
-    public function setUrlGenerator(UrlGenerator $urlGenerator)
-    {
-        $this->urlGenerator = $urlGenerator;
-
-        return $this;
     }
 
     /**
@@ -235,7 +220,7 @@ class DebuggerManager
      * @param bool $ajax
      * @return string
      */
-    protected function renderLoader($content, $ajax = false)
+    private function renderLoader($content, $ajax = false)
     {
         if ($ajax === true || $this->session->isStarted() === false) {
             return $content;
@@ -250,7 +235,7 @@ class DebuggerManager
      * @param string $content
      * @return string
      */
-    protected function renderBar($content)
+    private function renderBar($content)
     {
         return $this->render(
             $content,
@@ -267,7 +252,7 @@ class DebuggerManager
      * @param string[] $appendTags
      * @return string
      */
-    protected function render($content, $method, $appendTags = ['body'])
+    private function render($content, $method, $appendTags = ['body'])
     {
         $appendHtml = $this->renderBuffer(function () use ($method) {
             $requestUri = Arr::get($_SERVER, 'REQUEST_URI');
@@ -295,7 +280,7 @@ class DebuggerManager
      * @param callable $callback
      * @return string
      */
-    protected function renderBuffer(callable $callback)
+    private function renderBuffer(callable $callback)
     {
         ob_start();
         $callback();
@@ -309,14 +294,10 @@ class DebuggerManager
      * @param string $content
      * @return string
      */
-    protected function replacePath($content)
+    private function replacePath($content)
     {
-        $path = is_null($this->urlGenerator) === false
-            ? $this->urlGenerator->route(Arr::get($this->config, 'route.as').'bar')
-            : null;
-
-        return is_null($path) === false
-            ? str_replace('?_tracy_bar', $path.'?_tracy_bar', $content)
+        return $this->url
+            ? str_replace('?_tracy_bar', $this->url.'?_tracy_bar', $content)
             : $content;
     }
 }

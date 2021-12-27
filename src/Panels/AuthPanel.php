@@ -38,7 +38,7 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
         $attributes = [];
         if (is_null($this->userResolver) === false) {
             $attributes['rows'] = call_user_func($this->userResolver);
-        } else if ($this->hasLaravel() === true) {
+        } elseif ($this->hasLaravel() === true) {
             $attributes = isset($this->laravel['sentinel']) === true ?
                 $this->fromSentinel() : $this->fromGuard();
         }
@@ -90,7 +90,7 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
 
         if (empty($rows) === true) {
             $id = 'Guest';
-        } else if (is_numeric($id) === true || empty($id) === true) {
+        } elseif (is_numeric($id) === true || empty($id) === true) {
             $id = 'UnKnown';
             foreach (['username', 'account', 'email', 'name', 'id'] as $key) {
                 if (isset($rows[$key]) === true) {

@@ -4,8 +4,8 @@ namespace Recca0120\LaravelTracy\Tests;
 
 use Closure;
 use Exception;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\DebuggerManager;
 use Recca0120\LaravelTracy\Session;
@@ -241,15 +241,9 @@ class DebuggerManagerTest extends TestCase
         $bar = m::spy(new Bar());
         $blueScreen = new BlueScreen();
         $session = m::spy(new Session());
-        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
+        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session, 'foo');
 
         $session->expects('isStarted')->andReturns(true);
-
-        $debuggerManager->setUrlGenerator(
-            $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator')
-        );
-
-        $urlGenerator->expects('route')->twice()->andReturns('foo');
 
         $bar->expects('renderLoader')
             ->andReturnUsing($this->echoContent('<script src="?_tracy_bar=foo" async></script>'));

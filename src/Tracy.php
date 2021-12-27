@@ -14,7 +14,7 @@ class Tracy
     /**
      * @var Bar
      */
-    protected $bar;
+    private $bar;
 
     /**
      * __construct.

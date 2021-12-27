@@ -7,11 +7,11 @@ class Template
     /**
      * @var array
      */
-    protected $attributes = [];
+    private $attributes = [];
     /**
      * @var bool
      */
-    protected $minify = true;
+    private $minify = true;
 
     /**
      * setAttributes.
@@ -66,7 +66,7 @@ class Template
      * @param string $buffer
      * @return string
      */
-    protected function min($buffer)
+    private function min($buffer)
     {
         return preg_replace(
             ['/<!--(.*)-->/Uis', '/[[:blank:]]+/'],

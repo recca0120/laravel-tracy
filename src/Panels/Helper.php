@@ -44,11 +44,11 @@ class Helper
         $sql = preg_replace_callback('#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])('.static::KEYWORDS1.')(?=[\\s,)])|(?<=[\\s,(=])('.static::KEYWORDS2.')(?=[\\s,)=])#is', function ($matches) {
             if (! empty($matches[1])) { // comment
                 return '<em style="color:gray">'.$matches[1].'</em>';
-            } else if (! empty($matches[2])) { // error
+            } elseif (! empty($matches[2])) { // error
                 return '<strong style="color:red">'.$matches[2].'</strong>';
-            } else if (! empty($matches[3])) { // most important keywords
+            } elseif (! empty($matches[3])) { // most important keywords
                 return '<strong style="color:blue; text-transform: uppercase;">'.$matches[3].'</strong>';
-            } else if (! empty($matches[4])) { // other keywords
+            } elseif (! empty($matches[4])) { // other keywords
                 return '<strong style="color:green">'.$matches[4].'</strong>';
             }
         }, $sql);
