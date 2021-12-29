@@ -1,6 +1,6 @@
 <?php
 
-namespace Recca0120\LaravelTracy;
+namespace Recca0120\LaravelTracy\Session;
 
 class Session
 {

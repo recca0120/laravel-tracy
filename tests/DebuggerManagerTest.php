@@ -4,11 +4,12 @@ namespace Recca0120\LaravelTracy\Tests;
 
 use Closure;
 use Exception;
-use Mockery as m;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\DebuggerManager;
-use Recca0120\LaravelTracy\Session;
+use Recca0120\LaravelTracy\Session\DeferredContent;
+use Recca0120\LaravelTracy\Session\Session;
 use Tracy\Bar;
 use Tracy\BlueScreen;
 use Tracy\Debugger;
@@ -47,10 +48,11 @@ class DebuggerManagerTest extends TestCase
     public function testEnabled()
     {
         $config = ['enabled' => true];
-        $bar = new Bar();
-        $blueScreen = new BlueScreen();
-        $session = new Session();
-        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
+        $blueScreen = m::spy(new BlueScreen());
+        $bar = m::spy(new Bar());
+        $session = m::spy(new Session());
+        $defer = new DeferredContent($bar, $session);
+        $debuggerManager = new DebuggerManager($config, $blueScreen, $bar, $defer);
 
         $this->assertSame($config['enabled'], $debuggerManager->enabled());
     }
@@ -58,10 +60,11 @@ class DebuggerManagerTest extends TestCase
     public function testShowBar()
     {
         $config = ['showBar' => true];
-        $bar = new Bar();
-        $blueScreen = new BlueScreen();
-        $session = new Session();
-        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
+        $blueScreen = m::spy(new BlueScreen());
+        $bar = m::spy(new Bar());
+        $session = m::spy(new Session());
+        $defer = new DeferredContent($bar, $session);
+        $debuggerManager = new DebuggerManager($config, $blueScreen, $bar, $defer);
 
         $this->assertSame($config['showBar'], $debuggerManager->showBar());
     }
@@ -69,10 +72,11 @@ class DebuggerManagerTest extends TestCase
     public function testAccepts()
     {
         $config = ['accepts' => ['foo']];
-        $bar = new Bar();
-        $blueScreen = new BlueScreen();
-        $session = new Session();
-        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
+        $blueScreen = m::spy(new BlueScreen());
+        $bar = m::spy(new Bar());
+        $session = m::spy(new Session());
+        $defer = new DeferredContent($bar, $session);
+        $debuggerManager = new DebuggerManager($config, $blueScreen, $bar, $defer);
 
         $this->assertSame($config['accepts'], $debuggerManager->accepts());
     }
@@ -80,10 +84,11 @@ class DebuggerManagerTest extends TestCase
     public function testDispatchAssetsCss()
     {
         $config = [];
+        $blueScreen = m::spy(new BlueScreen());
         $bar = m::spy(new Bar());
-        $blueScreen = new BlueScreen();
-        $session = new Session();
-        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
+        $session = m::spy(new Session());
+        $defer = new DeferredContent($bar, $session);
+        $debuggerManager = new DebuggerManager($config, $blueScreen, $bar, $defer);
 
         $content = 'foo';
         $bar->expects('dispatchAssets')->andReturnUsing($this->echoContent($content));
@@ -98,10 +103,11 @@ class DebuggerManagerTest extends TestCase
     public function testDispatchAssetsJs()
     {
         $config = ['accepts' => ['foo']];
+        $blueScreen = m::spy(new BlueScreen());
         $bar = m::spy(new Bar());
-        $blueScreen = new BlueScreen();
-        $session = new Session();
-        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
+        $session = m::spy(new Session());
+        $defer = new DeferredContent($bar, $session);
+        $debuggerManager = new DebuggerManager($config, $blueScreen, $bar, $defer);
 
         $content = 'foo';
         $bar->expects('dispatchAssets')->andReturnUsing($this->echoContent($content));
@@ -116,13 +122,14 @@ class DebuggerManagerTest extends TestCase
     public function testDispatchAssetsContentId()
     {
         $config = ['accepts' => ['foo']];
+        $blueScreen = m::spy(new BlueScreen());
         $bar = m::spy(new Bar());
-        $blueScreen = new BlueScreen();
         $session = m::spy(new Session());
-        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
+        $defer = new DeferredContent($bar, $session);
+        $debuggerManager = new DebuggerManager($config, $blueScreen, $bar, $defer);
 
         $session->expects('isStarted')->andReturns(false);
-        $session->expects('start');
+        // $session->expects('start');
 
         $content = 'foo';
         $bar->expects('dispatchAssets')->andReturnUsing($this->echoContent($content));
@@ -136,10 +143,11 @@ class DebuggerManagerTest extends TestCase
     public function testShutdownHandlerAndSessionIsClose()
     {
         $config = [];
+        $blueScreen = m::spy(new BlueScreen());
         $bar = m::spy(new Bar());
-        $blueScreen = new BlueScreen();
         $session = m::spy(new Session());
-        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
+        $defer = new DeferredContent($bar, $session);
+        $debuggerManager = new DebuggerManager($config, $blueScreen, $bar, $defer);
 
         $session->expects('isStarted')->andReturns(false);
 
@@ -154,10 +162,11 @@ class DebuggerManagerTest extends TestCase
     public function testShutdownHandler()
     {
         $config = [];
+        $blueScreen = m::spy(new BlueScreen());
         $bar = m::spy(new Bar());
-        $blueScreen = new BlueScreen();
         $session = m::spy(new Session());
-        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
+        $defer = new DeferredContent($bar, $session);
+        $debuggerManager = new DebuggerManager($config, $blueScreen, $bar, $defer);
 
         $session->expects('isStarted')->andReturns(true);
 
@@ -175,10 +184,11 @@ class DebuggerManagerTest extends TestCase
     public function testShutdownHandlerAppendToHtml()
     {
         $config = ['appendTo' => 'html'];
+        $blueScreen = m::spy(new BlueScreen());
         $bar = m::spy(new Bar());
-        $blueScreen = new BlueScreen();
         $session = m::spy(new Session());
-        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
+        $defer = new DeferredContent($bar, $session);
+        $debuggerManager = new DebuggerManager($config, $blueScreen, $bar, $defer);
 
         $session->expects('isStarted')->andReturns(true);
 
@@ -196,10 +206,11 @@ class DebuggerManagerTest extends TestCase
     public function testShutdownHandlerHasError()
     {
         $config = ['appendTo' => 'html'];
-        $bar = new Bar();
         $blueScreen = m::spy(new BlueScreen());
-        $session = new Session();
-        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
+        $bar = m::spy(new Bar());
+        $session = m::spy(new Session());
+        $defer = new DeferredContent($bar, $session);
+        $debuggerManager = new DebuggerManager($config, $blueScreen, $bar, $defer);
 
         $content = '';
         $error = [
@@ -223,10 +234,11 @@ class DebuggerManagerTest extends TestCase
     public function testExceptionHandler()
     {
         $config = ['accepts' => ['foo']];
-        $bar = new Bar();
         $blueScreen = m::spy(new BlueScreen());
-        $session = new Session();
-        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session);
+        $bar = m::spy(new Bar());
+        $session = m::spy(new Session());
+        $defer = new DeferredContent($bar, $session);
+        $debuggerManager = new DebuggerManager($config, $blueScreen, $bar, $defer);
 
         $exception = new Exception();
         $content = 'foo';
@@ -238,19 +250,26 @@ class DebuggerManagerTest extends TestCase
     public function testReplacePath()
     {
         $config = ['accepts' => ['foo']];
+        $blueScreen = m::spy(new BlueScreen());
         $bar = m::spy(new Bar());
-        $blueScreen = new BlueScreen();
         $session = m::spy(new Session());
-        $debuggerManager = new DebuggerManager($config, $bar, $blueScreen, $session, 'foo');
+        $defer = new DeferredContent($bar, $session);
+        $debuggerManager = new DebuggerManager($config, $blueScreen, $bar, $defer, 'foo');
 
         $session->expects('isStarted')->andReturns(true);
 
-        $bar->expects('renderLoader')
-            ->andReturnUsing($this->echoContent('<script src="?_tracy_bar=foo" async></script>'));
+        $bar->expects('renderLoader')->andReturnUsing(
+            $this->echoContent('<script src="?_tracy_bar=foo" async></script>')
+        );
 
-        $bar->expects('render')->andReturnUsing($this->echoContent('?_tracy_bar=foo'));
+        $bar->expects('render')->andReturnUsing(
+            $this->echoContent('?_tracy_bar=foo')
+        );
 
-        $this->assertSame('<head><script src="foo?_tracy_bar=foo" async></script></head><body>foo?_tracy_bar=foo</body>', $debuggerManager->shutdownHandler('<head></head><body></body>'));
+        $this->assertSame(
+            '<head><script src="foo?_tracy_bar=foo" async></script></head><body>foo?_tracy_bar=foo</body>',
+            $debuggerManager->shutdownHandler('<head></head><body></body>')
+        );
     }
 
     /**

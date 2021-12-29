@@ -7,8 +7,8 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Application;
-use Mockery as m;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery as m;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\Panels\DatabasePanel;
@@ -74,7 +74,6 @@ class DatabasePanelTest extends TestCase
             $db = m::spy(DatabaseManager::class);
             $db->expects('connection')->with($connectionName)->andReturnSelf();
             $db->expects('getPdo')->andReturns($pdo);
-
 
             $laravel->instance('db', $db);
 

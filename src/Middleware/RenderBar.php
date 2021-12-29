@@ -89,10 +89,7 @@ class RenderBar
         $this->events->{$method}(new BeforeBarRender($request, $response));
 
         $response->setContent(
-            $this->debuggerManager->shutdownHandler(
-                $response->getContent(),
-                $ajax
-            )
+            $this->debuggerManager->shutdownHandler($response->getContent(), $ajax)
         );
 
         return $response;

@@ -11,6 +11,8 @@ use Illuminate\Support\ServiceProvider;
 use Recca0120\LaravelTracy\Exceptions\Handler;
 use Recca0120\LaravelTracy\Exceptions\HandlerForLaravel6;
 use Recca0120\LaravelTracy\Middleware\RenderBar;
+use Recca0120\LaravelTracy\Session\DeferredContent;
+use Recca0120\LaravelTracy\Session\Session;
 use Recca0120\Terminal\TerminalServiceProvider;
 use Tracy\Bar;
 use Tracy\BlueScreen;
@@ -65,9 +67,11 @@ class LaravelTracyServiceProvider extends ServiceProvider
         $showException = Arr::get($config, 'showException', true);
         if ($showException === true) {
             $this->app->extend(ExceptionHandler::class, function ($exceptionHandler, $app) {
+                $debuggerManager = $app[DebuggerManager::class];
+
                 return version_compare($this->app->version(), '7.0', '>=')
-                    ? new Handler($exceptionHandler, $app[DebuggerManager::class])
-                    : new HandlerForLaravel6($exceptionHandler, $app[DebuggerManager::class]);
+                    ? new Handler($exceptionHandler, $debuggerManager)
+                    : new HandlerForLaravel6($exceptionHandler, $debuggerManager);
             });
         }
 
@@ -101,13 +105,14 @@ class LaravelTracyServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(DebuggerManager::class, function ($app) use ($config) {
-            return new DebuggerManager(
-                DebuggerManager::init($config),
-                $app[Bar::class],
-                $app[BlueScreen::class],
-                new Session,
-                $app['url']->route(Arr::get($config, 'route.as').'bar')
-            );
+            $config = DebuggerManager::init($config);
+            $blueScreen = $app[BlueScreen::class];
+            $bar = $app[Bar::class];
+            $defer = new DeferredContent($bar, new Session);
+            $routeAs = Arr::get($config, 'route.as');
+            $url = $routeAs ? $app['url']->route($routeAs.'bar') : null;
+
+            return new DebuggerManager($config, $blueScreen, $bar, $defer, $url);
         });
     }
 

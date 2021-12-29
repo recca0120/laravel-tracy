@@ -7,9 +7,10 @@ use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
-use Mockery as m;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelTracy\DebuggerManager;
 use Recca0120\LaravelTracy\Exceptions\Handler;
@@ -42,8 +43,12 @@ class LaravelTracyServiceProviderTest extends TestCase
     {
         $app = m::spy(new Application());
         $config = new Repository();
+        $app->instance('request', Request::capture());
         $app->instance('config', $config);
-        $config->set('tracy', ['route' => ['prefix' => 'laravel-tracy', 'showException' => true]]);
+        $config->set('tracy', [
+            'enabled' => true,
+            'route' => ['prefix' => 'laravel-tracy', 'showException' => true],
+        ]);
         $serviceProvider = new LaravelTracyServiceProvider($app);
 
         $app->expects('routesAreCached')->andReturns(false);
@@ -57,6 +62,7 @@ class LaravelTracyServiceProviderTest extends TestCase
         $kernel = m::spy(Kernel::class);
         $router = m::spy(Router::class);
 
+        $serviceProvider->register();
         $serviceProvider->boot($kernel, $view, $router);
 
         $view->shouldHaveReceived('directive')->with('bdump', m::on(function ($closure) {

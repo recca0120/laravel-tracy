@@ -3,7 +3,7 @@
 namespace Recca0120\LaravelTracy\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Recca0120\LaravelTracy\Session;
+use Recca0120\LaravelTracy\Session\Session;
 
 class SessionTest extends TestCase
 {
