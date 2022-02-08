@@ -162,7 +162,7 @@ class HandlerTest extends TestCase
         $response = m::spy(SymfonyResponse::class);
         $exceptionHandler->expects('render')->with($request, $exception)->andReturns($response);
 
-        $response->expects('getContent')->andReturns(null);
+        $response->expects('getContent')->andReturns('');
         $debuggerManager->expects('exceptionHandler')->with($exception)->andReturns($content = 'foo');
         $response->expects('setContent')->with($content);
 

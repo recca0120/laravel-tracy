@@ -83,7 +83,7 @@ class DebuggerManager
             'scream' => true,
             'showLocation' => true,
             'strictMode' => true,
-            'currentTime' => $_SERVER['REQUEST_TIME_FLOAT'] ?: microtime(true),
+            'currentTime' => array_key_exists('REQUEST_TIME_FLOAT', $_SERVER) ? $_SERVER['REQUEST_TIME_FLOAT'] : microtime(true),
             'editorMapping' => isset(Debugger::$editorMapping) === true ? Debugger::$editorMapping : [],
         ], $config);
 
