@@ -50,7 +50,7 @@
                             <table class="tracy-collapsed Laravel-DatabasePanel-explain">
                                 <tr>
                                     <?php foreach ($query['explains'][0] as $col => $value): ?>
-                                        <th><?php echo htmlspecialchars($col, ENT_NOQUOTES, 'UTF-8') ?></th>
+                                        <th><?php echo htmlspecialchars((string) $col, ENT_NOQUOTES, 'UTF-8') ?></th>
                                     <?php endforeach ?>
                                 </tr>
                                 <?php foreach ($query['explains'] as $row): ?>

@@ -86,7 +86,7 @@ class Helper
                 return htmlspecialchars('\''.$binding->format('Y-m-d H:i:s').'\'', ENT_NOQUOTES, 'UTF-8');
             }
 
-            return htmlspecialchars($binding, ENT_NOQUOTES, 'UTF-8');
+            return htmlspecialchars((string) $binding, ENT_NOQUOTES, 'UTF-8');
         }, $bindings);
         $sql = str_replace(['%', '?'], ['%%', '%s'], $sql);
 
