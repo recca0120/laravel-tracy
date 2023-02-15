@@ -14,6 +14,7 @@ class ViewPanel extends AbstractSubscribePanel implements IAjaxPanel
      * @var int
      */
     public $limit = 50;
+
     /**
      * $views.
      *
@@ -56,7 +57,7 @@ class ViewPanel extends AbstractSubscribePanel implements IAjaxPanel
     /**
      * limitCollection.
      *
-     * @param array $data
+     * @param  array  $data
      * @return array
      */
     protected function limitCollection($data)

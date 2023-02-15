@@ -31,8 +31,8 @@ class HandlerForLaravel6 implements ExceptionHandler
     /**
      * __construct.
      *
-     * @param ExceptionHandler $exceptionHandler
-     * @param DebuggerManager $debuggerManager
+     * @param  ExceptionHandler  $exceptionHandler
+     * @param  DebuggerManager  $debuggerManager
      */
     public function __construct(ExceptionHandler $exceptionHandler, DebuggerManager $debuggerManager)
     {
@@ -43,7 +43,7 @@ class HandlerForLaravel6 implements ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param Exception $e
+     * @param  Exception  $e
      * @return void
      */
     public function report(Exception $e)
@@ -54,7 +54,7 @@ class HandlerForLaravel6 implements ExceptionHandler
     /**
      * Determine if the exception should be reported.
      *
-     * @param Exception $e
+     * @param  Exception  $e
      * @return bool
      */
     public function shouldReport(Exception $e)
@@ -65,8 +65,8 @@ class HandlerForLaravel6 implements ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param Request $request
-     * @param Exception $e
+     * @param  Request  $request
+     * @param  Exception  $e
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws Exception
@@ -86,8 +86,8 @@ class HandlerForLaravel6 implements ExceptionHandler
     /**
      * Render an exception to the console.
      *
-     * @param OutputInterface $output
-     * @param Exception $e
+     * @param  OutputInterface  $output
+     * @param  Exception  $e
      * @return void
      */
     public function renderForConsole($output, Exception $e)
@@ -98,7 +98,7 @@ class HandlerForLaravel6 implements ExceptionHandler
     /**
      * shouldRenderException.
      *
-     * @param Response|\Symfony\Component\HttpFoundation\Response $response
+     * @param  Response|\Symfony\Component\HttpFoundation\Response  $response
      * @return bool
      */
     protected function shouldRenderException($response)

@@ -37,9 +37,9 @@ class LaravelTracyServiceProvider extends ServiceProvider
     /**
      * boot.
      *
-     * @param Kernel $kernel
-     * @param View $view
-     * @param Router $router
+     * @param  Kernel  $kernel
+     * @param  View  $view
+     * @param  Router  $router
      */
     public function boot(Kernel $kernel, View $view, Router $router)
     {
@@ -129,8 +129,8 @@ class LaravelTracyServiceProvider extends ServiceProvider
     /**
      * register routes.
      *
-     * @param Router $router
-     * @param array $config
+     * @param  Router  $router
+     * @param  array  $config
      */
     protected function handleRoutes(Router $router, $config = [])
     {

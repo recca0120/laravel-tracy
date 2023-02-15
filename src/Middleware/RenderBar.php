@@ -18,6 +18,7 @@ class RenderBar
      * @var DebuggerManager
      */
     private $debuggerManager;
+
     /**
      * @var Dispatcher
      */
@@ -26,8 +27,8 @@ class RenderBar
     /**
      * __construct.
      *
-     * @param DebuggerManager $debuggerManager
-     * @param Dispatcher $events
+     * @param  DebuggerManager  $debuggerManager
+     * @param  Dispatcher  $events
      */
     public function __construct(DebuggerManager $debuggerManager, Dispatcher $events)
     {
@@ -38,8 +39,8 @@ class RenderBar
     /**
      * handle.
      *
-     * @param Request $request
-     * @param Closure $next
+     * @param  Request  $request
+     * @param  Closure  $next
      * @return Response
      */
     public function handle($request, $next)
@@ -52,8 +53,8 @@ class RenderBar
     /**
      * keepFlashSession.
      *
-     * @param Request $request
-     * @param Closure $next
+     * @param  Request  $request
+     * @param  Closure  $next
      * @return Response
      */
     private function keepFlashSession($request, $next)
@@ -69,8 +70,8 @@ class RenderBar
     /**
      * render.
      *
-     * @param Request $request
-     * @param Closure $next
+     * @param  Request  $request
+     * @param  Closure  $next
      * @return Response
      */
     private function render($request, $next)
@@ -98,9 +99,8 @@ class RenderBar
     /**
      * reject.
      *
-     * @param Response $response
-     * @param bool $ajax
-     *
+     * @param  Response  $response
+     * @param  bool  $ajax
      * @return bool
      */
     private function reject(Response $response, $ajax)

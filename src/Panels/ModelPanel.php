@@ -11,6 +11,7 @@ class ModelPanel extends AbstractSubscribePanel implements IAjaxPanel
      * @var array
      */
     protected $models = [];
+
     /**
      * @var int
      */

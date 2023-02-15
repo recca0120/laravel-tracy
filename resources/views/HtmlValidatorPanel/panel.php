@@ -13,14 +13,14 @@
 <div class="tracy-inner Laravel-HtmlValidatorPanel">
     <div class="tracy-inner-container">
         <table>
-            <?php foreach ($errors as $error): ?>
+            <?php foreach ($errors as $error) { ?>
             <tr><td><span class="severenity-<?php echo (int) $error->level; ?>">
                 <?php echo htmlspecialchars($severenity[$error->level].' on column '.$error->column.': '.$error->message); ?>
             </span></td></tr>
             <tr><td>
                 <?php echo \Tracy\BlueScreen::highlightPhp($html, $error->line, 10); ?>
             </td></tr>
-            <?php endforeach ?>
+            <?php } ?>
         </table>
     </div>
 </div>

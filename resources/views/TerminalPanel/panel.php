@@ -7,10 +7,10 @@
 
 <div class="tracy-inner Laravel-TerminalPanel">
     <div class="tracy-inner-container">
-        <?php if (empty($terminal) === false): ?>
+        <?php if (empty($terminal) === false) { ?>
             <?php echo $terminal; ?>
-        <?php else: ?>
+        <?php } else { ?>
             <span style="color: #fff;">Terminal is Disabled</span>
-        <?php endif ?>
+        <?php } ?>
     </div>
 </div>

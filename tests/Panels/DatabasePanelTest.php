@@ -95,8 +95,8 @@ class DatabasePanelTest extends TestCase
     }
 
     /**
-     * @param string $sql
-     * @param array $bindings
+     * @param  string  $sql
+     * @param  array  $bindings
      * @param $results
      * @return PDO
      */

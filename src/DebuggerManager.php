@@ -38,10 +38,12 @@ class DebuggerManager
      * @var Session
      */
     private $session;
+
     /**
      * @var null
      */
     private $url;
+
     /**
      * @var DeferredContent
      */
@@ -50,11 +52,11 @@ class DebuggerManager
     /**
      * __construct.
      *
-     * @param array $config
-     * @param Bar $bar
-     * @param BlueScreen $blueScreen
-     * @param DeferredContent $defer
-     * @param null $url
+     * @param  array  $config
+     * @param  Bar  $bar
+     * @param  BlueScreen  $blueScreen
+     * @param  DeferredContent  $defer
+     * @param  null  $url
      */
     public function __construct($config, BlueScreen $blueScreen, Bar $bar, $defer, $url = null)
     {
@@ -68,7 +70,7 @@ class DebuggerManager
     /**
      * init.
      *
-     * @param array $config
+     * @param  array  $config
      * @return array
      */
     public static function init($config = [])
@@ -135,7 +137,7 @@ class DebuggerManager
     /**
      * dispatchAssets.
      *
-     * @param string $type
+     * @param  string  $type
      * @return array
      */
     public function dispatchAssets($type)
@@ -176,9 +178,9 @@ class DebuggerManager
     /**
      * shutdownHandler.
      *
-     * @param string $content
-     * @param bool $ajax
-     * @param int $error
+     * @param  string  $content
+     * @param  bool  $ajax
+     * @param  int  $error
      * @return string
      */
     public function shutdownHandler($content, $ajax = false, $error = null)
@@ -198,7 +200,7 @@ class DebuggerManager
     /**
      * exceptionHandler.
      *
-     * @param Exception $exception
+     * @param  Exception  $exception
      * @return string
      */
     public function exceptionHandler(Throwable $exception)
@@ -212,8 +214,8 @@ class DebuggerManager
     /**
      * renderLoader.
      *
-     * @param string $content
-     * @param bool $ajax
+     * @param  string  $content
+     * @param  bool  $ajax
      * @return string
      */
     private function renderLoader($content, $ajax = false)
@@ -228,7 +230,7 @@ class DebuggerManager
     /**
      * renderBar.
      *
-     * @param string $content
+     * @param  string  $content
      * @return string
      */
     private function renderBar($content)
@@ -241,9 +243,9 @@ class DebuggerManager
     /**
      * render.
      *
-     * @param string $content
-     * @param string $method
-     * @param string[] $appendTags
+     * @param  string  $content
+     * @param  string  $method
+     * @param  string[]  $appendTags
      * @return string
      */
     private function render($content, $method, $appendTags = ['body'])
@@ -271,7 +273,7 @@ class DebuggerManager
     /**
      * renderBuffer.
      *
-     * @param callable $callback
+     * @param  callable  $callback
      * @return string
      */
     private function renderBuffer(callable $callback)
@@ -285,7 +287,7 @@ class DebuggerManager
     /**
      * replacePath.
      *
-     * @param string $content
+     * @param  string  $content
      * @return string
      */
     private function replacePath($content)

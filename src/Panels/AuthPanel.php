@@ -18,7 +18,7 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
     /**
      * setUserResolver.
      *
-     * @param Closure $userResolver
+     * @param  Closure  $userResolver
      * @return $this
      */
     public function setUserResolver(Closure $userResolver)
@@ -80,7 +80,7 @@ class AuthPanel extends AbstractPanel implements IAjaxPanel
     /**
      * identifier.
      *
-     * @param array $attributes
+     * @param  array  $attributes
      * @return array
      */
     protected function identifier($attributes = [])

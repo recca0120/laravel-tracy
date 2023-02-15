@@ -19,9 +19,9 @@ class Tracy
     /**
      * __construct.
      *
-     * @param array $config
-     * @param BarManager $barManager
-     * @param Bar $bar
+     * @param  array  $config
+     * @param  BarManager  $barManager
+     * @param  Bar  $bar
      */
     public function __construct($config = [], BarManager $barManager = null, Bar $bar = null)
     {
@@ -66,8 +66,8 @@ class Tracy
     /**
      * __call.
      *
-     * @param string $method
-     * @param array $parameters
+     * @param  string  $method
+     * @param  array  $parameters
      * @return mixed
      */
     public function __call($method, $parameters)
@@ -82,7 +82,7 @@ class Tracy
     /**
      * instance.
      *
-     * @param array $config
+     * @param  array  $config
      * @return static
      */
     public static function instance($config = [], BarManager $barManager = null, Bar $bar = null)

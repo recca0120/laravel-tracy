@@ -42,7 +42,7 @@ class HtmlValidatorPanel extends AbstractSubscribePanel implements IAjaxPanel
     /**
      * setHTML.
      *
-     * @param string $html
+     * @param  string  $html
      * @return $this
      */
     public function setHtml($html)
@@ -55,7 +55,7 @@ class HtmlValidatorPanel extends AbstractSubscribePanel implements IAjaxPanel
     /**
      * Removes special controls characters and normalizes line endings and spaces.
      *
-     * @param string $str
+     * @param  string  $str
      * @return string
      */
     protected static function normalize($str)
@@ -74,7 +74,7 @@ class HtmlValidatorPanel extends AbstractSubscribePanel implements IAjaxPanel
     /**
      * Standardize line endings to unix-like.
      *
-     * @param string $s
+     * @param  string  $s
      * @return string
      */
     protected static function normalizeNewLines($s)

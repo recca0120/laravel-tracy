@@ -32,8 +32,8 @@ class Handler implements ExceptionHandler
     /**
      * __construct.
      *
-     * @param ExceptionHandler $exceptionHandler
-     * @param DebuggerManager $debuggerManager
+     * @param  ExceptionHandler  $exceptionHandler
+     * @param  DebuggerManager  $debuggerManager
      */
     public function __construct(ExceptionHandler $exceptionHandler, DebuggerManager $debuggerManager)
     {
@@ -44,7 +44,7 @@ class Handler implements ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param Throwable $e
+     * @param  Throwable  $e
      * @return void
      *
      * @throws Exception
@@ -58,7 +58,7 @@ class Handler implements ExceptionHandler
     /**
      * Determine if the exception should be reported.
      *
-     * @param Throwable $e
+     * @param  Throwable  $e
      * @return bool
      */
     public function shouldReport(Throwable $e)
@@ -69,8 +69,8 @@ class Handler implements ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param Request $request
-     * @param Throwable $e
+     * @param  Request  $request
+     * @param  Throwable  $e
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws Throwable
@@ -90,8 +90,8 @@ class Handler implements ExceptionHandler
     /**
      * Render an exception to the console.
      *
-     * @param OutputInterface $output
-     * @param Throwable $e
+     * @param  OutputInterface  $output
+     * @param  Throwable  $e
      * @return void
      */
     public function renderForConsole($output, Throwable $e)
@@ -102,7 +102,7 @@ class Handler implements ExceptionHandler
     /**
      * shouldRenderException.
      *
-     * @param Response|\Symfony\Component\HttpFoundation\Response $response
+     * @param  Response|\Symfony\Component\HttpFoundation\Response  $response
      * @return bool
      */
     protected function shouldRenderException($response)

@@ -10,6 +10,7 @@ class DeferredContent
      * @var Bar
      */
     private $bar;
+
     /**
      * @var Session
      */

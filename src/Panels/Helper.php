@@ -25,9 +25,9 @@ class Helper
      * Returns syntax highlighted SQL command.
      *
      *
-     * @param string $sql
-     * @param array $bindings
-     * @param \PDO $pdo
+     * @param  string  $sql
+     * @param  array  $bindings
+     * @param  \PDO  $pdo
      * @return string
      */
     public static function highlight($sql, array $bindings = [], PDO $pdo = null)
@@ -96,9 +96,9 @@ class Helper
     /**
      * perform quer analysis hint.
      *
-     * @param string $sql
-     * @param string $version
-     * @param float $driver
+     * @param  string  $sql
+     * @param  string  $version
+     * @param  float  $driver
      * @return array
      */
     public static function performQueryAnalysis($sql, $version = null, $driver = null)
@@ -138,9 +138,9 @@ class Helper
     /**
      * explain sql.
      *
-     * @param PDO $pdo
-     * @param string $sql
-     * @param array $bindings
+     * @param  PDO  $pdo
+     * @param  string  $sql
+     * @param  array  $bindings
      * @return array
      */
     public static function explain(PDO $pdo, $sql, $bindings = [])

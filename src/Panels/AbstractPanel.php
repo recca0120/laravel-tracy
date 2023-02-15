@@ -14,14 +14,17 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
      * @var mixed
      */
     private $attributes;
+
     /**
      * @var string
      */
     private $viewPath;
+
     /**
      * @var Template
      */
     protected $template;
+
     /**
      * @var Application
      */
@@ -30,7 +33,7 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
     /**
      * __construct.
      *
-     * @param Template $template
+     * @param  Template  $template
      */
     public function __construct(Template $template = null)
     {
@@ -40,7 +43,7 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
     /**
      * setLaravel.
      *
-     * @param Application $laravel
+     * @param  Application  $laravel
      * @return $this
      */
     public function setLaravel(Application $laravel = null)
@@ -85,7 +88,7 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
     /**
      * render.
      *
-     * @param string $view
+     * @param  string  $view
      * @return string
      */
     protected function render($view)
@@ -155,7 +158,7 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
     /**
      * editor link.
      *
-     * @param string|array $source
+     * @param  string|array  $source
      * @return string
      */
     protected static function editorLink($source)
@@ -164,7 +167,7 @@ abstract class AbstractPanel implements IBarPanel, ILaravelPanel
             $file = $source;
             $line = null;
         } else {
-            list($file, $line) = $source;
+            [$file, $line] = $source;
         }
 
         return Helpers::editorLink($file, $line);

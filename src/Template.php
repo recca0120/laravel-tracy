@@ -8,6 +8,7 @@ class Template
      * @var array
      */
     private $attributes = [];
+
     /**
      * @var bool
      */
@@ -16,7 +17,7 @@ class Template
     /**
      * setAttributes.
      *
-     * @param array $attributes
+     * @param  array  $attributes
      * @return $this
      */
     public function setAttributes($attributes)
@@ -29,7 +30,7 @@ class Template
     /**
      * minify.
      *
-     * @param bool $minify
+     * @param  bool  $minify
      * @return $this
      */
     public function minify($minify)
@@ -42,7 +43,7 @@ class Template
     /**
      * render.
      *
-     * @param string $view
+     * @param  string  $view
      * @return string
      */
     public function render($view)
@@ -63,7 +64,7 @@ class Template
      * if need min style and script, refrence
      * https://gist.github.com/recca0120/5930842de4e0a43a48b8bf027ab058f9
      *
-     * @param string $buffer
+     * @param  string  $buffer
      * @return string
      */
     private function min($buffer)

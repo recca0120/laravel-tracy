@@ -42,9 +42,9 @@ class BarManager
     /**
      * __construct.
      *
-     * @param Bar $bar
-     * @param Request $request
-     * @param Application $app
+     * @param  Bar  $bar
+     * @param  Request  $request
+     * @param  Application  $app
      */
     public function __construct(Bar $bar = null, Request $request = null, Application $app = null)
     {
@@ -66,7 +66,7 @@ class BarManager
     /**
      * loadPanels.
      *
-     * @param array $panels
+     * @param  array  $panels
      * @return $this
      */
     public function loadPanels($panels = [])
@@ -96,7 +96,7 @@ class BarManager
     /**
      * make.
      *
-     * @param string $id
+     * @param  string  $id
      * @return IBarPanel
      */
     private static function make($id)
@@ -109,8 +109,8 @@ class BarManager
     /**
      * set.
      *
-     * @param IBarPanel $panel
-     * @param string $id
+     * @param  IBarPanel  $panel
+     * @param  string  $id
      * @return $this
      */
     public function set(IBarPanel $panel, $id)
@@ -125,7 +125,7 @@ class BarManager
     /**
      * get.
      *
-     * @param string $id
+     * @param  string  $id
      * @return IBarPanel
      */
     public function get($id)
@@ -136,7 +136,7 @@ class BarManager
     /**
      * isAjaxPanel.
      *
-     * @param string $id
+     * @param  string  $id
      * @return bool
      */
     private function isAjaxPanel($id)
@@ -147,7 +147,7 @@ class BarManager
     /**
      * name.
      *
-     * @param string $id
+     * @param  string  $id
      * @return string
      */
     private static function name($id)

@@ -13,10 +13,12 @@ class DatabasePanel extends AbstractSubscribePanel implements IAjaxPanel
      * @var array
      */
     protected $queries = [];
+
     /**
      * @var float
      */
     protected $totalTime = 0.0;
+
     /**
      * @var int
      */
@@ -25,12 +27,12 @@ class DatabasePanel extends AbstractSubscribePanel implements IAjaxPanel
     /**
      * logQuery.
      *
-     * @param string $sql
-     * @param array $bindings
-     * @param int $time
-     * @param string $name
-     * @param PDO $pdo
-     * @param string $driver
+     * @param  string  $sql
+     * @param  array  $bindings
+     * @param  int  $time
+     * @param  string  $name
+     * @param  PDO  $pdo
+     * @param  string  $driver
      * @return $this
      */
     public function logQuery($sql, $bindings = [], $time = 0, $name = null, PDO $pdo = null, $driver = 'mysql')
@@ -123,7 +125,7 @@ class DatabasePanel extends AbstractSubscribePanel implements IAjaxPanel
     /**
      * getDatabaseDriver.
      *
-     * @param PDO $pdo
+     * @param  PDO  $pdo
      * @return string
      */
     protected function getDatabaseDriver(PDO $pdo)
@@ -140,7 +142,7 @@ class DatabasePanel extends AbstractSubscribePanel implements IAjaxPanel
     /**
      * getDatabaseVersion.
      *
-     * @param PDO $pdo
+     * @param  PDO  $pdo
      * @return string
      */
     protected function getDatabaseVersion(PDO $pdo)

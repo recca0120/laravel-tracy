@@ -15,20 +15,20 @@
                 <th>Time&nbsp;ms / Name</th>
                 <th>SQL Query</th>
             </tr>
-            <?php foreach ($queries as $query): ?>
+            <?php foreach ($queries as $query) { ?>
                 <tr>
                     <td>
                         <?php echo sprintf('%0.3f', $query['time']) ?> / <?php echo $query['name'] ?>
-                        <?php if (count($query['hints']) > 0): ?>
+                        <?php if (count($query['hints']) > 0) { ?>
                             <br /><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .Laravel-DatabasePanel-hint">hint</a>
-                        <?php endif; ?>
-                        <?php if (count($query['explains']) > 0): ?>
+                        <?php } ?>
+                        <?php if (count($query['explains']) > 0) { ?>
                             <br /><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .Laravel-DatabasePanel-explain">explain</a>
-                        <?php endif; ?>
+                        <?php } ?>
                     </td>
                     <td class="Laravel-DatabasePanel-sql">
                         <?php echo $query['highlight'] ?>
-                        <?php if (count($query['hints']) > 0): ?>
+                        <?php if (count($query['hints']) > 0) { ?>
                             <?php $i = 0 ?>
                             <table class="tracy-collapsed Laravel-DatabasePanel-hint" id="">
                                 <thead>
@@ -37,37 +37,37 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($query['hints'] as $hint): ?>
+                                <?php foreach ($query['hints'] as $hint) { ?>
                                     <tr>
                                         <td><?php echo ++$i; ?></td><td><?php echo $hint ?></td>
                                     </tr>
-                                <?php endforeach; ?>
+                                <?php } ?>
                                 </tbody>
                             </table>
-                        <?php endif ?>
+                        <?php } ?>
 
-                        <?php if ($query['explains']): ?>
+                        <?php if ($query['explains']) { ?>
                             <table class="tracy-collapsed Laravel-DatabasePanel-explain">
                                 <tr>
-                                    <?php foreach ($query['explains'][0] as $col => $value): ?>
+                                    <?php foreach ($query['explains'][0] as $col => $value) { ?>
                                         <th><?php echo htmlspecialchars((string) $col, ENT_NOQUOTES, 'UTF-8') ?></th>
-                                    <?php endforeach ?>
+                                    <?php } ?>
                                 </tr>
-                                <?php foreach ($query['explains'] as $row): ?>
+                                <?php foreach ($query['explains'] as $row) { ?>
                                     <tr>
-                                        <?php foreach ($row as $value): ?>
+                                        <?php foreach ($row as $value) { ?>
                                             <td><?php echo htmlspecialchars((string) $value, ENT_NOQUOTES, 'UTF-8') ?></td>
-                                        <?php endforeach ?>
+                                        <?php } ?>
                                     </tr>
-                                <?php endforeach ?>
+                                <?php } ?>
                             </table>
-                        <?php endif ?>
-                        <?php if ($query['editorLink']): ?>
+                        <?php } ?>
+                        <?php if ($query['editorLink']) { ?>
                             <?php echo substr_replace($query['editorLink'], ' class="Laravel-DatabasePanel-source"', 2, 0) ?>
-                        <?php endif ?>
+                        <?php } ?>
                     </td>
                 </tr>
-            <?php endforeach ?>
+            <?php } ?>
         </table>
     </div>
 </div>

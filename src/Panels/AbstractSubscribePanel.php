@@ -9,7 +9,7 @@ abstract class AbstractSubscribePanel extends AbstractPanel
     /**
      * setLaravel.
      *
-     * @param Application $laravel
+     * @param  Application  $laravel
      * @return $this
      */
     public function setLaravel(Application $laravel = null)

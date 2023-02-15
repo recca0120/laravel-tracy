@@ -21,7 +21,7 @@
                                 Tracy\Dumper::TRUNCATE => 50,
                                 Tracy\Dumper::COLLAPSE => true,
                             ]);
-                        ?>
+                ?>
                     </td>
                 </tr>
             <?php } ?>

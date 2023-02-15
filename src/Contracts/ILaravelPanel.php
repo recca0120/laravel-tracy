@@ -9,7 +9,7 @@ interface ILaravelPanel
     /**
      * setLaravel.
      *
-     * @param \Illuminate\Contracts\Foundation\Application $laravel
+     * @param  \Illuminate\Contracts\Foundation\Application  $laravel
      * @return static
      */
     public function setLaravel(Application $laravel = null);

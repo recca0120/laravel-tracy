@@ -11,7 +11,7 @@
                     data
                 </th>
             </tr>
-            <?php foreach ($rows as $row): ?>
+            <?php foreach ($rows as $row) { ?>
                 <tr>
                     <td>
                         <?php echo $row['name'] ?>
@@ -21,7 +21,7 @@
                         <?php echo Tracy\Dumper::toHtml($row['data'], [Tracy\Dumper::LIVE => true]) ?>
                     </td>
                 </tr>
-            <?php endforeach ?>
+            <?php } ?>
         </table>
     </div>
 </div>

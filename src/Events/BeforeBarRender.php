@@ -24,8 +24,8 @@ class BeforeBarRender
     /**
      * Create a new event instance.
      *
-     * @param Request $request
-     * @param Response $response
+     * @param  Request  $request
+     * @param  Response  $response
      */
     public function __construct(Request $request, Response $response)
     {
